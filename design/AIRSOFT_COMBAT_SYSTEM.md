@@ -1,42 +1,58 @@
-# Airsoft combat system
+# Airsoft combat system — v2
 
-PD-04/14/15. Automatic watch/skip і fixed anchors — ORIGINAL CONFIRMED E012/E020. Уся математика нижче — **NEW AIRSOFT DESIGN / tuning v0**, deterministic execution — RECONSTRUCTION DECISION.
+USER APPROVED: variable1–16 deployment, one battle/round, HP/Damage/Armor, persistent HP і BBs. Exact formulas OPEN. [Pack v2](AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2.md); E012/E020 — automatic shooting, damage/MISS/HP/Skip.
 
-## Input і результат
+## Battle contract
 
-Input: MatchConfig(mode,format3v3,arenaId), SnapshotA/B, server-generated seed, simulationBuildHash, rulesetVersion, balanceVersion, mapVersion, PRNGVersion. Hash канонічного input зберігається. Sim не читає wall clock, DB, Steam, account rating або client FPS під час виконання.
+Input:BattleConfig(mode, arena, ruleset), attacker snapshot1–16, defender snapshot1–16, server seed, simulation build, PRNG version, balance version, resource policy version. Немає validation countA=countB. Не нормалізувати вхід до трьох actors і не застосовувати hidden fixed-size scaling.
 
-Output: round results, match outcome, ordered events, BB usage, summary facts, inputHash/outputHash. Wallet/rating settlement — окремий authoritative domain, не частина shot RNG.
+Один challenge дає один battle та один result. Немає roundWins, best-of-three, respawn/reset між rounds або повторів заради серії. Automatic watch/skip; гравець не стріляє й не надає tactical orders вручну.
 
-## Raундова структура
+Inputs містять starting CurrentHP/MaxHP, training-derived stats, weapon damage, MK, armor, BB class/quantity, formation якщо буде обрана. Acceptance pins input; не читати змінний live inventory під час replay. Клієнт не може запропонувати authority seed, result або свої effective stats.
 
-До 3 rounds;2 round wins завершують match. Round budget300ticks; усі бойові стани reset між rounds: ACTIVE, full stamina, magazine, reserves. Вибрані fighters/gear/anchors упродовж match незмінні. Round win: лише одна сторона має ACTIVE; simultaneous elimination → draw. Timeout: більше ACTIVE виграє; однакова кількість → draw. Після 3 rounds порівняти wins; рівність → match draw. No respawn всередині round.
+## Causal combat pipeline — без final coefficients
 
-Arena MVP має три anchors на бік і симетричну range matrix: matching anchor short, сусідній medium, крайній long. Згодом таблиці геометрії можна замінити authored distance/cover matrices. Starting side seed-selected у round1, alternating у round2/3. Side bias перевіряється окремо. Visual lean не є physics input.
+| Крок | Вхід / відповідальність | Що ще відкрите |
+|---|---|---|
+| Max HP | Fighter stats/progression + дозволені gear modifiers | MaxHP function і upper caps |
+| Starting HP | Authoritative health на acceptance timestamp | Recovery pause/concurrency policy |
+| Action scheduling | Living fighters, weapon handling/cadence | Tick/event model, intervals |
+| Target | Valid enemy із HP>0 | Uniform/weighted choice, formation effects |
+| Fire availability | Selected BB stock/loadout | BBs per action, magazines, reload/mixing |
+| Ammo debit in simulation | Витрата для performed fire action | Miss теж consumes за рекомендованою proposal |
+| Hit calculation | Fighter accuracy, weapon/MK, defender agility/gear | Probability bounds, range/cover, rounding |
+| Weapon damage | Base weapon + small MK changes | additive vs multiplicative, randomness |
+| BB interaction | Class damage modifier або equivalent ballistic effect | order/penetration relationship |
+| Armor mitigation | Armor rating зменшує received damage | curve, minimum damage, penetration option |
+| Health transition | HPafter=max(0, HPbefore−appliedDamage) | Числовий scale/rounding |
+| Elimination | HP<=0 | simultaneous event ordering |
+| Battle end | Одна сторона повністю eliminated | both-zero, timeout, no-ammo/stalemate Q-05 |
 
-## Candidate deterministic model
+HP transition — інваріант стану, не фінальна damage formula. Кілька hits можуть бути потрібні для elimination. Не встановлювати fire chance1800bp,300tick limit, magazines3 або будь-які старі constants v1.
 
-Використати integer/fixed-point math; hit probabilities у basis points0..10000. Нормалізація і округлення всюди floor, якщо не вказано інше.
+Strong armor зменшує damage, може мати mobility tradeoff. No invulnerability або guaranteed hit для premium. Ammo ceiling~15% є hypothesis для BB, а не total premium advantage. Повний stack тестується на hits-to-eliminate thresholds і group focus-fire.
 
-1. Round start: stamina Smax=100+3E+kitBonus. Кожний fighter має phase0..9 із versioned PRNG; global10tick cycle: перші 4ticks його shifted cycle = exposed, решта covered. Візуально це короткий peek; жодної ручної зміни exposure.
-2. Початковий ready tick=10+phase. Якщо shooter не exposed, відкласти до наступного власного exposed tick. Alive і ready shooter обирає uniform random серед exposed alive opponents, sorted за snapshot-local slot. Якщо нікого немає, retry через 1tick, RNG/ammo не витрачаються.
-3. Під час action S<0.25Smax дає fatiguePenalty500bp і cadence multiplier1.25. MobilityEffective=max(0,M+kitAdjustment−weaponLoad). Chance=clamp(1800+60A+weaponRangeBonus−40×targetMobilityEffective−fatiguePenalty,300,4500).
-4. Одне random integer0..9999; нижче chance → HIT, target стає OUT наприкінці цього tick. Інакше MISS. Немає damage roll, armor absorption або hitpoints. Один trial — abstract fire opportunity; не стверджуємо реалістичну ймовірність попадання кожної BB.
-5. Action витрачає 1magazine burst, BBs/burst з таблиці,8stamina. Stamina не нижче 0 і сама не відновлюється до наступного round. Наступний ready tick=current+cadence або floor(cadence×1.25) при fatigue. Якщо magazine0, наступний ready tick додатково відсувається на reloadTicks і магазин поповнюється. Дозволено 2 повні запасні magazines; якщо всі 3 витрачені, стан OUT_OF_AMMO до кінця round, але fighter лишається ACTIVE для timeout count.
-6. Усі actions одного tick обчислюються від state на початок tick. Sorted actions: side A slot0..2, side B slot0..2. Hits apply разом; два shooters можуть одночасно вибити один одного. RNG call schedule незмінний для однакового input, включно з пропусками.
+## Після бою
 
-Цей baseline спеціально малий. Якщо exposure/phase породжує патологічні deadlocks або надмірні draws, змінювати одну versioned table за раз; не додавати runtime random retry. Timeout гарантує завершення навіть без shots.
+Result містить finalHP per fighter, spent/unspent BB per class, win/loss/edge result, event log. Persistent attacker health і stock оновлюються once через settlement. Skip не лікує й не повертає витрачені BB. UI memory/replay restart не повторює resource transitions.
 
-## Determinism contract
+Матеріалізувати free recovery від server clock перед acceptance, далі input frozen. Proposal: не нараховувати recovery під час accepted combat, почати наступний recovery interval після logical battle settlement. Точна semantics Q-03, особливо при затримці worker. Playback duration не повинна змінювати HP/reward.
 
-PRNG: конкретний алгоритм і test vectors обираються на M1; до їх фіксації не заявляти bit-identical implementation. Seed256bit генерує сервер, клієнт не пропонує seed. Stable serialization: versioned field order, UTF-8, integers, sorted arrays, no platform-dependent hash. Tie and RNG ordering як вище. Batch resolution не використовує floating physics/navigation/animations.
+Offline defender policy Q-06 не обрана. Варіанти:
+- Live defender HP/ammo:серіалізація/reservations, ризик пасивного resource drain.
+- Isolated defense snapshot:відсутність live debit, але це окремий відхід від persistent cost principle, потребує approval.
+- Dedicated defense resource pool:складніший UI/economy, не default.
 
-Combat logs: tick,round,eventIndex,actorSlot,targetSlot,eventType,hitChanceBp,roll,staminaAfter,magazineAfter,statusAfter. Full audit log server-only до settlement; replay payload після settlement може опускати rolls. Client summary показує тільки факти: «2 вибуття на далекій лінії», «темп знизився через stamina», а не недоведене причинне «саме це коштувало перемоги».
+Будь-який варіант мусить зберігати finalHP/BB use у battle record. Жоден не реалізується мовчки. Повторні offline attacks не можуть неконтрольовано писати finalHP поверх іншого бою.
 
-## Replay і версії
+## Determinism / replay
 
-Сервер resolve передає event timeline і result. Pause/speed/skip змінюють playback, не sim state. Replay зі старим ruleset не оновлює equipment definitions із live catalog. Зберігати старий sim build, таблиці та input для audit; event log окремо для playback. Відсутній старий renderer → текстовий timeline, а не нова simulation з іншими правилами.
+Server-authoritative deterministic sim — RECONSTRUCTION DECISION. Pure input→result, event ordering, PRNG algorithm, serialization/fixed-point policy фіксуються в окремому technical design після дозволу. Старі ruleset/build/tables потрібні для replay/audit; seed сам по собі недостатній.
 
-## Acceptance
+Event:sequence, simulationTime, actorId, targetId, type, ammoClass/quantity, hit/miss, rawDamage, mitigatedDamage, HPafter, elimination. Summary показує фактичні події, не гарантовану контрфактичну причину поразки. Presentation не використовує physics як authority.
 
-Однаковий input дає тотожний output hash на supported server builds. Для seed suite немає invalid actors, negative ammo, shots після OUT із попереднього tick, infinite rounds. Simultaneous hits/draw/ammo exhaustion/timeout мають golden cases. Watch/skip/disconnect settlement однаковий. Seed sweeps із side swap порівнюють composition/range/training; тільки після цього висновки про balance.
+## Future validation gates — не виконані зараз
+
+Валідація всіх 256 пар countA/countB у 1..16; порожній/17/duplicate/foreign fighter відхилені. Приклади 1v5,16v2,10v16,16v16 не блокуються size equality. Performance виміряти на 32actors.
+
+HP<=0 elimination, armor impact, BB damage/stock consumption, miss cost, zero ammo/timeout, both-zero, partial HP entry. Watch/skip/disconnect мають однаковий settlement. Seed sweeps:stats/quantity/MK/BB/armor/level, side swaps, underdog/overpower. До запуску цих перевірок balance не заявляється.

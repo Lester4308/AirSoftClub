@@ -1,0 +1,852 @@
+Онови поточний:
+
+AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v1
+
+до:
+
+AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2
+
+на основі наведених нижче ЗАТВЕРДЖЕНИХ product decisions.
+
+Це correction pass.
+
+НЕ починай implementation.
+НЕ створюй production code.
+НЕ змінюй Project Airsoft.
+Працюй тільки в окремому проєкті:
+
+Airsoft_Club_Game
+
+==================================================
+0. ГОЛОВНИЙ PRODUCT PRINCIPLE
+==================================================
+
+Нова гра повинна бути значно ближчою за core gameplay, progression, economy та UI flow до реконструйованої старої VK-гри:
+
+«Пейнтбольные войны»
+
+але:
+
+- весь сетинг — AIRSOFT;
+- весь код створюється з нуля;
+- production assets створюються заново;
+- UI осучаснюється;
+- Steam замінює VK як social platform;
+- asynchronous PvP модернізує старий social rivalry loop.
+
+Не перетворювати гру на симетричний 3v3 tactical manager.
+
+Це було помилкове попереднє припущення.
+
+==================================================
+1. BATTLE SIZE — ЗМІНЕНО
+==================================================
+
+НЕ фіксувати 3v3 як основний або обов'язковий формат.
+
+Максимальна кількість бійців клубу:
+
+16
+
+Максимальна кількість бійців однієї сторони в конкретному бою:
+
+16
+
+Гравець сам вирішує, скільки своїх доступних бійців виставити.
+
+Дозволені асиметричні бої:
+
+1v1
+1v2
+1v3
+2v1
+2v3
+3v1
+3v5
+5v8
+10v16
+16v16
+
+і будь-які інші допустимі комбінації в межах 1–16 бійців на сторону.
+
+Не примушувати гравців використовувати однакову кількість бійців.
+
+Це важлива частина design DNA старої гри.
+
+==================================================
+2. ONE BATTLE = ONE ROUND
+==================================================
+
+НЕ використовувати:
+
+best-of-three
+серії раундів
+round wins
+multi-round match structure
+
+Один challenge:
+
+→ один battle
+→ один результат.
+
+Після завершення бою визначається переможець.
+
+Це має бути швидкий, зрозумілий social battle loop.
+
+==================================================
+3. HP SYSTEM — ONE-HIT ELIMINATION ВІДКИНУТО
+==================================================
+
+Попереднє рішення:
+
+one hit = fighter eliminated
+
+СКАСОВАНО.
+
+Потрібна система:
+
+HP
++
+Damage
++
+Armor / Protection
+
+Бійці можуть пережити декілька влучань.
+
+Основна логіка повинна бути ближчою до «Пейнтбольных войн», де результат залежить від бойових характеристик, damage та стану персонажа.
+
+Потрібно спроєктувати:
+
+- Max HP;
+- weapon damage;
+- BB damage modifier;
+- armor mitigation;
+- hit calculation;
+- elimination at HP <= 0.
+
+Не вигадувати фінальні числові формули на цьому етапі.
+
+Balance values залишити prototype hypotheses.
+
+==================================================
+4. CLUB ROSTER
+==================================================
+
+Максимальний ростер:
+
+16 fighters.
+
+Перший fighter:
+
+FREE.
+
+Це стартовий персонаж нового club.
+
+Після нього кожен наступний fighter купується.
+
+Загальний progression principle максимально близький до оригінальної гри:
+
+1st fighter
+→ free
+
+2nd
+→ cheap
+
+3rd
+→ more expensive
+
+і далі вартість поступово росте.
+
+Але нова система recruitment буде глибшою за оригінал.
+
+==================================================
+5. RECRUITMENT MARKET
+==================================================
+
+При відкритті recruitment screen гравець НЕ отримує одного фіксованого fighter.
+
+Показувати приблизно:
+
+6–7 recruits
+
+одночасно.
+
+Кожен recruit має:
+
+- різні starting stats;
+- різну силу;
+- різну ціну;
+- можливо різний visual appearance;
+- потенційно різний development potential, якщо така система буде схвалена пізніше.
+
+Основний tradeoff:
+
+CHEAPER RECRUIT
+→ weaker starting stats
+
+EXPENSIVE RECRUIT
+→ stronger starting stats
+
+Гравець повинен сам вирішувати:
+
+купити дешевого fighter зараз
+
+або
+
+накопичити на значно кращого.
+
+==================================================
+6. CLUB LEVEL → RECRUIT QUALITY
+==================================================
+
+З ростом Club Level recruitment pool покращується.
+
+На ранньому рівні:
+
+переважно слабкі/середні recruits.
+
+На високих рівнях:
+
+можуть з'являтися значно сильніші recruits.
+
+При цьому не всі високорівневі recruits повинні бути автоматично кращими за всіх попередніх.
+
+Потрібна variance, щоб recruitment залишався вибором.
+
+==================================================
+7. BATTLE REWARD FOUNDATION
+==================================================
+
+Основна цінність суперника повинна бути прив'язана насамперед до:
+
+OPPONENT CLUB LEVEL.
+
+Тобто перемога над клубом високого рівня має потенційно давати більшу нагороду.
+
+Базова модель:
+
+Opponent Club Level
+→ Base Battle Value
+
+Після цього застосовується коригування за фактичну різницю бойової сили.
+
+==================================================
+8. TEAM POWER MODIFIER
+==================================================
+
+Не використовувати лише кількість fighters.
+
+Потрібен derived показник:
+
+TEAM POWER
+
+або аналогічний internal metric.
+
+Він може враховувати:
+
+- number of fighters;
+- fighter stats;
+- HP;
+- weapons;
+- weapon upgrade tier;
+- armor;
+- ammunition class;
+- other combat-relevant modifiers.
+
+TEAM POWER потрібен насамперед для:
+
+- reward scaling;
+- matchmaking assistance;
+- anti-farming;
+- balancing analytics.
+
+Не обов'язково показувати точну формулу гравцю.
+
+==================================================
+9. UNDERDOG / OVERPOWER REWARD
+==================================================
+
+Якщо гравець атакує значно сильнішого суперника:
+
+ризик вищий
+→ potential reward може бути вищим.
+
+Якщо гравець атакує значно слабшого суперника:
+
+reward суттєво зменшується.
+
+Приклад:
+
+16 сильних fighters
+проти
+1 слабкого fighter
+
+може бути дозволено.
+
+Але reward повинен бути дуже малим.
+
+Таким чином система НЕ забороняє нерівні бої, але економічно не заохочує farming.
+
+==================================================
+10. ENERGY — ВИДАЛЕНО
+==================================================
+
+Persistent Energy system:
+
+НЕ ВИКОРИСТОВУВАТИ.
+
+Гравець не повинен чекати energy refill, щоб продовжувати грати.
+
+Основними обмежувачами можуть бути:
+
+- health;
+- ammo;
+- money;
+- readiness;
+- opponent availability;
+
+але не artificial energy bar.
+
+==================================================
+11. POST-BATTLE HEALTH
+==================================================
+
+Damage/health fighters зберігається після бою.
+
+Після battle fighter може мати:
+
+100%
+70%
+35%
+10%
+
+HP.
+
+Відновлення доступне двома способами.
+
+OPTION A:
+
+IMMEDIATE HEAL
+→ за звичайні гроші.
+
+OPTION B:
+
+FREE RECOVERY
+→ автоматично з часом.
+
+Гравець сам вирішує:
+
+заплатити і продовжити грати зараз
+
+або
+
+почекати та відновитися безкоштовно.
+
+==================================================
+12. NO CREDIT HEALING
+==================================================
+
+Не створювати окремий heal-for-Credits button.
+
+Причина:
+
+Credits уже можна конвертувати в звичайну валюту.
+
+Тому:
+
+Credits
+→ Money
+→ Healing
+
+вже покриває такий use case.
+
+Не дублювати monetization mechanic без необхідності.
+
+==================================================
+13. ECONOMY — TWO CURRENCIES
+==================================================
+
+Потрібні:
+
+SOFT CURRENCY
++
+PREMIUM CURRENCY.
+
+Premium currency official working name:
+
+CREDITS.
+
+Soft currency name можна визначити окремо.
+
+==================================================
+14. CREDITS
+==================================================
+
+Credits можуть:
+
+- купуватися за реальні гроші;
+- іноді видаватися як special rewards, якщо це буде схвалено;
+- обмінюватися на soft currency;
+- використовуватися для premium purchases;
+- відкривати частину прогресії раніше.
+
+Credits — важлива частина monetization model.
+
+==================================================
+15. MONETIZATION GOAL
+==================================================
+
+Цей проєкт має комерційну мету.
+
+Monetization НЕ є необов'язковою додатковою функцією.
+
+Вона повинна бути закладена в product/economy design із самого початку.
+
+Але необхідно уникнути ситуації:
+
+PAY = GUARANTEED WIN.
+
+Базовий принцип:
+
+PAY TO PROGRESS FASTER
++
+PREMIUM COLLECTION
++
+LIMITED POWER ADVANTAGE
+
+але не грубий pay-to-win.
+
+==================================================
+16. EARLY UNLOCK THROUGH CREDITS
+==================================================
+
+Як і в старій «Пейнтбольные войны», premium currency може дозволяти отримати:
+
+weapon
+equipment
+other items
+
+які ще не доступні за поточним Club Level.
+
+Приклад:
+
+AR unlock normally:
+Club Level 10
+
+Player at Level 7:
+
+може дочекатися Level 10
+
+або
+
+використати Credits для early access.
+
+Але сам item не повинен автоматично гарантувати перемогу.
+
+==================================================
+17. PREMIUM / UNIQUE ITEMS
+==================================================
+
+Можуть існувати:
+
+expensive premium-only items.
+
+Вони можуть мати:
+
+- унікальний вигляд;
+- collectible value;
+- невеликий combat advantage;
+- special identity/status.
+
+Але їхня сила повинна бути обмеженою.
+
+Не створювати:
+
++100% damage
+invulnerability
+guaranteed hit
+або подібні balance-breaking advantages.
+
+==================================================
+18. WEAPON UPGRADE / SKIN SYSTEM
+==================================================
+
+Скін НЕ є просто косметичним paint.
+
+Використовувати progression model:
+
+WEAPON BASE
+→ MK1
+→ MK2
+→ MK3
+→ potentially further tiers
+
+Кожен MK:
+
+- змінює visual appearance / skin;
+- показує progression;
+- дає невелике покращення характеристик.
+
+Наприклад:
+
+small Damage increase
+small Accuracy increase
+small Handling improvement
+
+але конкретні modifiers визначаються балансом.
+
+Основна ідея:
+
+MK upgrade = visual skin + small gameplay upgrade.
+
+Credits можуть використовуватися для відкриття таких tiers.
+
+==================================================
+19. WEAPON UPGRADE BALANCE
+==================================================
+
+MK upgrades не повинні перетворювати базову зброю на completely different power tier.
+
+Потрібне поступове покращення.
+
+Приклад conceptual scale:
+
+Base
+→ MK1
+small improvement
+
+MK2
+→ slightly stronger
+
+MK3
+→ premium/high-end version
+
+Не використовувати великі множники damage без balance testing.
+
+==================================================
+20. BB AMMUNITION SYSTEM
+==================================================
+
+BBs залишаються persistent consumable resource.
+
+Гравець повинен:
+
+купувати BBs
+→ брати їх у battle
+→ витрачати
+→ поповнювати запас.
+
+Ammo має бути частиною operational economy.
+
+==================================================
+21. BB CLASSES
+==================================================
+
+Передбачити приблизно:
+
+3–5 класів BB ammunition.
+
+Робочий design direction:
+
+BASE BB
+→ +0%
+
+IMPROVED BB
+→ приблизно +3%
+
+ADVANCED BB
+→ приблизно +5%
+
+HIGH-END BB
+→ приблизно +10%
+
+PREMIUM BB
+→ максимум приблизно +15%
+
+Ці числа є PROTOTYPE HYPOTHESES.
+
+Не вважати їх final balance.
+
+==================================================
+22. PREMIUM BB
+==================================================
+
+Найсильніший клас BB може бути:
+
+Credits-only.
+
+Але максимальна бойова перевага повинна залишатися обмеженою.
+
+Current target ceiling:
+
+приблизно +15% damage
+
+або еквівалентна перевага через armor penetration / ballistic modifier.
+
+Не робити:
+
+x2 damage
+guaranteed kill
+ignores all armor.
+
+Premium BB повинні давати advantage, але не визначати результат бою самостійно.
+
+==================================================
+23. ARMOR
+==================================================
+
+Armor повинна впливати на отриманий Damage.
+
+Потрібно спроєктувати:
+
+armor rating
+damage mitigation
+possible penetration interaction
+equipment tradeoffs
+
+Наприклад:
+
+strong armor
+→ better survivability
+→ possible mobility penalty
+
+але не вводити складність без gameplay benefit.
+
+==================================================
+24. STEAM FRIENDS
+==================================================
+
+Steam Friends залишаються ключовою social mechanic.
+
+Друг може бути атакований:
+
+будь-якою допустимою кількістю fighters.
+
+Наприклад:
+
+1v5
+3v10
+16v2
+
+якщо обидва профілі мають відповідну кількість доступних fighters.
+
+Не робити forced equal team size.
+
+==================================================
+25. FRIENDS PVP
+==================================================
+
+Steam Friends PvP:
+
+NON-RANKED SOCIAL MODE.
+
+Основна ціль:
+
+rivalry
+revenge
+comparison
+fun
+friend competition.
+
+Не дозволяти друзям легко farm'ити ranked rating один через одного.
+
+==================================================
+26. REVENGE
+==================================================
+
+Revenge також:
+
+NON-RANKED
+
+як default decision.
+
+Воно може давати:
+
+money
+XP
+other normal rewards
+
+але не повинно бути простим джерелом rating farming.
+
+==================================================
+27. RANKED MODE
+==================================================
+
+RANKED:
+
+окремий opponent pool.
+
+Backend matchmaking.
+
+Rating changes тільки в цьому режимі або за окремо затвердженою ruleset.
+
+==================================================
+28. UI / UX DIRECTION
+==================================================
+
+Користувачу подобається UI/flow старої:
+
+«Пейнтбольные войны».
+
+Тому:
+
+НЕ відкидати original UI structure.
+
+Потрібно окремо в майбутньому провести:
+
+ORIGINAL UI ANALYSIS
+→ MODERN AIRSOFT UI REDESIGN.
+
+Зберегти сильні сторони:
+
+- прості великі locations/screens;
+- зрозумілий hub;
+- швидка навігація;
+- персонаж/команда як центральний елемент;
+- currencies завжди зрозумілі;
+- Shop / Training / Recovery / Club як окремі зрозумілі destinations.
+
+Але:
+
+visual execution
+typography
+layouts
+responsive behavior
+animations
+interaction patterns
+
+мають відповідати сучасній PC/Steam грі.
+
+UI redesign буде окремим етапом.
+
+==================================================
+29. ORIGINAL GAME FIRST PRINCIPLE
+==================================================
+
+При design decisions використовуй такий порядок:
+
+1. Як це працювало в підтвердженій старій грі?
+2. Чи ця mechanic досі працює сьогодні?
+3. Якщо так — зберегти максимально близько.
+4. Якщо ні — модернізувати мінімально необхідним способом.
+5. Не змінювати mechanics лише тому, що існує «сучасніший» складніший варіант.
+
+Мета:
+
+MODERNIZED SUCCESSOR
+
+а не:
+
+повністю інша management game.
+
+==================================================
+30. ECONOMY AS BUSINESS SYSTEM
+==================================================
+
+Economy повинна підтримувати одночасно:
+
+PLAYER PROGRESSION
+
+і
+
+COMMERCIAL MONETIZATION.
+
+Потрібно моделювати:
+
+money sources
+money sinks
+Credits sources
+Credits sinks
+recruitment costs
+weapon costs
+armor costs
+BB costs
+healing costs
+upgrade costs
+early unlock costs.
+
+Не фіналізувати числа без simulation/testing.
+
+==================================================
+31. IMPORTANT ECONOMIC LOOP
+==================================================
+
+Очікуваний loop:
+
+Battle
+→ reward
+→ ammo cost
+→ possible healing
+→ recruit/equipment saving
+→ progression
+→ next battle.
+
+Таким чином battle має:
+
+gross reward
+
+але фактичний економічний результат залежить від operational costs.
+
+Це важлива частина design DNA оригіналу.
+
+==================================================
+32. UPDATE EXISTING DOCUMENTS
+==================================================
+
+Після застосування corrections онови:
+
+AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v1
+→ v2
+
+і всі залежні документи, де старі рішення суперечать новим.
+
+Особливо перевір:
+
+AIRSOFT_CORE_LOOP.md
+AIRSOFT_FIGHTER_SYSTEM.md
+AIRSOFT_EQUIPMENT_SYSTEM.md
+AIRSOFT_COMBAT_SYSTEM.md
+AIRSOFT_ECONOMY.md
+STEAM_SOCIAL_PVP_ARCHITECTURE.md
+DATA_MODEL.md
+MVP_IMPLEMENTATION_PLAN.md
+PRODUCT_DECISIONS.md
+ROADMAP
+
+==================================================
+33. INVALIDATE OLD DECISIONS
+==================================================
+
+Познач як SUPERSEDED:
+
+- mandatory 3v3;
+- max roster 6;
+- one-hit elimination;
+- fixed symmetric team sizes;
+- no planned monetization;
+- purely cosmetic weapon skins.
+
+Не залишати старі рішення як активні поруч із новими.
+
+==================================================
+34. DON'T IMPLEMENT YET
+==================================================
+
+Після оновлення документів:
+
+НЕ починай code implementation.
+
+Спочатку сформуй:
+
+AIRSOFT CLUB GAME — UPDATED PRODUCT DECISION SUMMARY v2
+
+з розділами:
+
+CONFIRMED
+BALANCE HYPOTHESES
+OPEN QUESTIONS
+SUPERSEDED DECISIONS
+
+Після цього зупинись на product/design gate.
+
+Implementation потребує окремого наступного рішення.

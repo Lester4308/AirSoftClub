@@ -11,6 +11,7 @@
 - Власна архітектура: design/BACKEND_ARCHITECTURE.md та design/STEAM_SOCIAL_PVP_ARCHITECTURE.md.
 - Власна модель даних: design/DATA_MODEL.md.
 - Власний roadmap: design/MVP_IMPLEMENTATION_PLAN.md.
+- Актуальний roadmap v2: [ROADMAP.md](ROADMAP.md); затверджені corrections — [Product Pack v2](design/AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2.md).
 - Власні combat, economy, progression, UI та майбутній save implementation.
 
 Project Airsoft не змінювати. Його код, архітектура, data model, fighter classes, combat rules, economy, calendar, UI flow, progression, repository structure, save system, balance та terminology не успадковуються.

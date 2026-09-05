@@ -1,54 +1,46 @@
-# MVP implementation plan
+# MVP implementation plan — v2
 
-Статус: план, implementation не почато. [Decision Pack](AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v1.md) сформовано перед будь-яким кодом. Milestones мають gates, а не вигадану дату release.
+**PLAN ONLY. Implementation потребує окремого наступного рішення.** [Pack v2](AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2.md), [ROADMAP](../ROADMAP.md).
 
-## M0 — Design baseline (цей пакет)
+## Завершений correction milestone D0
 
-Результат: evidence mapping,24decisions,game/system/Steam/backend/data specs. Перевірка: усі 7 особливо названих research documents прочитані; невідомі original formulas не видані за факти; нові choices мають options/recommendation/impact. Production art/code не переноситься з архіву.
+Затверджені corrections застосовано; v1 superseded. Active docs узгоджуються з variable1–16, одним боєм, HP/BB persistence, Money/Credits, MK, hub і monetization. Updated Summary відокремлює approved rules, hypotheses та open questions. Жодного runtime, database schema або production code зараз.
 
-## M1 — One complete loop
+## Product/design gates перед реалізацією
 
-Порядок: foundation → Steam adapter stub → profile → club → fighters → inventory/equipment → shop/economy → opponent profile → immutable team input → deterministic sim → Result → progression → dev save/reload.
+D1: Q-01–Q-05 — stats/recruit/training/recovery/ammo/edge outcomes; Q-06 — offline defense resource policy до human async; Q-07/Q-09/Q-11 — acquisition, power/reward, business і cumulative paid edge.
+D2: окремий original UI analysis → modern redesign, зі збереженням hub.
+D3: узгодження balance scenarios й економічної моделі та scope наступного implementation decision.
 
-Concrete scope:3starters,4thchoice,max4;3v3+1v1drill;Primary/Protection/Kit;AR/SMG,3kit styles;one arena;watch/skip;Credits+training;one NPC opponent set;debug presentation. No social/ranked backend exposed to external players. Dev SQLite/file adapter допустимий лише як disposable non-production persistence, profile namespace dev.
+Не потрібно фіналізувати всі coefficients, щоб згодом дозволити prototype. Невизначені health/resource semantics мають бути явно обрані або виключені зі scope такого дозволу. У цьому завданні зупиняємося після D0.
 
-Перед основною реалізацією foundation spike порівнює два engine кандидати за headless simulation reuse, Steam adapter integration, UI iteration і deploy constraints. За замовчуванням дослідити C#-based shared domain library; engine brand/version не зафіксовано без наявних навичок команди й integration evidence. Timebox2 робочі дні команди, не поточна обіцянка виконання. Gate output — короткий ADR з engine/runtime/DB/version choices та перевіреним minimal build.
+## Майбутня послідовність — тільки план
 
-M1 exit: новий profile → club → купити/equip → battle → reward → upgrade → repeat → restart відновлює state. Same seed/input identical result; skip однаковий; missing protection виправляється безкоштовно. Designer може змінити balance table без rewrite системи. Не переходити до polish, поки гравець не розуміє build effect.
-
-## M2 — Persistence і Steam authority
-
-Порядок: production DB schema/migrations → command validation/ledger → durable sim jobs/settlement → Steam ticket/ownership integration → cache/offline practice → backup/restore.
-
-Auth stub не переноситься у production. Real Steam integration потребує game AppID, publisher credentials і тестових entitlement accounts. User-visible MVP післяM2 дозволяє trustworthy account/profile/equipment/battle/progression/save. Social PvP ще може бути прихований feature flag; NPC snapshots server-owned.
-
-M2 exit: invalid auth rejected; no local save import; simultaneous purchase не робить negative wallet;duplicate submit/worker/settlement не дублює reward;disconnect відновлює той самий match;old balance replay відтворюється;restore drill відновлює canonical data. Exactly-once effect перевіряється fault injection між кожними двома state transitions.
-
-## M3 — Social beta / public v1 candidate
-
-Порядок: async human defense → Steam Friends → rating offers/paired rating → revenge → leaderboards → inbox → privacy/moderation → UI/3D polish. Це відповідає пріоритету стабільного battle core перед social.
-
-Gate для кожної частини: offline B не потрібний для A challenge;friend SDK empty/error не блокує Rating/PvE;pair counts cross-mode;revenge one-use72h/no chain;ranking pool constraints видно;concurrent defense changes не мутують pinned inputs;Global/Friends/Around Me мають consistent rating;unverified social IDs не відкривають private data.
-
-Перед external beta: allowlisted tester population, monitoring/rollback, feedback про battle length/build clarity, report/block/rename tools. Public v1 не називати готовим лише тому, що M1 playable. Steam push, Steam leaderboard mirror, Steam Deck certification не критичний шлях.
-
-## M4 — Content expansion
-
-До 6roster,DMR,до 3arenas,new art/audio,cosmetic options і achievements після balance gates. Не додавати 4v4,secondary,attachment tree чи persistent fatigue в цей milestone без окремого PD update. Умови для Deck/controller — реальний input/text/performance test на пристрої.
-
-## Validation matrix
-
-| Risk | Перевірка | Gate |
+| Milestone | Scope | Exit evidence після окремого дозволу |
 |---|---|---|
-| Нецікава підготовка | Human playtest після 3matches | Може пояснити рішення та побачений ефект |
-| One-hit RNG/домінантний build | Seed sweep + side swaps + win matrix | Review перед freeze balance, без заяви про вже доведений баланс |
-| Economy trap | Zero wallet,10loss streak,caps,repeat pairs | Завжди доступний новий матч; ledger consistent |
-| Client tampering | Modified stats/price/XP/result | Server rejects або ignores authoritative fields |
-| Async race | Equip+accept,2workers,2settlements | Frozen inputs,one reward/paired rating |
-| Population fragmentation |100/1k/10k synthetic clubs,quota saturation | No-offer rate виміряний; fallback чесно маркований |
-| Privacy failure | Forged friend IDs,blocked target,private profile | Лише public cards; no sensitive data |
-| Patch/replay break | Match across balance migration | Old event hash і audit build доступні |
+| I0 Foundation | Independent runtime ADR, auth adapter/dev stub, domain contracts | Minimal build окремого repo, без імпорту Project Airsoft |
+| I1 One complete loop | Club, один free fighter, market, gear/BB, NPC battle, HP damage, result, Money, Recovery, save | Equip → battle → persistent HP/spent BB → heal/refill/save → repeat |
+| I2 Variable roster/deployment | Paid recruits різної якості, level-dependent pool, 1–16 selection, asymmetric battles | 1v2/2v1/3v5/10v16/16v16; усі 256 пар кількості допустимі |
+| I3 Durable authority | Transactions, Money/Credits ledgers, exchange, ammo reservation, health clock, snapshots | Retry/crash не дублює reward/ammo/heal |
+| I4 Social | Real Steam auth, offline defense за Q-06, Friends, Ranked pool, Revenge/history | Unequal friends challenges; rating тільки Ranked |
+| I5 Commerce validation | MK/early/premium SKUs, Steam sandbox, verified Credits grants, reversals | Combined balance, payment correctness, business review |
+| I6 UI/release readiness | Approved modern UI, art/audio, accessibility, content, operations | Readability32 actors, currencies/costs, monitoring/restore/privacy |
 
-## Команда, витрати, відкриті залежності
+Commercial model і потрібні domain boundaries закладені з I0/I1. Test currency може заміняти real checkout до I5; монетизація не optional. Перший 1v1 — technical slice, не public format lock. Boundary16v16 й асиметрія не відкладаються до невизначеного expansion.
 
-Потрібні ролі domain/backend engineer,client/UI engineer,designer/balance,3D/generalist art та QA; одна людина може поєднувати ролі. Без чисельності/досвіду/бюджету оцінка тижнями ненадійна. Найдорожчі невідомі:3Dproduction throughput,Steam integration credentials,retention/storage,online operations і actual battle fun. Після M1 оцінити scope на фактичному throughput, а не підміняти його кількістю документів.
+## Validation plan
+
+| Area | Cases |
+|---|---|
+| Roster/recruit | First free once; subsequent paid;6–7 varied offers; level quality overlap; reject17 owned |
+| Combat sizes | Усі 1..16 ×1..16; reject0/17, duplicates; unequal count не блокується |
+| Combat HP | Multiple hits, mitigation, MK/BB modifiers, HP<=0, persistent final HP |
+| Operational economy | Actual stock spent, unused return, Money heal, free elapsed recovery, no direct Credits heal |
+| Rewards | Opponent level base, power disparity, low payout16strong vs1weak, underdog manipulation |
+| Monetization | Currency separation, exchange, early access, MK visual+stats, premium BB hypothesis |
+| Stack balance | Free/paid cohorts, full gear/MK/BB/armor, roster size, HP sustain; no guaranteed win |
+| Concurrency | Acceptance+heal/equip, worker retry, reservations, defense policy Q-06 |
+| Steam/commerce | Wrong AppID/identity, unknown payment state, retry, refund after conversion |
+| UX | Original hub, distinct destinations,32 actors, clear gross/cost/currencies |
+
+Це список майбутніх перевірок, не test report. Немає final win rates, prices, release calendar чи engine choice. Власний roadmap не успадковує Project Airsoft calendar або milestones.

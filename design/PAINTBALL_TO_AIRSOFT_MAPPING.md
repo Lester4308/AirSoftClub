@@ -1,42 +1,46 @@
-# Original → Airsoft mapping
+# Original → Airsoft mapping — v2
 
-Історичні назви нижче використовуються виключно для traceability. E### розшифровані у [RESEARCH_BASIS.md](RESEARCH_BASIS.md). Keep/Modify/Remove — рішення нової гри, а не правова оцінка. Нові механіки не називаються підтвердженими механіками оригіналу.
+Канон: [Pack v2](AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2.md). E### у [Research basis](RESEARCH_BASIS.md). Original terminology нижче лише для доказового порівняння. USER APPROVED не означає ORIGINAL CONFIRMED.
 
 | Original mechanic | Evidence / status | Keep? | Modify? | Remove? | Airsoft replacement | Reason |
 |---|---|---|---|---|---|---|
-| Hire → equip → auto battle → reward | E007–E020 CONFIRMED | так | терміни/UX | ні | Club preparation loop | Основний емоційний контракт |
-| School candidates,8 cards, first free | E007 CONFIRMED | вибір бійця | 3 starters +4th choice,4 cards | literal8 | Recruit у Team | Швидкий перший 3v3 |
-| Другий 100/третій 300 | E025 STRONGLY SUPPORTED | rising opportunity cost | нова price table | literal prices | slots5/6 за Credits | Старі числа не баланс нової гри |
-| Roster16 | E002/E014 CONFIRMED; deploy UNKNOWN | постійний roster | max6/deploy3 |16 v1 | active trio + reserves | Читабельність |
-| Name/rename/dismiss/portrait | E002, Fighter/Team docs CONFIRMED | так | нові pools, min3 rule | ні | персональні club members | Прив'язаність до команди |
-| Endurance/Agility/Accuracy | E010/E018 CONFIRMED | три параметри | ефекти | буквальні формули невідомі | Endurance/Mobility/Accuracy | Build clarity |
-| Fighter HP | E010/E020 CONFIRMED | зрозуміле вибуття | round status | persistent HP | ACTIVE/OUT; per-round stamina | Один зарахований hit |
-| Damage/speed/armor | E008/E019/E020 CONFIRMED | gear tradeoffs | cadence/accuracy/range/weight | damage sponge/armor | weapon and kit properties | Спортивний контекст |
-| Karma training | E002/E010/E018 CONFIRMED | цільовий stat upgrade | Credits+XP budget | karma | Training Center | Без premium-like другої валюти |
-| Trainer periodic gift | E006 CONFIRMED; timer UNKNOWN | early encouragement | one-time milestone | mandatory collection timer | first-match reward | Не вставляти chores |
-| Marker slot | E010 CONFIRMED | слот | airsoft сім'ї/нові names | старі models/names | Primary | Clean-room content |
-| Mask mandatory | E021 CONFIRMED | readiness check | eye/face protection | armor effect | Protection, free baseline | Gear completeness без paid safety |
-| Camouflage | E011 CONFIRMED | loadout choice | consolidated kit | old art/stat armor | Tactical kit | Три meaningful slots |
-| Set relationship | E011 CONFIRMED; bonus UNKNOWN | майбутня можливість | sidegrade synergy | set bonus v1 | explicit individual tradeoffs | Немає прихованого обов'язкового set |
-| Shop price/resale/unlock | E008/E023/E030 CONFIRMED | порівняння/cost/unlock | нові tables; resale25% | old prices | Credits shop | Контроль витрат |
-| Persistent balls | E013/E015 CONFIRMED | operational expense | fixed match supply cost | manual stock | BB allowance each round | Не зупиняти матчі |
-| Ammo capacity growth | Economy doc, cause UNKNOWN | ні | ні | з v1 | fixed per-round loadout | Не винаходити old formula |
-| Coins + karma | E006/E008 CONFIRMED | resource choice | Credits+XP | exchange/premium assumptions | one spendable currency | Проста економіка |
-| XP/level gates | E016/E017/E029/E030 CONFIRMED | так | own curves/caps | old thresholds | Club/Fighter XP | Розвиток без unlimited power |
-| Resp | карта CONFIRMED; heal purpose STRONGLY SUPPORTED | ready feedback | instant reset | paid/timed recovery | Ready Room | Більше боїв |
-| Energy | E024–E026 CONTRADICTORY | ні | ні | не вводити | no persistent energy | Не переносити суперечливе |
-| Opponents/Allies lists | E014 CONFIRMED | opponent discovery | tabs Friends/Rating/Revenge | ally count as power | Opponents | Friends count не power |
-| VK friend attack/profile | E009 CONFIRMED | rivalry | Steam adapter | VK integration | Steam Friends | First-class платформа |
-| Automatic fixed positions | E012/E020 CONFIRMED | autonomous watch | anchors/rounds/exposure | ручне керування не додається | deterministic automatic3v3 | Підготовка визначає дії |
-| Static map variants | E020 CONFIRMED; modifiers UNKNOWN | visual variety | authored lane distances | old backgrounds | new low-poly arenas | Sidegrade context |
-| MISS/damage/colored HP | E020 CONFIRMED | feedback clarity | Miss/Blocked/Hit/Out/stamina | damage labels/HP | readable event replay | Пояснення airsoft outcomes |
-| Skip | E012 CONFIRMED | так | speed/replay | ні | Skip to settled result | Гравець контролює час |
-| Rewards44/44,36/32,97/84 | E016/E017 CONFIRMED examples | explicit reward | own eligible tables | literal formula inference | settled reward breakdown | Відділити evidence від tuning |
-| Battle history rows | E017 CONFIRMED | так | attacks/defenses/replay | ні | versioned MatchRecord | Audit + rivalry |
-| Server fight endpoint | E026 CONFIRMED route; replay weakness STRONGLY SUPPORTED | authoritative domain | transactions/idempotency | historic endpoints | new battle commands | Повтор не дає нагороду |
-| Async match model | Social doc STRONGLY SUPPORTED | так | immutable defense | ні | offline defense | Snapshot schema — нове рішення |
-| Team photo to VK album | E002/E022 CONFIRMED | pride/team view | local lineup view | automatic social posting | Club lineup; export later | Не залежати від публікацій |
-| Kremlin-like city object | E002 object CONFIRMED; function UNKNOWN | ні | ні | з нового дизайну | none | Не вигадувати призначення |
-| Music/SFX | Original audio UNKNOWN | feedback role | new sound design | extracted soundtrack | own assets | Відеомузика не game audio |
-| Flash/Flex/VK shell | E002 CONFIRMED | domain separation | PC client/backend | obsolete runtime | Steam-ready client | Сучасна підтримка |
-| Revenge/rating/leaderboards | UNKNOWN | немає established mechanic | цілком нові | — | PD-17/18/23 | Не видавати нове за реконструкцію |
+| Hire/equip/train/battle/reward | E007–E020 CONFIRMED | так | терміни та UX | ні | Management-first loop | Original-game-first |
+| City hub / великі locations | E006/E022 CONFIRMED | структура | modern visual execution | ні | Hub, Shop, Training, Recovery, Club | Вподобаний користувачем flow |
+| Перший recruit безкоштовний | E007 CONFIRMED | так | starter selection Q-02 | ні | Один free fighter | Малий старт |
+| Наступні recruits дорожчають | E024/E025 STRONGLY SUPPORTED | принцип | якість + hire progression | old exact prices | Paid recruits після першого | Saving tradeoff |
+| Вісім candidate cards | E007 CONFIRMED | market choice | приблизно 6–7 | equal-budget v1 | Різні stats, сила, ціна | Новий глибший recruitment |
+| Club Level → recruit quality | Exact rule UNKNOWN | — | NEW AIRSOFT DESIGN | — | Better distribution with overlap | Довгий progression |
+| Development potential | UNKNOWN | — | лише після approval | inactive зараз | Q-02 | Не додавати прихований параметр |
+| Roster max16 | E002/E014 CONFIRMED |16 | deployment policy clarified | max6 v1 | Max16 owned | Повернення до reference scale |
+| Asymmetric deployment1–16 | Повний range UNKNOWN | design spirit | USER APPROVED exact range | forced equality | Будь-які 1–16 на сторону | Самостійний risk choice |
+| Три trainable stats | E002/E010/E018 CONFIRMED | рекомендовано | exact effects Q-01 | v1 fixed budgets | Accuracy/Agility/Endurance proposal | Мінімальна модернізація |
+| Name/appearance/rename/dismiss | E002/E022 CONFIRMED | так за scope | нові assets/names, anti-reset policy | старий content | Personal fighters | Прив'язаність до команди |
+| Training за karma | E010/E018 CONFIRMED; increment UNKNOWN | training role | currency/curve Q-01 | literal cost table | Training destination | Не домислювати payment route |
+| HP/MaxHP | E010/E020 CONFIRMED | так | нові balance curves | one-hit v1 | Persistent CurrentHP/MaxHP | Можна пережити кілька hits |
+| Armor/damage/speed | E008/E011/E019 CONFIRMED; formula UNKNOWN | combat role | own mitigation/hit model | old coefficients | Weapon damage, armor, handling | Ближчий combat payoff |
+| Resp/recovery | Location CONFIRMED, exact behavior UNKNOWN | recovery role | USER APPROVED paid immediate/free time | full reset v1 | Money heal / timed recovery | Operational decision |
+| Energy | E024–E026 CONTRADICTORY | ні | не копіювати | persistent energy | None | Без artificial refill |
+| Marker/camouflage/mask slots | E010/E011/E021 CONFIRMED | compact principle | Weapon/Clothing-Armor/Protection proposal | old names/art | Q-08 slot design | Airsoft conversion |
+| Missing-mask validation | E021 CONFIRMED | так | eye/face protection | ні | Readiness rule | Historical prerequisite |
+| Set bonus relation | E011 reference CONFIRMED; amount UNKNOWN | не active requirement | future review | invented bonus | None until decision | Не додавати недоведений effect |
+| Weapon level gates | E008/E030 CONFIRMED | normal gates | new catalog | old levels/prices | Club Level gates | Progression |
+| Premium early level bypass | UNKNOWN у recovered sources | — | USER APPROVED | level-only v1 | Credits early access | Commercial acceleration |
+| MK skins/upgrades | UNKNOWN | — | USER APPROVED | cosmetic-only interpretation | Base→MK1→MK2→MK3 visual+stats | Visible power progression |
+| Coins/karma | E006/E008 CONFIRMED | two resource structure | Money/Credits roles | single soft Credits v1 | Soft + premium | Business+progression |
+| Real-money currency | Original purchase screen UNKNOWN | — | USER APPROVED | no-paid-advantage v1 | Steam Credits purchase | Комерційна мета |
+| Exchange | E026 request traces; rate UNKNOWN | conversion concept | Credits→Money | presumed old rate | Versioned exchange | No direct Credits heal |
+| Persistent ammunition | E013/E015 CONFIRMED | так | BB classes/stock/loadout | fixed fee v1 | Buy/use/replenish BB | Operational economy |
+| Ammo capacity growth | Observed values; cause UNKNOWN | capacity need | Q-04 | invented growth curve | Configurable later | Не переносити causality |
+| BB quality classes/premium | UNKNOWN | — | USER APPROVED direction | single-class assumption |3–5 classes, capped hypothesis | Modest advantage/cost |
+| Auto combat/fixed positions/Skip | E012/E020 CONFIRMED | automatic, Skip | own presentation/positions | manual FPS не додається | One automatic battle | Підготовка визначає payoff |
+| HP zero / result | E016/E020 CONFIRMED | так | edge outcomes Q-05 | round series v1 | One battle/result | Швидкий social loop |
+| Damage/MISS/HP feedback | E020 CONFIRMED | так | modern readable UI | one-hit-only UI | Armor/damage/HP/BB feedback | Пояснення результату |
+| Maps | E020 visuals CONFIRMED; mechanics UNKNOWN | variety | new independent art | old backgrounds | Arena proposal | Не переносити hidden modifiers |
+| XP/Money rewards | E016/E017 CONFIRMED examples; formula UNKNOWN | progression role | approved level+power basis | flat v1 payout | Gross reward + operational net | Anti-farm economy |
+| Opponent/friend cards | E009/E014 CONFIRMED | rivalry | Steam metadata/level/count/power | VK dependency | Steam Friends | Offline opponent allowed |
+| Asynchronous model | Social note STRONGLY SUPPORTED | так | authoritative snapshots | — | Modern async PvP | Internals нові |
+| Ranked/Revenge/Leaderboards | UNKNOWN | — | USER APPROVED/new design | direct friend rating | Separate Ranked, non-ranked social | Не приписувати старій грі |
+| Server fight API | E026 route CONFIRMED; replay weakness strongly supported | authority role | transactions/idempotency | historical code/routes | New independent backend | One resource/reward effect |
+| Photo/social posting | E002/E022 CONFIRMED | team pride | optional later | mandatory posting | Club team view | Не блокувати loop соцдією |
+| Central unknown building | E002 object; function UNKNOWN | лише hub organization | не вигадувати function | unsupported feature | No active purpose | Evidence discipline |
+| Old art/audio/branding/runtime | Asset/source notes | reference only | new production | copied assets/code | New airsoft identity + Steam client | Clean-room boundary |

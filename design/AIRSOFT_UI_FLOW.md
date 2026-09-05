@@ -1,42 +1,53 @@
-# Airsoft UI flow
+# Airsoft UI flow — v2
 
-NEW AIRSOFT DESIGN; reference E006–E023. Production UI art не створюється на цьому етапі.
+USER APPROVED V2-28/29. [Pack v2](AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2.md). Original hub/screens E006–E023 зберігаються як інформаційна структура; новий visual redesign — окремий етап.
 
-## Navigation
+## Navigation foundation
 
-Launch → Auth → Club; із Club постійні tabs Team / Training / Shop / Opponents / History. Leaderboards доступний з Club і Opponents. Settings завжди доступний поза транзакційним modal. Desktop navigation не залежить від illustrated city.
+Launch / Steam auth → Club hub.
+Hub → Team/Recruitment · Training · Shop · Recovery · Club/Opponents.
+Opponents → Preview → One Battle → Result → Hub/Recovery/Shop/наступний opponent.
 
-| Screen | Основний зміст | CTA / перехід | Empty/error behavior |
-|---|---|---|---|
-| Auth | Steam status, backend status | retry / offline practice | auth failure не створює фальшивий online profile |
-| Club | own logo/name,level,rating,Credits,ready trio,defense summary | Prepare / Opponents | cache badge і час останньої синхронізації |
-| Team | deployed3, reserve до 3, preset | Fighter Detail / Recruit / Save squad | зміна preset атомарна; cancel не змінює defense |
-| Fighter Detail | три stats, XP budget,3slots | compare/equip/train/rename | конфлікт revision → reload + зберегти вибір у UI |
-| Recruit |4 рівнобюджетні candidates,price | hire | max roster пояснюється, не відкривається purchase |
-| Training Center | доступний upgrade budget,ціна,preview | apply/respec | недостатньо XP/Credits — показати причину |
-| Shop | Primary/Protection/Kit,filters,side-by-side | buy / buy+equip explicit | вже owned/locked/no funds окремо |
-| Opponents | Steam Friends / Rating Match / Revenge | Preview | no friends ≠ SDK error; rating/PvE лишається |
-| Club Profile | Steam identity + окремий Club; public lineup,rating,records | challenge/report/block | inaccessible club без витоку приватних полів |
-| Preview |3v3,map,squad,defense snapshot time,cost/reward/rated badge | Accept match | expired offer/snapshot → refresh preview, без silent substitution |
-| Battle |6participants,round score,stamina,hit/out feedback | pause playback/speed/skip | disconnect не скасовує серверний match |
-| Result | already settled reward,rating delta,XP,outcome,3key facts | next opponent / prepare / replay | pending settlement → pending screen, без вигаданої виплати |
-| History | Attacks / Defenses,datetime,mode,opponent | replay / eligible revenge | expired revenge лишає replay |
-| Leaderboards | Global / Friends / Around Me | view club/challenge | friends unavailable → явне повідомлення, не порожній global |
+Shortcuts допустимі для швидкості, але не скасовують hub і destinations. Домашній Club hub відрізняється від Club/Opponents як місця пошуку суперника; final labels визначить redesign.
 
-## Opponent cards
+## Screen contracts
 
-Steam avatar і display name; Club name окремим рядком; rating; strength estimate із tooltip «орієнтир, не прогноз перемоги»; default format3v3. Recent form — останні 5 відповідного mode; не змішувати ranked і casual wins. Last active прихований v1. Placeholder avatar/unknown name не блокують матч.
+| Screen | Required information / action | Edge state |
+|---|---|---|
+| Hub | Team/fighter focus, Money, Credits, HP, BB stock, locations | Cached/offline status, без wallet upload |
+| Team | Owned roster≤16, deployment1–16, health, gear/ammo readiness | Partial HP allowed;0/17 selection invalid |
+| Recruitment | Approx6–7 recruits, different stats/strength/price, Club Level context | First-free rule явне; capacity/refresh Q-02 |
+| Fighter | Stats, Max/CurrentHP, gear, MK, training | Без round-stamina або one-hit UI |
+| Training | Обране покращення, витрати, preview | Ціна/XP/caps Q-01, без вигаданих фінальних чисел |
+| Shop | Weapons, armor/protection, BB classes, MK, premium offers | Money й Credits не взаємозамінні |
+| Early access | Ordinary Club Level gate + explicit Credits option | Приклад 7→10 не actual AR spec |
+| MK upgrade | Base/MK1/MK2/MK3 appearance + stat deltas | Gameplay upgrade, не cosmetic-only label |
+| Currency exchange | Credits amount, Money output, quote | Окреме підтвердження, без implicit exchange |
+| Recovery | Per-fighter HP, free recovery estimate, Money immediate heal | Немає Heal for Credits; changed quote→refresh |
+| Opponents | Friends / Ranked / Revenge, count, power, Club Level | No friends/social error окремо; unequal sizes valid |
+| Preview | Own/defense counts, HP/gear/ammo, level/power, reward context | Stale snapshot/resource quote→refresh |
+| Battle | HP bars, damage, miss, armor effect, ammo, remaining fighters | Layout для 32 actors; one round, no round wins |
+| Result | Outcome, gross Money/XP, HP after, BB spent/remaining, replacement estimate | Wallet delta окремо; optional heal quote не auto debit |
+| History | Attacks/Defenses, mode, snapshots, outcome, ranked changes | Defense resource effects за Q-06 |
+| Leaderboards | Global/Friends/Around Me, ranked rating | Challenge non-ranked поза approved ranked flow |
+| Inbox | Defense/revenge, read state | Не залежить від external push |
 
-Challenge з leaderboard — unranked; для rating використовувати Rating Match. Так leaderboard не стає обходом ranked offers.
+## First-use flow
 
-## Defense report
+Перший free fighter → ready gear/BB за Q-04 → automatic1v1 → damage/ammo/result → recovery/replenishment або saving на paid recruit. Не видавати готову трійку й не прив'язувати onboarding до серії раундів.
 
-«Ваш клуб атакував [Steam name] / [Club name]». Perspective чіткий: «Ваш захист: перемога/поразка/нічия». Показати rating delta, що вже applied; resources change0 на defense; timestamp і mode. CTA Revenge, якщо ticket valid, і Replay. Reports агрегуються; користувач може вимкнути rivalry alerts.
+## Currency і monetization UX
 
-## Network state machine
+Money — звичайні витрати, Credits — premium. Реальні гроші, Credits і Money показувати різними одиницями. Gameplay effects раннього доступу, MK та premium BB видимі, не приховані за словом «skin». Prices/modifiers TBD; production screens із вигаданими числами зараз не створюються.
 
-Draft → validating → accepted(matchId) → resolving → settled → playback/result. Повтор submit використовує той самий idempotency key. При timeout після submit клієнт шукає command/match status, не створює новий battle. При reconnect показує settlement, який відбувся offline. Training/equip mutations із stale revision відхиляються з reload; немає last-write-wins для wallet.
+Health cost і BB replacement estimate не маскують mandatory premium purchase. При нестачі Money free recovery доступна; empty ammo fallback Q-04 потрібний окремо. Немає automatic Credits top-up/exchange/heal.
 
-## Accessibility і moderation surfaces
+## Next stage: ORIGINAL UI ANALYSIS → MODERN AIRSOFT UI REDESIGN
 
-Клавіатурний focus, видимий selected state, text scale, reduced motion, HIT/OUT текстом. Усі hover дані доступні натисканням. User text plain-text escaped, довжина name обмежена. Club names проходять normalization, filter, report і moderator rename; невинні збіги мають appeal. Власні fighter names не публікуються без потреби; базова report/block дія присутня. Emblem v1 тільки curated layers.
+1. Зіставити historical screens з evidence frames, locations і кількістю переходів.
+2. Визначити збережені task flows до visual choices.
+3. Створити нові layout concepts для hub, recruit market, shop, fighter, recovery, asymmetric battle.
+4. Перевірити Money/Credits, HP/BB, щільність 16 fighters, keyboard/focus, scale/tooltips.
+5. Лише після окремого рішення — UI implementation/production assets.
+
+Це flow requirements, не готовий redesign. Layout, typography, animation і rendering technology ще не вибрано.

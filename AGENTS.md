@@ -15,3 +15,11 @@ Use this repository's own design documents, architecture, data model, roadmap an
 PaintballWars_Research is read-only historical evidence. Preserve ORIGINAL CONFIRMED / ORIGINAL STRONGLY SUPPORTED / RECONSTRUCTION DECISION / NEW AIRSOFT DESIGN distinctions. Create all production code, art, audio and branding independently.
 
 Current stage: design only. Do not start game implementation merely because documentation exists; follow the user's current task. Do not publish a remote repository or deploy without task authorization.
+
+## Current canonical product decisions
+
+Use design/AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2.md and design/PRODUCT_DECISIONS.md. User-approved corrections in design/USER_APPROVED_CORRECTIONS_v2.txt supersede v1 assumptions. V1 product files are historical pointers only.
+
+Mandatory constraints: roster max16; selectable1–16 fighters per side with asymmetric battles allowed; one challenge/one battle/one round/one result; HP/Damage/Armor and persistent health; first recruit free, later recruits paid; approximately6–7 varied recruitment offers; persistent BB classes; soft Money plus premium Credits; mandatory commercial monetization with limited power advantage; MK means visual AND small gameplay upgrade; preserve original hub/destinations. Friends and default Revenge are non-ranked; Ranked uses its own backend pool. No persistent Energy and no direct heal-for-Credits.
+
+Distinguish USER APPROVED product rules from historical evidence, balance hypotheses and open questions. Do not invent final formulas or silently select offline-defense resource policy. This correction pass ends at the product/design gate; implementation requires a separate subsequent decision.

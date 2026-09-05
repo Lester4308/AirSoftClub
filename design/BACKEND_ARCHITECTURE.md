@@ -1,65 +1,62 @@
-# Backend architecture
+# Backend architecture — v2
 
-RECONSTRUCTION DECISION / NEW AIRSOFT DESIGN. Historical API E026/E027 не встановлює поточний stack. Ціль — малий modular backend, не MMO.
+[Pack v2](AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2.md). Technical proposals для Airsoft_Club_Game. Незалежна архітектура; implementation не дозволена цим correction pass.
 
-## Deployment boundary
+## Foundation
 
-PC client → HTTPS application API → transactional relational DB. Simulation worker використовує durable jobs у тій самій DB на початку; object storage для великих replay archives після вимірювання. Auth adapter звертається до Steam. Один deployable backend із модулями, worker може працювати окремим process із тієї ж codebase. Redis, Kafka, service mesh і multi-region writes не залежності MVP.
+PC/Steam client → authenticated HTTPS backend → transactional store/durable work → event replay. Modular monolith як proposed старт, окремі boundary interfaces для Steam Auth/Commerce/Storage/Simulation. Engine/runtime/vendor не chosen. Не успадковувати calendars, classes, save schema або repo layout Project Airsoft.
 
-Мова/engine gate M1: перевага pure domain simulation library, яку можна headless запускати на сервері й offline practice. C# — кандидат для спільної library, остаточний engine/DB vendor фіксуються після короткого integration spike і перевірки актуальних умов; цей design не приписує конкретній бібліотеці неперевірену підтримку Steam.
+| Domain | Дані/відповідальність v2 |
+|---|---|
+| Auth/Profile/Club | verified identity, Club Level, settings/public card |
+| Recruitment |6–7 offers, quality distribution by level, free-first entitlement, growing price |
+| Fighters/Training | stats, progression, owned roster≤16 |
+| Health/Recovery | CurrentHP/MaxHP, server timestamps, Money healing quote |
+| Gear/MK | owned definitions, tier, visual+gameplay modifiers, early access |
+| Ammo | persistent stock per class, loadouts, reservations, spent/released |
+| Economy | Money/Credits ledger, exchange, reward level/power policy |
+| Commerce | Steam orders, verified grants, reversals, entitlements |
+| Snapshots/Power | immutable1–16 inputs, actual/reference power і versions |
+| Battle/Settlement | one battle, result, HP/ammo/reward/rating effects once |
+| Social/Ranked/Revenge | separate modes, opponent availability, abuse counters |
+| History/Inbox/Leaderboards | projections із canonical results |
 
-## Modules і ownership
+## Atomic commands
 
-| Domain | Owns | Commands / reads |
-|---|---|---|
-| Authentication | identities,sessions,entitlements | exchange ticket,logout |
-| Profiles/Clubs | public identity,privacy,settings | create/rename,public card |
-| Fighters | XP,training budget,roster | hire/train/respec/dismiss |
-| Inventory | owned instances,equipment | buy/equip/sell |
-| Economy | wallet,ledger,eligibility | internal settlement; no arbitrary client credit |
-| Snapshots | immutable battle inputs,current pointer | publish from owned state |
-| Matchmaking | ranked offers,pair/quota reservations | offer,accept |
-| Resolution | input versions,seed,jobs,events | simulate/retry |
-| Rating | ratings,revision,season | internal atomic rating settlement |
-| History/Notifications | records,inbox,revenge tickets | paginated reads,redeem ticket |
-| Leaderboards | canonical projection | global/friends/around me |
+Hire validates free-first usage/roster capacity/offer ownership і quote; debit correct currency, create fighter once. Train/equip/MK upgrade validates costs та busy policy; new snapshot revision. Exchange дебетує Credits і кредитує Money в одній transaction. Heal матеріалізує recovery, перевіряє quote/missingHP, Money debit+HP update atomic; Credits не accepted healing currency.
 
-Modules можуть мати separate logical tables, але їх критичні зміни виконуються в одній DB transaction. RPC між ними не вводиться тільки заради «масштабування».
+Ammo purchase створює stock lot; loadout/reservation не подвоює stock. Ціну, XP, HP, damage, reward, seed або Steam grant клієнт не встановлює. Expected revision+idempotency key+body hash; повтор same command повертає existing result, інший body із same key conflict.
 
-## Command contracts
+## Battle lifecycle
 
-POST /auth/steam — ticket exchange; GET /me — authoritative profile. POST /clubs; POST /fighters/hire; POST /fighters/{id}/train; POST /fighters/{id}/respec; POST /loadouts; POST /shop/purchases; GET /opponents; POST /ranked/offers; POST /matches; GET /matches/{id}; GET /history; GET /leaderboards; POST /revenge/{ticketId}/redeem. Це **нові** endpoints, не historical reconstruction URLs.
+1. Preview:materialize health на server time, validate attacker1–16 і opponent1–16; power/reward quote with versions. Повна validity не залежить від рівності counts.
+2. Acceptance transaction:перевірити preview freshness, ownership/privacy, availability, ammo; pin snapshots і server seed; reserve attacker ammo та deployed actors; record health timestamps/versions; create durable battle job й pair context.
+3. Worker:deterministic pure sim на frozen inputs; persist one result/events. Duplicate worker не перезаписує іншим output.
+4. Settlement transaction:unique BattleSettlement; spent BB consumption/unspent release, final attackerHP, recovery timestamp, reward Money/XP, ranked rating тільки if applicable, history/inbox. Defense writes додаються тільки після Q-06 policy selection.
+5. Disconnect/Skip — presentation changes, не cancel/reward rollback. Internal failure до settlement звільняє reservations і залишає audit record, без free payouts.
 
-Mutations authenticated, scoped to playerUUID із session, expectedRevision і idempotencyKey. Клієнт не передає owner identity як доказ права, ready stats, reward amount, authoritative seed, price або resulting rating. Requests містять обрані IDs і очікувані display versions; сервер визначає фактичні значення. Public DTO не містить wallet,Steam tickets,всього inventory чи приватної історії.
+Proposed busy lock на deployed actors від acceptance до settlement; heal/train/equip serialize/reject, benched actors не повинні блокуватись без потреби. Atomic HP merge між offline defense і owner action не вирішується простим last-write-wins. Q-03/Q-06 gate до resource implementation.
 
-## Match transaction flow
+## Recovery authority
 
-**Acceptance transaction:** lock attacker,validate identity/entitlement/ruleset/offer/opponent privacy,ensure at most one active attacker match; validate and pin both current snapshots; reserve reward ordinal/pair/incoming quota; consume revenge ticket якщо є; generate/store seed та configs; insert Match(accepted),Job,outbox marker. Idempotency row у тій самій transaction. Невдала validation не витрачає ticket/counter.
+Server clock/lastMaterializedAt; free recovery нараховується за elapsed time, коли policy дозволяє. Не потрібний tick-writing кожного fighter щосекунди:lazy materialization при read/command як proposal. Client countdown display не змінює authority. Exact speed/cost,0HP і upgrade MaxHP semantics OPEN.
 
-**Worker:** lease job з expiry; load frozen input; simulate; persist immutable result/events із unique matchId і output hash; стан resolved. Duplicate worker може обчислити вдруге, але write conflict повертає existing result. Output hash mismatch для того самого input — fail/quarantine, не «обрати останнє».
+Не нараховувати health двічі після retry і не overwrite paid heal старим battle result. Accepted input immutability окрема від live state write policy. Немає Energy recharge domain.
 
-**Settlement transaction:** lock match та обидва rating rows у deterministic UUID order; якщо settled — повернути існуюче. Apply wallet entries,XP,ratings/quota finalization,history та inbox/revenge rows; update Match(settled); insert projection outbox. Unique(matchId) settlement. Сервер, не client claim, виконує цю дію.
+## Commerce / ledger
 
-Client disconnect після acceptance не скасовує match. API timeout → retry same key або query command status. Internal permanent failure → failed зі structured reason, no reward/rating; повернути reserved ticket у valid state, якщо не expired, звільнити quota/reward reservation; original record зберегти. Нове acceptance отримує новий matchId; failed seed не показувати як безкоштовний scout.
+CommerceOrder власний unique ID, player identity, provider order/transaction IDs, catalog quote, real currency/amount, Credits entitlement, status. Server verifies Steam finalized state перед grant. Idempotent provider callback/polling, reconciliation job, outbox та source-linked ledger. Secrets тільки server; payment failures не стають currency grant.
 
-## Snapshot mutations і patches
+Credits conversion або purchase premium BB/MK має provenance до ledger transaction/lot. Refund/chargeback може відбутись після consumption; Q-11 визначить policy, не silent negative spendable balance чи rewrite history. Потрібні support/audit records і компенсаційні entries замість видалення старих. [Steam details](STEAM_SOCIAL_PVP_ARCHITECTURE.md).
 
-Equip/train/respec/hire/dismiss зберігають власність та новий currentDefense pointer транзакційно. Defense preset окремий від attack preset, за замовчуванням linked. Якщо linked=false, training поточного defense fighter усе одно породжує новий snapshot. Збереження invalid defense складу відхиляється; draft можна залишити локально. Existing pinned battles завершуються на старому immutable input.
+## Snapshots і patching
 
-Balance patch: immutable version tables; maintenance gate new acceptances за потреби; regenerate current snapshots from owned definitions нової версії, invalid old pointers прибрати з discovery. Old records залишаються. Відсутність compatibility snapshot → no challenge, не silent mixed-version sim.
+Snapshots містять stats/HP/gear/MK/BB і версії. Current defense pointer не mutable battle input. Patch створює new definitions і compatible snapshot, старі records зберігають old build/tables. Seed alone недостатній.
 
-## Offline, save і міграції
+Replay може зберігати events, для audit потрібні inputs/build/PRNG/ruleset. Storage/retention/vendor і часові limits OPEN Q-12; не переносити v1capacity estimate як benchmark16v16.
 
-Online source of truth — DB; cache локальний для inspection/practice. Cache keyed playerUUID+schemaVersion із lastSyncedAt; на зміну Steam account не показувати private cache попереднього account автоматично. Offline practice save має separate namespace і ніколи не merge-иться з authoritative economy. Settings можна синхронізувати з allowlist, не generic upload profile JSON.
+## Offline і операції
 
-Internal UUID дозволяє later verified account linking. Migration не створює подвійну economy: explicit merge policy, audit і доказ контролю identities; v1 linking лише Steam і не UI feature. Schema migrations з backups/rollback plan; balance versioning окремо від DB schema version.
+Proposed:cached club inspection+isolated practice, без wallet/HP/BB upload. Free recovery при reconnect обчислюється сервером від timestamp; це не offline economy merge. Settings allowlist окремо від progression.
 
-## Operations і moderation
-
-Метрики: auth failures, acceptance latency, queue age, sim duration, settlement retries, duplicate-key conflicts, no-offer rate, snapshot invalidation, ledger reconciliation. Logs keyed matchId/player pseudonym, secrets redacted. DB backup і restore drill до external beta; alert при stuck accepted/resolved match і ledger inconsistency.
-
-Club name length3–32Unicode graphemes після normalization; filter + report + moderator rename/appeal. Block зупиняє майбутні directed challenges і discovery. Для ranked block не використовується як безкоштовний нескінченний reroll offer: existing offer expires зазвичай, нова видається за timetable; fairness review відстежує abuse. Profile deletion приховує public identity та snapshots із discovery, anonymizes history attribution; combat numeric inputs зберігаються за оголошеною retention policy. Це product plan, не юридичний висновок.
-
-## Capacity hypothesis
-
-Для planning тільки:1000DAU×20matches=20k/day, середнє 0.23match/s; peak10×≈2.3/s. Якщо worker CPU10ms/match, це 23ms CPU/s; якщо 200ms —460ms/s. Потрібен benchmark, не гарантована пропускна здатність. При compressed replay50KB обсяг≈1GB/day без replication/metadata. Виміряти actual sizes і вартість retention до public release; whole-history audit input/version retention планувати окремо від доступності графічного replay.
+Monitoring:stuck jobs, reservation leaks, HP conflicts, ammo reconciliation, wallet mismatch, payment unknown state, repeat payout anomalies, power/reward outliers. Backup/restore, redacted logs, public DTO allowlist, moderation/report/block потрібні до external release; exact policy окремо. Жодних production services зараз не створено.

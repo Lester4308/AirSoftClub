@@ -1,5 +1,13 @@
 # Research basis і provenance
 
+## Correction pass v2 — уточнення статусу
+
+Канон нового продукту: [Pack v2](AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2.md). Розділи нижче описують дослідження v1; їхній source manifest не змінено. У correction pass повторно прочитані Combat/Economy/Team reconstruction notes, а затверджений користувачем текст збережено у [USER_APPROVED_CORRECTIONS_v2.txt](USER_APPROVED_CORRECTIONS_v2.txt).
+
+Roster16 історично підтверджений; deployment1–16 з усіма асиметричними парами тепер USER APPROVED, а не newly confirmed historical fact. One-battle/HP/recovery behavior нової гри та її two-currency commercial model визначені користувачем. Ранній unlock за premium і premium-only BB/MK не встановлені як оригінальні правила архівом.
+
+Додатково перевірено офіційні Steam Microtransactions, Implementation Guide та ISteamMicroTxn для проєктування Credits payments; прямі посилання у [Steam architecture](STEAM_SOCIAL_PVP_ARCHITECTURE.md). Це документаційна перевірка, не виконана платіжна інтеграція. Коефіцієнти HP/armor/rewards, prices та сумарний paid advantage залишаються відкритими.
+
 Зріз 2026-09-05. Архів не змінено. Цей пакет використовує його як historical behavior evidence; production assets не копіювалися. Перелік прочитаних файлів і SHA-256 на момент аналізу: [SOURCE_MANIFEST.csv](SOURCE_MANIFEST.csv).
 
 ## Обсяг перевірки
