@@ -8,6 +8,9 @@ New-Item -ItemType Directory -Force (Join-Path $bundle 'Client') | Out-Null
 Copy-Item -Path (Join-Path $root 'Artifacts/IL2CPP/*') -Destination (Join-Path $bundle 'Client') -Recurse -Force
 Copy-Item -LiteralPath (Join-Path $root 'compose.yaml') -Destination $bundle -Force
 Copy-Item -LiteralPath (Join-Path $root 'implementation/DEVELOPMENT_RUNBOOK.md') -Destination $bundle -Force
+Copy-Item -LiteralPath (Join-Path $root 'implementation/FUNCTIONAL_ALPHA_013.md') -Destination $bundle -Force
+New-Item -ItemType Directory -Force (Join-Path $bundle 'evidence/013') | Out-Null
+Copy-Item -Path (Join-Path $root 'implementation/evidence/013/*') -Destination (Join-Path $bundle 'evidence/013') -Force
 $launcher=@'
 $ErrorActionPreference='Stop'
 Set-Location $PSScriptRoot
@@ -30,6 +33,6 @@ $compose=[IO.File]::ReadAllText((Join-Path $bundle 'compose.yaml')).Replace('554
 [IO.File]::WriteAllText((Join-Path $bundle 'compose.yaml'),$compose)
 $notice='Requires Windows x64, .NET10 runtime and Docker Desktop. Run Start-Backend.ps1, then open Client/AirsoftClubIntegration.exe. Stop another development backend using port5080 first. Database/password are local to this bundle. Placeholder art; no live Steam/payments. See DEVELOPMENT_RUNBOOK.md.'
 [IO.File]::WriteAllText((Join-Path $bundle 'START-HERE.txt'),$notice)
-$archivePaths=@('Client','Server','compose.yaml','DEVELOPMENT_RUNBOOK.md','Start-Backend.ps1','START-HERE.txt') | ForEach-Object { Join-Path $bundle $_ }
+$archivePaths=@('Client','Server','compose.yaml','DEVELOPMENT_RUNBOOK.md','FUNCTIONAL_ALPHA_013.md','evidence','Start-Backend.ps1','START-HERE.txt') | ForEach-Object { Join-Path $bundle $_ }
 Compress-Archive -Path $archivePaths -DestinationPath (Join-Path $root 'Artifacts/AirsoftClub-Development-Windows-x64.zip') -Force
 Get-FileHash (Join-Path $root 'Artifacts/AirsoftClub-Development-Windows-x64.zip') -Algorithm SHA256

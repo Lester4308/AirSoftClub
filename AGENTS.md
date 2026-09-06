@@ -1,3 +1,5 @@
+> **Functional Alpha013 checkpoint:** local functional acceptance verified; see [Functional Alpha report](implementation/FUNCTIONAL_ALPHA_013.md). Steam sandbox/final art remain external/later. Early-access premium-stack audit exceeds target at levels1–2 and is explicitly NOT balance approval. Earlier implementation statuses are historical.
+
 > **Current verification012:** Revenge counterparty policy is approved (target rating unchanged), live local path enabled, rewards display corrected; manual visual gate blocked by Windows capture API. See [Verification012](implementation/VERIFICATION_012.md). Previous011 statuses are historical.
 
 # Airsoft_Club_Game — agent rules

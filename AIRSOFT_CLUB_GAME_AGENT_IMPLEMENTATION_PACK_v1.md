@@ -1,3 +1,5 @@
+> **Functional Alpha013 checkpoint:** local functional acceptance verified; see [Functional Alpha report](implementation/FUNCTIONAL_ALPHA_013.md). Steam sandbox/final art remain external/later. Early-access premium-stack audit exceeds target at levels1–2 and is explicitly NOT balance approval. Earlier implementation statuses are historical.
+
 
 > **Approved reconciliation 2026-09-06:** the user confirmed that the Revenge target loses no rating. Rated attacker win restores floor(actual origin loss × 120 / 100), without normal rating gain; it still consumes the target’s shared incoming exposure slot. At cap, accept non-rated with no recovery and retain own shield. Any win closes the ticket. Existing friend-window anti-farm limits remain; no extra reward multiplier. The previous counterparty-debit blocker is superseded. See implementation/VERIFICATION_012.md.
 # AIRSOFT CLUB GAME — AGENT IMPLEMENTATION PACK v1

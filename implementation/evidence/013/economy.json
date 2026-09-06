@@ -1,0 +1,11 @@
+{
+  "Accounts": 100,
+  "Battles": 2000,
+  "TotalRewards": 106240,
+  "TotalHealing": 170430,
+  "TotalRefills": 5000,
+  "FreeRecoveryWaitMinutes": 15300,
+  "Emergencies": 0,
+  "MinimumMoney": 0,
+  "PremiumSpent": 0
+}

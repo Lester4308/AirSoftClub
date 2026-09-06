@@ -1,0 +1,497 @@
+{
+  "Metric": "matched full-build expected DPS x effective HP ratio",
+  "MaxRatio": 1.1902496,
+  "Battles": 5400,
+  "PremiumWins": 4213,
+  "Draws": 347,
+  "StarterAmmoMean": 9.526,
+  "CurrentStarterBattles": 6.2985513331933655259290363216,
+  "Rows": [
+    {
+      "Family": "Pistol",
+      "Armor": 1,
+      "Size": 1,
+      "Ratio": 1.190244378005979461848433641,
+      "PremiumWins": 60,
+      "Draws": 9,
+      "Battles": 100
+    },
+    {
+      "Family": "Pistol",
+      "Armor": 1,
+      "Size": 8,
+      "Ratio": 1.190244378005979461848433641,
+      "PremiumWins": 85,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Pistol",
+      "Armor": 1,
+      "Size": 16,
+      "Ratio": 1.190244378005979461848433641,
+      "PremiumWins": 95,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Pistol",
+      "Armor": 2,
+      "Size": 1,
+      "Ratio": 1.190248,
+      "PremiumWins": 61,
+      "Draws": 9,
+      "Battles": 100
+    },
+    {
+      "Family": "Pistol",
+      "Armor": 2,
+      "Size": 8,
+      "Ratio": 1.190248,
+      "PremiumWins": 89,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Pistol",
+      "Armor": 2,
+      "Size": 16,
+      "Ratio": 1.190248,
+      "PremiumWins": 98,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Pistol",
+      "Armor": 3,
+      "Size": 1,
+      "Ratio": 1.1902450607902735562310030395,
+      "PremiumWins": 78,
+      "Draws": 6,
+      "Battles": 100
+    },
+    {
+      "Family": "Pistol",
+      "Armor": 3,
+      "Size": 8,
+      "Ratio": 1.1902450607902735562310030395,
+      "PremiumWins": 97,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Pistol",
+      "Armor": 3,
+      "Size": 16,
+      "Ratio": 1.1902450607902735562310030395,
+      "PremiumWins": 99,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Smg",
+      "Armor": 1,
+      "Size": 1,
+      "Ratio": 1.1902378785909268165865072144,
+      "PremiumWins": 63,
+      "Draws": 21,
+      "Battles": 100
+    },
+    {
+      "Family": "Smg",
+      "Armor": 1,
+      "Size": 8,
+      "Ratio": 1.1902378785909268165865072144,
+      "PremiumWins": 91,
+      "Draws": 2,
+      "Battles": 100
+    },
+    {
+      "Family": "Smg",
+      "Armor": 1,
+      "Size": 16,
+      "Ratio": 1.1902378785909268165865072144,
+      "PremiumWins": 98,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Smg",
+      "Armor": 2,
+      "Size": 1,
+      "Ratio": 1.19024,
+      "PremiumWins": 63,
+      "Draws": 16,
+      "Battles": 100
+    },
+    {
+      "Family": "Smg",
+      "Armor": 2,
+      "Size": 8,
+      "Ratio": 1.19024,
+      "PremiumWins": 88,
+      "Draws": 1,
+      "Battles": 100
+    },
+    {
+      "Family": "Smg",
+      "Armor": 2,
+      "Size": 16,
+      "Ratio": 1.19024,
+      "PremiumWins": 98,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Smg",
+      "Armor": 3,
+      "Size": 1,
+      "Ratio": 1.1902355623100303951367781155,
+      "PremiumWins": 73,
+      "Draws": 13,
+      "Battles": 100
+    },
+    {
+      "Family": "Smg",
+      "Armor": 3,
+      "Size": 8,
+      "Ratio": 1.1902355623100303951367781155,
+      "PremiumWins": 94,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Smg",
+      "Armor": 3,
+      "Size": 16,
+      "Ratio": 1.1902355623100303951367781155,
+      "PremiumWins": 100,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "AssaultRifle",
+      "Armor": 1,
+      "Size": 1,
+      "Ratio": 1.1902422115342952467611248321,
+      "PremiumWins": 53,
+      "Draws": 29,
+      "Battles": 100
+    },
+    {
+      "Family": "AssaultRifle",
+      "Armor": 1,
+      "Size": 8,
+      "Ratio": 1.1902422115342952467611248321,
+      "PremiumWins": 80,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "AssaultRifle",
+      "Armor": 1,
+      "Size": 16,
+      "Ratio": 1.1902422115342952467611248321,
+      "PremiumWins": 85,
+      "Draws": 2,
+      "Battles": 100
+    },
+    {
+      "Family": "AssaultRifle",
+      "Armor": 2,
+      "Size": 1,
+      "Ratio": 1.19024,
+      "PremiumWins": 65,
+      "Draws": 22,
+      "Battles": 100
+    },
+    {
+      "Family": "AssaultRifle",
+      "Armor": 2,
+      "Size": 8,
+      "Ratio": 1.19024,
+      "PremiumWins": 93,
+      "Draws": 1,
+      "Battles": 100
+    },
+    {
+      "Family": "AssaultRifle",
+      "Armor": 2,
+      "Size": 16,
+      "Ratio": 1.19024,
+      "PremiumWins": 99,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "AssaultRifle",
+      "Armor": 3,
+      "Size": 1,
+      "Ratio": 1.1902355623100303951367781155,
+      "PremiumWins": 63,
+      "Draws": 21,
+      "Battles": 100
+    },
+    {
+      "Family": "AssaultRifle",
+      "Armor": 3,
+      "Size": 8,
+      "Ratio": 1.1902355623100303951367781155,
+      "PremiumWins": 93,
+      "Draws": 1,
+      "Battles": 100
+    },
+    {
+      "Family": "AssaultRifle",
+      "Armor": 3,
+      "Size": 16,
+      "Ratio": 1.1902355623100303951367781155,
+      "PremiumWins": 97,
+      "Draws": 1,
+      "Battles": 100
+    },
+    {
+      "Family": "Shotgun",
+      "Armor": 1,
+      "Size": 1,
+      "Ratio": 1.1902378785909268165865072144,
+      "PremiumWins": 64,
+      "Draws": 25,
+      "Battles": 100
+    },
+    {
+      "Family": "Shotgun",
+      "Armor": 1,
+      "Size": 8,
+      "Ratio": 1.1902378785909268165865072144,
+      "PremiumWins": 94,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Shotgun",
+      "Armor": 1,
+      "Size": 16,
+      "Ratio": 1.1902378785909268165865072144,
+      "PremiumWins": 99,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Shotgun",
+      "Armor": 2,
+      "Size": 1,
+      "Ratio": 1.19024,
+      "PremiumWins": 62,
+      "Draws": 29,
+      "Battles": 100
+    },
+    {
+      "Family": "Shotgun",
+      "Armor": 2,
+      "Size": 8,
+      "Ratio": 1.19024,
+      "PremiumWins": 93,
+      "Draws": 4,
+      "Battles": 100
+    },
+    {
+      "Family": "Shotgun",
+      "Armor": 2,
+      "Size": 16,
+      "Ratio": 1.19024,
+      "PremiumWins": 100,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Shotgun",
+      "Armor": 3,
+      "Size": 1,
+      "Ratio": 1.1902228976697061803444782168,
+      "PremiumWins": 72,
+      "Draws": 21,
+      "Battles": 100
+    },
+    {
+      "Family": "Shotgun",
+      "Armor": 3,
+      "Size": 8,
+      "Ratio": 1.1902228976697061803444782168,
+      "PremiumWins": 97,
+      "Draws": 1,
+      "Battles": 100
+    },
+    {
+      "Family": "Shotgun",
+      "Armor": 3,
+      "Size": 16,
+      "Ratio": 1.1902228976697061803444782168,
+      "PremiumWins": 99,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Dmr",
+      "Armor": 1,
+      "Size": 1,
+      "Ratio": 1.1902493481469020729310832613,
+      "PremiumWins": 37,
+      "Draws": 26,
+      "Battles": 100
+    },
+    {
+      "Family": "Dmr",
+      "Armor": 1,
+      "Size": 8,
+      "Ratio": 1.1902493481469020729310832613,
+      "PremiumWins": 49,
+      "Draws": 2,
+      "Battles": 100
+    },
+    {
+      "Family": "Dmr",
+      "Armor": 1,
+      "Size": 16,
+      "Ratio": 1.1902493481469020729310832613,
+      "PremiumWins": 50,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Dmr",
+      "Armor": 2,
+      "Size": 1,
+      "Ratio": 1.1902494117647058823529411765,
+      "PremiumWins": 64,
+      "Draws": 13,
+      "Battles": 100
+    },
+    {
+      "Family": "Dmr",
+      "Armor": 2,
+      "Size": 8,
+      "Ratio": 1.1902494117647058823529411765,
+      "PremiumWins": 91,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Dmr",
+      "Armor": 2,
+      "Size": 16,
+      "Ratio": 1.1902494117647058823529411765,
+      "PremiumWins": 98,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Dmr",
+      "Armor": 3,
+      "Size": 1,
+      "Ratio": 1.1902489719291972107992133023,
+      "PremiumWins": 63,
+      "Draws": 13,
+      "Battles": 100
+    },
+    {
+      "Family": "Dmr",
+      "Armor": 3,
+      "Size": 8,
+      "Ratio": 1.1902489719291972107992133023,
+      "PremiumWins": 88,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "Dmr",
+      "Armor": 3,
+      "Size": 16,
+      "Ratio": 1.1902489719291972107992133023,
+      "PremiumWins": 96,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "SniperRifle",
+      "Armor": 1,
+      "Size": 1,
+      "Ratio": 1.1902482776550110490055894969,
+      "PremiumWins": 40,
+      "Draws": 20,
+      "Battles": 100
+    },
+    {
+      "Family": "SniperRifle",
+      "Armor": 1,
+      "Size": 8,
+      "Ratio": 1.1902482776550110490055894969,
+      "PremiumWins": 48,
+      "Draws": 4,
+      "Battles": 100
+    },
+    {
+      "Family": "SniperRifle",
+      "Armor": 1,
+      "Size": 16,
+      "Ratio": 1.1902482776550110490055894969,
+      "PremiumWins": 50,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "SniperRifle",
+      "Armor": 2,
+      "Size": 1,
+      "Ratio": 1.1902496,
+      "PremiumWins": 68,
+      "Draws": 13,
+      "Battles": 100
+    },
+    {
+      "Family": "SniperRifle",
+      "Armor": 2,
+      "Size": 8,
+      "Ratio": 1.1902496,
+      "PremiumWins": 95,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "SniperRifle",
+      "Armor": 2,
+      "Size": 16,
+      "Ratio": 1.1902496,
+      "PremiumWins": 99,
+      "Draws": 0,
+      "Battles": 100
+    },
+    {
+      "Family": "SniperRifle",
+      "Armor": 3,
+      "Size": 1,
+      "Ratio": 1.1902469604863221884498480243,
+      "PremiumWins": 40,
+      "Draws": 20,
+      "Battles": 100
+    },
+    {
+      "Family": "SniperRifle",
+      "Armor": 3,
+      "Size": 8,
+      "Ratio": 1.1902469604863221884498480243,
+      "PremiumWins": 49,
+      "Draws": 2,
+      "Battles": 100
+    },
+    {
+      "Family": "SniperRifle",
+      "Armor": 3,
+      "Size": 16,
+      "Ratio": 1.1902469604863221884498480243,
+      "PremiumWins": 50,
+      "Draws": 0,
+      "Battles": 100
+    }
+  ]
+}

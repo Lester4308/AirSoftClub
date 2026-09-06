@@ -1,3 +1,5 @@
+> **Functional Alpha013:** current scope, tests and important early-access balance risk: [Functional Alpha report](FUNCTIONAL_ALPHA_013.md). The manual capture error and absent Steam sandbox do not block the local alpha.
+
 # Airsoft Club — local development runbook
 
 This is the independent Airsoft_Club_Game. It is a functional development slice with placeholder UI, not a Steam release or approved production art.
@@ -47,6 +49,14 @@ Native UI smoke uses --club-ui-smoke against the running backend. It creates an 
 Pure Battle remains netstandard2.1, immutable schema1, fixed arithmetic and seeded RNG. Server Club domain is net10.0 and never shipped as client authority. PostgreSQL stores club-owned aggregate JSON plus relational ledger/operation/match/session/order records. A cross-process transaction advisory lock serializes mutations for this bounded slice; production-scale partitioning is deferred. Defense publication becomes visible at transaction commit. Pending battle worker uses captured inputs and a120s fence; expired work fails without rewards and releases resources/reservations. There are no distributed notifications requiring an outbox yet.
 
 Health:/health; schema/DB readiness:/ready. Structured console logs and System.Diagnostics.Metrics meter Airsoft.Club.Server provide a foundation. Do not log tickets, bearer tokens, publisher keys or full external Steam URLs. Runtime Dockerfile is provided as a packaging option; local verified run uses Windows .NET and Compose PostgreSQL.
+
+## Alpha tools and configuration
+
+Status exposes server state, profile/emblem, leaderboard and clearly marked local DEV fixtures. Use test currency, simulated full recovery, seeded offers and test Revenge only on development identities. A new profile leaves previous history/free entitlement intact. Server gates these tools by Development environment, explicit auth flag, dev owner and loopback; production has no registered tool routes. Authenticated ledger inspection: GET /api/dev/ledger.
+
+Extended checks: tools/verify-alpha-http.ps1 and tools/verify-alpha-security.ps1. Visible smoke now launches a second process to verify persisted identity, currencies, BB, history, shield and Revenge. Screenshots are Artifacts/club-*.png. All actual rewards remain server-authoritative.
+
+AlphaConfig centralizes prototype values. Weapon family levels1–6 and early access are active. The full-access audit reveals a2.445x level1 paid/normal sustained metric: this is NOT balanced or monetization-approved. See report013. Partial heal uses Money only; seventh consecutive UTC daily grants1Credit.
 
 ## Explicit external/product gates
 
