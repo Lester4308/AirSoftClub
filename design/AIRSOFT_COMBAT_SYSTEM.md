@@ -1,58 +1,36 @@
-# Airsoft combat system — v2
+# Automatic combat — v3
 
-USER APPROVED: variable1–16 deployment, one battle/round, HP/Damage/Armor, persistent HP і BBs. Exact formulas OPEN. [Pack v2](AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2.md); E012/E020 — automatic shooting, damage/MISS/HP/Skip.
+[Gate v3](AIRSOFT_CLUB_GAME_PRODUCT_DESIGN_GATE_v3.md) визначає product rules; [Q01–Q04](IMPLEMENTATION_QUESTIONS_v3.md) — деталі до майбутнього battle core.
 
-## Battle contract
+## Вхід і виконання
 
-Input:BattleConfig(mode, arena, ruleset), attacker snapshot1–16, defender snapshot1–16, server seed, simulation build, PRNG version, balance version, resource policy version. Немає validation countA=countB. Не нормалізувати вхід до трьох actors і не застосовувати hidden fixed-size scaling.
+Один challenge = один battle = один round = один результат. Участь автоматична: усі owned combat-ready fighters, максимум 16 на сторону, асиметрія дозволена. Гравець готує клуб і обирає opponent, не керує стрільбою. Екіпіровка не є eligibility gate.
 
-Один challenge дає один battle та один result. Немає roundWins, best-of-three, respawn/reset між rounds або повторів заради серії. Automatic watch/skip; гравець не стріляє й не надає tactical orders вручну.
+Offensive roster бере live Current HP після recovery/readiness validation. Defense бере immutable snapshot з повним Max HP доступних fighters, gear, active BB class, rating та ruleset/balance version. Нові committed зміни публікують новішу snapshot; accepted battle використовує вже зафіксовану версію.
 
-Inputs містять starting CurrentHP/MaxHP, training-derived stats, weapon damage, MK, armor, BB class/quantity, formation якщо буде обрана. Acceptance pins input; не читати змінний live inventory під час replay. Клієнт не може запропонувати authority seed, result або свої effective stats.
+Accuracy впливає на hit, Agility на evasion/tempo, Endurance на Max HP. Weapon/BB/armor визначають damage та protection interactions. Бійці можуть пережити кілька влучань, вибувають при Current HP <= 0. Остаточні формули та simultaneous-event ordering OPEN. Не додавати базові stats чи складну балістику.
 
-## Causal combat pipeline — без final coefficients
+## Ресурси
 
-| Крок | Вхід / відповідальність | Що ще відкрите |
-|---|---|---|
-| Max HP | Fighter stats/progression + дозволені gear modifiers | MaxHP function і upper caps |
-| Starting HP | Authoritative health на acceptance timestamp | Recovery pause/concurrency policy |
-| Action scheduling | Living fighters, weapon handling/cadence | Tick/event model, intervals |
-| Target | Valid enemy із HP>0 | Uniform/weighted choice, formation effects |
-| Fire availability | Selected BB stock/loadout | BBs per action, magazines, reload/mixing |
-| Ammo debit in simulation | Витрата для performed fire action | Miss теж consumes за рекомендованою proposal |
-| Hit calculation | Fighter accuracy, weapon/MK, defender agility/gear | Probability bounds, range/cover, rounding |
-| Weapon damage | Base weapon + small MK changes | additive vs multiplicative, randomness |
-| BB interaction | Class damage modifier або equivalent ballistic effect | order/penetration relationship |
-| Armor mitigation | Armor rating зменшує received damage | curve, minimum damage, penetration option |
-| Health transition | HPafter=max(0, HPbefore−appliedDamage) | Числовий scale/rounding |
-| Elimination | HP<=0 | simultaneous event ordering |
-| Battle end | Одна сторона повністю eliminated | both-zero, timeout, no-ammo/stalemate Q-05 |
+Один club BB class на battle. Кожен simulated shot атакуючого споживає реальний shared club BB; нуль stock не дозволяє безкоштовного пострілу. Defense shots витрачають тільки simulated budget snapshot battle. Offensive HP зберігається після результату; defense не змінює live HP/BB. Max HP training не лікує.
 
-HP transition — інваріант стану, не фінальна damage formula. Кілька hits можуть бути потрібні для elimination. Не встановлювати fire chance1800bp,300tick limit, magazines3 або будь-які старі constants v1.
+## Outcome precedence
 
-Strong armor зменшує damage, може мати mobility tradeoff. No invulnerability або guaranteed hit для premium. Ammo ceiling~15% є hypothesis для BB, а не total premium advantage. Повний stack тестується на hits-to-eliminate thresholds і group focus-fire.
+| Умова | Outcome |
+|---|---|
+| Останні боєздатні fighters обох сторін вибули одночасно | Draw |
+| Лише одна сторона повністю втратила боєздатних fighters | Перемога іншої сторони |
+| Обидві сторони без ammo і не можуть завершити бій | Draw |
+| Safety cap досягнуто без переможця | Draw |
 
-## Після бою
+Safety cap захищає simulation від зависання, не є обов'язковим видимим таймером. Порожню власну readiness roster потрібно відхиляти до прийняття battle, а не продавати як гарантовану поразку. No-weapon/no-progress поведінка — Q03, не прихована one-hit або instant-win політика.
 
-Result містить finalHP per fighter, spent/unspent BB per class, win/loss/edge result, event log. Persistent attacker health і stock оновлюються once через settlement. Skip не лікує й не повертає витрачені BB. UI memory/replay restart не повторює resource transitions.
+[Reward table](AIRSOFT_ECONOMY.md): draw Club XP 35%, Ranked draw rating 0; loss Money 0, Fighter XP 25%. Fighter XP отримують фактичні учасники включно з eliminated. Mode eligibility може зменшити/занулити reward, але не змінює combat outcome.
 
-Матеріалізувати free recovery від server clock перед acceptance, далі input frozen. Proposal: не нараховувати recovery під час accepted combat, почати наступний recovery interval після logical battle settlement. Точна semantics Q-03, особливо при затримці worker. Playback duration не повинна змінювати HP/reward.
+## Майбутня відтворюваність
 
-Offline defender policy Q-06 не обрана. Варіанти:
-- Live defender HP/ammo:серіалізація/reservations, ризик пасивного resource drain.
-- Isolated defense snapshot:відсутність live debit, але це окремий відхід від persistent cost principle, потребує approval.
-- Dedicated defense resource pool:складніший UI/economy, не default.
+Рекомендовані MatchConfig: immutable input, stable fighter/item IDs, стартові HP, два simulated BB budgets/classes, ruleset/balance version і seed. MatchResult: outcome/reason, кінцеві HP, shot counts/BB used, participant IDs, ordered event trace або digest, versions. Це специфікація майбутніх типів, не код.
 
-Будь-який варіант мусить зберігати finalHP/BB use у battle record. Жоден не реалізується мовчки. Повторні offline attacks не можуть неконтрольовано писати finalHP поверх іншого бою.
+Однакові input + seed + version мають давати однаковий результат. RNG не залежить від Unity frame rate; domain не залежить від Unity scenes/network/database. Backend надалі сам resolve/verify battle, client replay не доводить нагороду. Acceptance та settlement idempotent; пропозиція — один незавершений offensive battle на клуб до settlement, щоб уникнути подвійного витрачання. Деталі reservation OPEN.
 
-## Determinism / replay
-
-Server-authoritative deterministic sim — RECONSTRUCTION DECISION. Pure input→result, event ordering, PRNG algorithm, serialization/fixed-point policy фіксуються в окремому technical design після дозволу. Старі ruleset/build/tables потрібні для replay/audit; seed сам по собі недостатній.
-
-Event:sequence, simulationTime, actorId, targetId, type, ammoClass/quantity, hit/miss, rawDamage, mitigatedDamage, HPafter, elimination. Summary показує фактичні події, не гарантовану контрфактичну причину поразки. Presentation не використовує physics як authority.
-
-## Future validation gates — не виконані зараз
-
-Валідація всіх 256 пар countA/countB у 1..16; порожній/17/duplicate/foreign fighter відхилені. Приклади 1v5,16v2,10v16,16v16 не блокуються size equality. Performance виміряти на 32actors.
-
-HP<=0 elimination, armor impact, BB damage/stock consumption, miss cost, zero ammo/timeout, both-zero, partial HP entry. Watch/skip/disconnect мають однаковий settlement. Seed sweeps:stats/quantity/MK/BB/armor/level, side swaps, underdog/overpower. До запуску цих перевірок balance не заявляється.
+Майбутні meaningful tests: 1v2/7v16/16v16, automatic inclusion без gear, HP <= 0, кілька влучань, одночасна остання elimination, ammo draw, cap draw, no negative BB, однакові seeds, defense isolation, Max HP upgrade без heal. Вони ще не реалізовані й не запускалися.

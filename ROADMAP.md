@@ -1,19 +1,19 @@
-# Airsoft_Club_Game — roadmap v2
+# Airsoft_Club_Game roadmap — v3
 
-Статус: **PRODUCT / DESIGN GATE**. [Updated Summary v2](design/AIRSOFT_CLUB_GAME_UPDATED_PRODUCT_DECISION_SUMMARY_v2.md) · [Detailed plan](design/MVP_IMPLEMENTATION_PLAN.md).
+Незалежний проєкт; [boundary](PROJECT_BOUNDARY.md). Рішення 2026-09-06: [Product Design Gate v3](design/AIRSOFT_CLUB_GAME_PRODUCT_DESIGN_GATE_v3.md).
 
-| Stage | Результат | Поточний статус |
-|---|---|---|
-| D0 Correction pass | Pack v2, approved register, dependent docs, superseded audit | DOCUMENTED |
-| D1 Product clarification | HP/recovery/ammo, defense persistence, recruit/training, reward/business open questions | NOT STARTED |
-| D2 Original UI analysis → modern airsoft redesign | Збережений hub flow, нові layouts/visuals | NOT STARTED; окремий етап |
-| D3 Balance/economy design review | Scenarios і критерії для prototype; без фінальних чисел до тестів | NOT STARTED |
-| Gate | Окреме рішення користувача про implementation scope | REQUIRED; NOT GIVEN |
-| I0–I3 Foundation та complete loop | Один free fighter → battle → HP/BB/costs → progress/save; потім 1–16 і durable authority | FUTURE PLAN |
-| I4 Social | Steam Friends, asynchronous defense, Ranked pool, non-ranked Revenge | FUTURE PLAN |
-| I5 Commerce | Обов'язкова monetization validation, Steam orders, MK/early/premium | FUTURE PLAN |
-| I6 UI/content/release | Approved redesign, art, balance, operations | FUTURE PLAN |
+| Stage | Статус / результат |
+|---|---|
+| Historical reconstruction basis | Завершена база попереднього pass; provenance збережено, не переносить assets |
+| Product decisions v1/v2 | SUPERSEDED; попередні тексти в Git history |
+| Product Design Gate v3 | FINALIZED; APPROVED FOR IMPLEMENTATION PREPARATION |
+| First implementation authorization | **Не отримано** |
+| Future foundation milestone | Лише recommended scope: Unity/C#, pure domain, deterministic headless core, models/config/result/seed/tests |
+| Economy / health / recruitment prototype | Майбутній окремий scope після відповідних питань/дозволу |
+| Authoritative backend / PostgreSQL | Майбутня система, не частина першого milestone |
+| Steam identity / Friends / Ranked / Revenge | Майбутня integration; exposure/shields/anti-farm уточнення до launch |
+| Credits / retention / moderation | Майбутня implementation та verified transaction flow |
+| Final art pass | OPEN; повернутися наприкінці core design / foundation |
+| Production UI / content / release | Не розпочато; залежить від перевірок попередніх stages |
 
-Дата release, engine, людино-тижні та production budget не встановлені. Business/economy architecture проєктується від початку, навіть якщо перший prototype використовує test Credits.
-
-Не починати production code, UI implementation або реальні платежі за фактом оновлення цього плану. Це окрема гра з власною Git history; Project Airsoft не змінюється.
+Перший code milestone **виключає** production UI/art, Steamworks, live backend, PostgreSQL, monetization/Credits purchases та matchmaking. [Рекомендований scope](design/MVP_IMPLEMENTATION_PLAN.md). **IMPLEMENTATION NOT YET AUTHORIZED.**

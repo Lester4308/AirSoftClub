@@ -1,53 +1,40 @@
-# Airsoft UI flow — v2
+# UI flow — v3
 
-USER APPROVED V2-28/29. [Pack v2](AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2.md). Original hub/screens E006–E023 зберігаються як інформаційна структура; новий visual redesign — окремий етап.
+Це карта майбутніх екранів, не production UI чи остаточний art style. [Gate v3](AIRSOFT_CLUB_GAME_PRODUCT_DESIGN_GATE_v3.md).
 
-## Navigation foundation
+| Екран | Дії / видима інформація |
+|---|---|
+| Entry / reconnect | Steam online session; offline read-only cache з очевидним статусом |
+| First recruit | Рівно 3 FREE candidates, обрати одного; male/female variants |
+| Club hub | Roster/count до 16, Money/Credits, Club Level, health summary, shared BB, шлях до інших destinations |
+| Fighter profile | Accuracy/Endurance/Agility, HP, XP/Level/training cap; soft training/heal; 4 equipment slots |
+| Recruitment Center | 6–7 varied priced offers, free refresh timer/match progress, soft immediate refresh, partial-value dismissal |
+| Shop / equipment | Weapon/Camouflage/Head Protection/Load-bearing; Base/MK2/MK3; MK1 не презентувати як finalized |
+| BB supply | Один club active class, class quantities/capacity, refill, later auto-buy Basic, eligible emergency Basic |
+| Opponents | Friends, Ranked candidates 3–5, Revenge opportunities |
+| Pre-battle | Автоматичний список учасників і причин health exclusion; один BB class; opponent/reward categories |
+| Battle | Automatic HP/Damage/Armor presentation; без ручної стрільби; safety cap не обов'язково UI timer |
+| Result | Outcome, Money/Club XP/Fighter XP, rating delta/eligibility, HP/BB витрати, повернення до hub |
+| Defense history / Revenge | Origin loss, точна база rating recovery, expiry 24h, attempts до 3, shield/eligibility block |
+| Credits / protection | Paid Steam + optional Credits, clear prices, shield durations; early unlock ≠ item purchase |
+| Retention / social | Daily/7-day streak, leaderboard, report flow, moderation feedback |
 
-Launch / Steam auth → Club hub.
-Hub → Team/Recruitment · Training · Shop · Recovery · Club/Opponents.
-Opponents → Preview → One Battle → Result → Hub/Recovery/Shop/наступний opponent.
+У pre-battle немає checkboxes для manual active squad. Усі боєздатні owned fighters беруть участь, включно з неекіпірованими. HP/readiness policy деталізувати до UI implementation; не приховувати exclusion.
 
-Shortcuts допустимі для швидкості, але не скасовують hub і destinations. Домашній Club hub відрізняється від Club/Opponents як місця пошуку суперника; final labels визначить redesign.
+Opponent card: Club Level, rating, count, Very Weak / Weak / Balanced / Strong / Very Strong та reward category. Не показувати exact numeric Team Power або formula. Labels можна локалізувати.
 
-## Screen contracts
+Friends UI пояснює directed 8h window: одна rating win, після неї rating 0; перша win full reward, друга/третя reduced, четверта+ zero до кінця window. Бounded loss policy до першої win буде показана після уточнення. Draw Ranked rating 0.
 
-| Screen | Required information / action | Edge state |
-|---|---|---|
-| Hub | Team/fighter focus, Money, Credits, HP, BB stock, locations | Cached/offline status, без wallet upload |
-| Team | Owned roster≤16, deployment1–16, health, gear/ammo readiness | Partial HP allowed;0/17 selection invalid |
-| Recruitment | Approx6–7 recruits, different stats/strength/price, Club Level context | First-free rule явне; capacity/refresh Q-02 |
-| Fighter | Stats, Max/CurrentHP, gear, MK, training | Без round-stamina або one-hit UI |
-| Training | Обране покращення, витрати, preview | Ціна/XP/caps Q-01, без вигаданих фінальних чисел |
-| Shop | Weapons, armor/protection, BB classes, MK, premium offers | Money й Credits не взаємозамінні |
-| Early access | Ordinary Club Level gate + explicit Credits option | Приклад 7→10 не actual AR spec |
-| MK upgrade | Base/MK1/MK2/MK3 appearance + stat deltas | Gameplay upgrade, не cosmetic-only label |
-| Currency exchange | Credits amount, Money output, quote | Окреме підтвердження, без implicit exchange |
-| Recovery | Per-fighter HP, free recovery estimate, Money immediate heal | Немає Heal for Credits; changed quote→refresh |
-| Opponents | Friends / Ranked / Revenge, count, power, Club Level | No friends/social error окремо; unequal sizes valid |
-| Preview | Own/defense counts, HP/gear/ammo, level/power, reward context | Stale snapshot/resource quote→refresh |
-| Battle | HP bars, damage, miss, armor effect, ammo, remaining fighters | Layout для 32 actors; one round, no round wins |
-| Result | Outcome, gross Money/XP, HP after, BB spent/remaining, replacement estimate | Wallet delta окремо; optional heal quote не auto debit |
-| History | Attacks/Defenses, mode, snapshots, outcome, ranked changes | Defense resource effects за Q-06 |
-| Leaderboards | Global/Friends/Around Me, ranked rating | Challenge non-ranked поза approved ranked flow |
-| Inbox | Defense/revenge, read state | Не залежить від external push |
+Shield active блокує нові incoming attacks; accepted match finish. Own Ranked attack interaction OPEN — не створювати кнопку з вигаданою auto-cancel обіцянкою. Revenge success показує 120% origin rating loss і standard reward без bonus multiplier.
 
-## First-use flow
+Final art OPEN. Reference preferences: класична 2D presentation, side/3/4 profile, stylized/low-poly-inspired 2D, голова приблизно +30%, читабельні weapon/helmet/chest rig, універсальні male/female bases, карти під 16v16. Це не production specification; concepts reference-only. Art pass після core design / implementation foundation.
 
-Перший free fighter → ready gear/BB за Q-04 → automatic1v1 → damage/ammo/result → recovery/replenishment або saving на paid recruit. Не видавати готову трійку й не прив'язувати onboarding до серії раундів.
+## Navigation continuity
 
-## Currency і monetization UX
+Збережена інформаційна структура hub/destinations попереднього pass: Launch → Club hub → Team/Recruitment · Training · Shop · Recovery · Club/Opponents. Shortcuts не скасовують destinations. Club hub і Club/Opponents мають різні задачі; labels уточнюються при redesign.
 
-Money — звичайні витрати, Credits — premium. Реальні гроші, Credits і Money показувати різними одиницями. Gameplay effects раннього доступу, MK та premium BB видимі, не приховані за словом «skin». Prices/modifiers TBD; production screens із вигаданими числами зараз не створюються.
+Training показує cap, ціну та preview; Recovery — HP, free recovery estimate і soft heal quote. Currency exchange показує Credits amount і Money output з явним підтвердженням. Leaderboards мають Global/Friends/Around Me; Inbox — defense/Revenge та read state. History зберігає attack/defense outcomes. Немає automatic Credits top-up/exchange/heal. У result gross reward, wallet delta і BB replacement estimate розділені.
 
-Health cost і BB replacement estimate не маскують mandatory premium purchase. При нестачі Money free recovery доступна; empty ammo fallback Q-04 потрібний окремо. Немає automatic Credits top-up/exchange/heal.
+First-use: один free recruit → доступне starter gear/Basic BB за майбутньою starter configuration → automatic battle з доступним opponent → result → recovery/refill/recruitment. Не примушувати 1v1, якщо eligible opponent має інший roster. Стан stale quote/snapshot потребує оновлення, offline/social error та empty candidates — окремого пояснення.
 
-## Next stage: ORIGINAL UI ANALYSIS → MODERN AIRSOFT UI REDESIGN
-
-1. Зіставити historical screens з evidence frames, locations і кількістю переходів.
-2. Визначити збережені task flows до visual choices.
-3. Створити нові layout concepts для hub, recruit market, shop, fighter, recovery, asymmetric battle.
-4. Перевірити Money/Credits, HP/BB, щільність 16 fighters, keyboard/focus, scale/tooltips.
-5. Лише після окремого рішення — UI implementation/production assets.
-
-Це flow requirements, не готовий redesign. Layout, typography, animation і rendering technology ще не вибрано.
+Майбутній ORIGINAL UI ANALYSIS → MODERN AIRSOFT UI REDESIGN зіставить historical task flows, створить незалежні layouts і перевірить читабельність 16 fighters, keyboard/focus, scaling/tooltips. Production style лишається OPEN.

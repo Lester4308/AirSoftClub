@@ -1,37 +1,39 @@
-# Airsoft fighter system — v2
+# Fighter system — v3
 
-Затверджено V2-03–06/10/11. [Pack v2](AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2.md). E002/E007/E010/E018: historical roster, stats, training; formulas UNKNOWN.
+Канон: [Gate v3](AIRSOFT_CLUB_GAME_PRODUCT_DESIGN_GATE_v3.md). Числові targets: [Balance hypotheses](BALANCE_HYPOTHESES_v3.md). Відкриті деталі: [Q01–Q15](IMPLEMENTATION_QUESTIONS_v3.md).
 
-## Fighter і roster
+## Roster та участь
 
-Club owns максимум 16. Перший FREE, кожен наступний платний. Deployment окремий від roster:1–16 distinct owned available fighters. Будь-який valid count дозволений проти будь-якого valid count opponent. Немає trio presets як обов'язкової схеми.
+Клуб володіє максимум 16 fighters. Усі куплені боєздатні fighters автоматично беруть участь у власному бою. Ручного active squad, резерву для довільного виключення або обов'язкового 3v3 немає. 1v2, 2v5, 7v16 та 16v16 допустимі. Погана чи відсутня екіпіровка не виключає бійця; точна дія без Weapon — Q03.
 
-Fighter має identity/appearance, starting stats, поточний training progress, Max HP/Current HP, gear, BB assignment. При HP<=0 — eliminated у battle та потребує recovery; не permanent death. HP>0 може бути ready без повного лікування. Energy bar відсутній.
+Offense використовує live Current HP після належного server-time recovery. Fighter на 0 HP не допускається до власної атаки до readiness threshold (~10% Max HP, hypothesis). Q02 визначить застосування порога до решти поранених. Не створювати окремий persistent Energy ресурс.
 
-Рекомендовані 3 основні stats (Q-01): Accuracy, Agility, Endurance. Accuracy→hit quality; Agility→avoidance/tempo; Endurance→Max HP. Точні functions/caps/назви OPEN. Damage/armor/cadence — combat-derived fields із equipment. Не переносити v1 round-stamina formulas або stat budget24/36.
+Defense формує доступних owned fighters із 100% Max HP у snapshot; live wounds не знижують цей HP. Рекомендована інтерпретація доступності — чинний roster без звільнених fighters, незалежно від live 0 HP; остаточна lifecycle validation — Q14. Defense не лікує та не ранить live roster.
 
-## Recruitment market
+## Три базові характеристики
 
-При відкритті приблизно 6–7 offers, кожен з visible starting stats, HP/derived strength preview, Money price, appearance. Cost залежить і від hire progression, і від candidate quality. Cheaper recruit weaker; expensive stronger як загальна економічна тенденція, без гарантії superiority кожного stat.
+| Stat | Роль |
+|---|---|
+| Accuracy | Chance to hit |
+| Endurance | Max HP |
+| Agility | Evasion та action/initiative tempo |
 
-Club Level зміщує pool distribution до сильніших candidates із overlap/variance. Upgrade існуючих бійців має залишатися осмисленою альтернативою найму, але рівність потенціалу/caps не затверджена. Development potential — OPEN; не додавати latent rarity або hidden permanent potential до схвалення.
+Max HP, Current HP, Damage, Protection, penetration та derived tempo не є додатковими базовими stats. Не вводити fighter classes або генетичні стелі, успадковані з іншої гри.
 
-OfferId, generatedClubLevel, stats, price quote і version фіксує backend. Повтор відкриття екрана не повинен непомітно давати безкоштовний unlimited reroll; refresh timing/trigger Q-02. Два кліки Hire не створюють двох бійців.
+## XP та training
 
-## Free-first і growth prices
+Фактична участь → Battle XP → Fighter Level → підвищення доступного training cap → покупка конкретного stat upgrade за soft currency. Окремої training currency немає. Учасники, які вибули під час бою, також eligible; неучасникам XP не нараховується. Рівень сам не купує stat upgrades. Дешевий recruit може стати сильним ветераном; дорожчий економить час і витрати, але не має недосяжної генетичної переваги.
 
-Один free-first entitlement, after-use flag persistent. Чи всі starter candidates free, чи це спеціальний starter subset — Q-02; дорогий high-level offer не стає автоматично безкоштовним через слово first.
+XP curve швидша спочатку і поступово сповільнюється; числа відкриті. Outcome multipliers: [Economy](AIRSOFT_ECONOMY.md). Endurance upgrade не лікує: 80/100 → Max HP 110 → 80/110.
 
-Для однакової якості successive recruitment дорожчає. Exact price curve невідома. Питання replacement:current roster size проти lifetime hires; recommendation lifetime progression guard, але не adopted. Не копіювати 100/300 з E025 як нові ціни.
+## Recruitment
 
-## Training та lifecycle
+Одноразово обрати одного з 3 FREE starter candidates. Звичайний центр показує 6–7 candidates з різними starting stats, силою, ціною та male/female visual variants. Club Level підвищує середню якість, зберігаючи variance. Купівля збільшує автоматично залучений roster, потребу в gear, BB і лікуванні.
 
-Training підвищує обрані stats; payment route, increment/XP/caps, respec й compensation OPEN Q-01. Немає автоматичного схвалення premium training button. Credits→Money already creates indirect acceleration якщо base training paid Money.
+Free refresh: ~1 година АБО ~10 матчів, що раніше (prototype); immediate refresh — soft currency. Dismiss/sell повертає лише частину вартості, target ~25–40%. Не дублювати перший безкоштовний entitlement через dismissal. Resale base, gear return та refresh reset — Q13.
 
-Rename/dismiss можуть зберегтися як historical-supported capabilities. Не дозволити dismissal скидати free-first прапорець, market costs або farm counters. Політика останнього fighter/повернення gear/compensation має бути визначена Q-02; не зберігати старий min3.
+## Health lifecycle
 
-## Health state
+Після offensive battle зберігається фактичний Current HP: 35/100 без лікування означає старт наступної атаки з 35 HP плюс законне відновлення за минулий час. Immediate healing — soft currency; free recovery — ~1% Max HP/хв, включно з офлайном. Offline elapsed time обчислює сервер, локальний clock не є доказом.
 
-CurrentHP bounded0..MaxHP; recovery materializes за server timestamp. Після authoritative battle зберігається finalHP, а не reset. Proposed concurrency: deployed actors busy від acceptance до settlement, heal/train/equip для них serialize/reject; benched actors можуть відновлюватися. Це technical proposal, потрібно погодити Q-03/Q-06 до реалізації.
-
-MaxHP upgrade не може неявно лікувати до 100%: absolute HP, deficit або ratio policy Q-03. Defense snapshot з oldHP не визначає live owner health сам по собі. Injury types, calendar, classes з Project Airsoft не додаються.
+Перед battle acceptance сервер фіксує версію roster/health. Після результату застосовує HP та XP один раз. Не дозволяти старому результату перезаписати пізніший heal/equip; порядок команд і recovery timestamps — Q14.

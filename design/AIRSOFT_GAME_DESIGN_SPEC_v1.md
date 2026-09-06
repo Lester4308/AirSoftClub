@@ -1,5 +1,7 @@
-# Airsoft game design spec — SUPERSEDED filename
+# SUPERSEDED — AIRSOFT_GAME_DESIGN_SPEC_v1
 
-Активна специфікація: [AIRSOFT_GAME_DESIGN_SPEC_v2.md](AIRSOFT_GAME_DESIGN_SPEC_v2.md).
+Цей product document не містить активних правил. Чинна версія: [AIRSOFT_GAME_DESIGN_SPEC_v3](AIRSOFT_GAME_DESIGN_SPEC_v3.md).
 
-Цей v1 файл залишений лише як покажчик для старих посилань. Не застосовувати його попередні 3v3, one-hit, roster6, одно-валютні або hub-removal правила. Вони замінені затвердженими corrections у [Pack v2](AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2.md). Попередній текст є у Git history.
+[Product Design Gate v3](AIRSOFT_CLUB_GAME_PRODUCT_DESIGN_GATE_v3.md) замінює суперечливі рішення v1/v2. Попередній стан збережено у Git history, verified base 3f76545; для давніших повних v1 текстів використовуйте історію цього файла.
+
+**IMPLEMENTATION NOT YET AUTHORIZED.**

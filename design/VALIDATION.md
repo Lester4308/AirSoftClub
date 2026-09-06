@@ -1,39 +1,43 @@
-# Documentation validation — v2
+# Documentation validation — v3
 
-2026-09-05. Перевірка correction pass у незалежному Airsoft_Club_Game. **Це перевірка документів, не виконані тести гри, балансу чи платежів.**
+Дата: 2026-09-06. Repository: Airsoft_Club_Game. Branch: codex/design-foundation. Verified pre-pass HEAD: 3f76545797e5c9bd594b0b6cb22e4822f87f06d7; початковий working tree був чистий.
 
-## Виконана перевірка
+**Це перевірка документації, не тести гри, balance simulations або підтвердження робочих інтеграцій.**
 
-- У PRODUCT_DECISIONS.md є рівно35 рядків V2-00–V2-34; усі секції затверджених corrections мають відповідний запис.
-- Updated Summary містить усі4 потрібні розділи: CONFIRMED, BALANCE HYPOTHESES, OPEN QUESTIONS, SUPERSEDED DECISIONS.
-- Pack v2 і Game Design Spec v2 — активні. V1 файли — тільки SUPERSEDED pointers; попередні тексти збережені у Git history.
-- Оновлені core loop, fighters/recruitment, equipment/MK/BB, combat, economy, Steam/social/commerce, backend, data model, UI flow, mapping, MVP plan, roadmap та індекси.
-- Markdown links на локальні файли перевірені: broken links0. Таблиці перевірені на кількість колонок: errors0. Evidence IDs звірені з ledger: unknown IDs0.
-- Усі26 джерел original SOURCE_MANIFEST.csv мають незмінні SHA-256. Архів PaintballWars_Research не змінено.
-- USER_APPROVED_CORRECTIONS_v2.txt точно збігається з attachment за SHA-256: 60D8BEE75773AB34B25FD70A737B43EBF7AA235B61CA502DAD967F756481B1D0.
-- Перевірено скасовані правила: mandatory3v3, roster6, one-hit, equal sizes, multi-round, full HP reset, fixed ammo fee, single soft Credits, cosmetic-only MK та flat rewards згадуються лише як скасовані/заперечені або історичні.
-- Власні файли нового проєкту — єдина область записів; Project Airsoft не відкривався для імпорту і не змінювався. Змінені/нові артефакти — тільки документація та точна текстова копія user corrections.
+## Coverage і source integrity
 
-## Semantic checks
+- PRODUCT_DECISIONS містить рівно 77 унікальних послідовних рядків V3-00–V3-76 із посиланнями на покриття.
+- Gate містить усі 12 required sections у порядку 1–12.
+- Exact user request збережено у USER_APPROVED_DECISIONS_v3.txt. SHA-256: 25FB25CA645471DFE35BDE7700C9855E222C050595674968D0563EABF19733B4; збігається з attachment.
+- Окремо зафіксовано відповідь користувача: перша friend win full, друга/третя reduced, четверта+ zero.
+- SOURCE_MANIFEST.csv, REUSE_DECISIONS.md та historical USER_APPROVED_CORRECTIONS_v2.txt не змінені від verified base. Зовнішні research source bytes у цьому pass повторно не хешувалися.
 
-| Topic | Узгоджений результат |
+## Consistency review
+
+| Область | Результат |
 |---|---|
-| Size | Max16 owned; selectable1–16 per side; усі256 комбінацій — future validation target, не вже виконаний simulation test |
-| Battle | Один challenge/battle/round/result; HP/Damage/Armor; elimination HP<=0 |
-| Recruitment | First free, later paid;6–7 varied offers; level-dependent quality; potential OPEN |
-| Health | Persistent damage, Money immediate heal/free timed recovery; no Energy/direct Credits heal |
-| Ammo | Persistent stock/classes; purchase і consumption не створюють подвійного money debit |
-| Rewards | Opponent Club Level foundation, Team Power scaling; unequal fights legal |
-| Commerce | Soft Money + premium Credits; ранній доступ, modest premium edge, MK visual+stats |
-| Balance | BB0/3/5/10/~15% лише hypotheses; сумарний premium cap OPEN |
-| Social | Friends/default Revenge non-ranked; separate backend Ranked pool |
-| UI | Hub/destinations збережені; redesign окремим майбутнім етапом |
-| Gates | Q-01–Q-12 видимі; особливо defense resource policy та combined monetization effect не обрані приховано |
+| Boundary | Усі записи лише в незалежному Airsoft_Club_Game; без import/reuse або змін Project Airsoft |
+| Roster | Max 16, автоматична участь усіх combat-ready, asymmetry; gear не eligibility gate |
+| Health / BB | Offensive HP persists/real shots debit shared BB; defense full HP/no live HP or BB debit |
+| Progression / gear | 3 base stats, XP → cap → soft upgrades; 4 slots, 6 families, MK2 soft/MK3 Credits-only |
+| Rewards | Draw Club XP 35%; loss Money 0/Fighter XP 25%; інші proposed coefficients явно hypotheses |
+| Friends | Directed 8h/one rating win; subsequent rating 0; fourth win onward zero rewards |
+| PvP | Exposure 4/24h, shield durations/accepted-match semantics, Ranked 3–5 selection, Revenge 24h/3/120% origin loss |
+| Commercial / stack | Paid Steam + Credits; entitlement-only early unlock +3; Unity/C#/ASP.NET Core/PostgreSQL |
+| Open questions | Readiness, no-weapon, defense ammo budget, window anchors, loss cap, Revenge edge cases, MK1, own-attack shield, formulas/versions залишені видимими |
+| Art / scope | Final art OPEN; лише recommended future foundation scope, без implementation |
 
-## Не виконувалося
+Пошук legacy terms переглянуто в контексті: old squad/3v3/one-hit/non-ranked-only/3-slots/final-3D правила присутні лише як заперечені, SUPERSEDED або historical evidence. V1/v2 product files тепер pointers. Поточні docs посилаються на v3, historical research не оголошено активним продуктним каноном.
 
-Production code, engine setup, database migrations, game simulation, automated gameplay tests, economy simulation, Steam login/payment integration, actual purchases, UI implementation, production art, deployment або зміни Project Airsoft.
+## Structural verification
 
-Steam commerce statements звірені з офіційною документацією; це не підтвердження робочої інтеграції. Числових балансних гарантій і фінальних цін немає.
+Markdown file links перевірено на існування, включно з historical absolute references; broken links 0. Markdown tables перевірено на однакову кількість колонок у кожній таблиці; errors 0. Перевірка Git diff включає scope, file extensions та whitespace; тільки documentation files. Документ цього report проходить фінальний повторний link/table check перед commit.
 
-**Результат: correction pass документації завершено; зупинка на PRODUCT / DESIGN GATE. Implementation потребує окремого наступного рішення.**
+## Межі виконаного
+
+Не створювалися production code, Unity project, C# solution, live backend, migrations, database, Steam integration, purchases, matchmaking, UI, production art чи deployment. Game tests не запускалися, бо implementation не починався. Project Airsoft не змінювався; усі write operations цього pass адресовані Airsoft_Club_Game.
+
+**PRODUCT DESIGN GATE v3 — APPROVED FOR IMPLEMENTATION PREPARATION**
+**IMPLEMENTATION NOT YET AUTHORIZED.**
+
+Commit із цим report фіксує завершений документаційний pass; його SHA наведено у фінальному повідомленні, без самопосилального hash у файлі.

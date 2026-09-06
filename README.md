@@ -1,13 +1,10 @@
 # Airsoft_Club_Game
 
-Нова незалежна management-first гра в airsoft-сетингу для PC/Steam, натхненна історичними механіками VK-гри. Робочий ідентифікатор; остаточна назва не обрана.
+Нова незалежна airsoft management game, натхненна management loop «Пейнтбольные войны», зі Steam social/asynchronous PvP. [Обов'язкова project boundary](PROJECT_BOUNDARY.md): Project Airsoft / Airsoft Manager не змінюється і не є основою.
 
-**Не Project Airsoft / Airsoft Manager.** [Межа проєкту](PROJECT_BOUNDARY.md) та [AGENTS.md](AGENTS.md) обов'язкові.
+**PRODUCT DESIGN GATE v3 — APPROVED FOR IMPLEMENTATION PREPARATION**
+**IMPLEMENTATION NOT YET AUTHORIZED.**
 
-- [Updated Product Decision Summary v2](design/AIRSOFT_CLUB_GAME_UPDATED_PRODUCT_DECISION_SUMMARY_v2.md)
-- [Product Decision Pack v2](design/AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2.md)
-- [Усі design documents](design/README.md)
-- [Власний roadmap v2](ROADMAP.md)
-- [Реєстр можливого повторного використання ідей](design/REUSE_DECISIONS.md)
+Почати з [короткого summary v3](design/AIRSOFT_CLUB_GAME_UPDATED_PRODUCT_DECISION_SUMMARY_v3.md) та [повного Gate v3](design/AIRSOFT_CLUB_GAME_PRODUCT_DESIGN_GATE_v3.md). [Індекс усієї документації](design/README.md), [roadmap](ROADMAP.md), [майбутній перший scope](design/MVP_IMPLEMENTATION_PLAN.md), [validation](design/VALIDATION.md).
 
-Стадія: **PRODUCT / DESIGN GATE**. Затверджені corrections застосовано; implementation потребує окремого наступного рішення. Код гри, production assets і платіжна інтеграція не створені. Локальний репозиторій має незалежну історію, remote не налаштований.
+Стек обрано: Unity/C# client, C#/ASP.NET Core backend, PostgreSQL, Steam-first. Це design-only repository: code, integration, production UI/art та live services ще не створені. Final art OPEN. Баланс і implementation-level питання явно позначені, не приховані як final constants.

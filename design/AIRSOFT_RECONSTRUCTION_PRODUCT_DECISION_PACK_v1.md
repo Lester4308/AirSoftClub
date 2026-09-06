@@ -1,9 +1,7 @@
-# AIRSOFT RECONSTRUCTION PRODUCT DECISION PACK v1 — SUPERSEDED
+# SUPERSEDED — AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v1
 
-Повністю замінено [Product Decision Pack v2](AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2.md) на підставі затверджених користувачем corrections.
+Цей product document не містить активних правил. Чинна версія: [AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v3](AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v3.md).
 
-Цей файл — тільки історичний покажчик, не активна специфікація. Попередній повний текст збережено у Git commit 99a354f. Mandatory 3v3, max roster6, one-hit elimination, symmetric size restrictions, multi-round structure та одно-валютна модель більше не застосовуються.
+[Product Design Gate v3](AIRSOFT_CLUB_GAME_PRODUCT_DESIGN_GATE_v3.md) замінює суперечливі рішення v1/v2. Попередній стан збережено у Git history, verified base 3f76545; для давніших повних v1 текстів використовуйте історію цього файла.
 
-[Updated Summary v2](AIRSOFT_CLUB_GAME_UPDATED_PRODUCT_DECISION_SUMMARY_v2.md) · [Реєстр рішень і SUPERSEDED](PRODUCT_DECISIONS.md).
-
-Implementation потребує окремого наступного рішення.
+**IMPLEMENTATION NOT YET AUTHORIZED.**

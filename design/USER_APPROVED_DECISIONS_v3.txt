@@ -1,0 +1,1302 @@
+Онови всю актуальну product/design документацію окремого проєкту:
+
+Airsoft_Club_Game
+
+до узгодженого стану:
+
+PRODUCT DESIGN GATE v3 — FINALIZED FOR IMPLEMENTATION PREP
+
+Це фіналізація дизайну перед першим дозволом на код.
+
+НЕ починай implementation.
+НЕ створюй production code.
+НЕ змінюй Project Airsoft.
+Працюй тільки в:
+
+C:/Users/Ihor/Documents/ChatGPT/Airsoft_Club_Game/
+
+Поточна verified Git-точка до цього pass:
+
+3f76545
+
+==================================================
+0. PROJECT BOUNDARY
+==================================================
+
+ЦЕ НОВА ОКРЕМА ГРА.
+
+Не модернізувати й не продовжувати Project Airsoft / Airsoft Manager.
+
+Airsoft_Club_Game має власні:
+
+- repository;
+- Git history;
+- architecture;
+- roadmap;
+- design;
+- economy;
+- combat;
+- backend;
+- Steam integration.
+
+PROJECT_BOUNDARY.md залишається обов’язковим.
+
+==================================================
+1. PRODUCT DNA
+==================================================
+
+Нова гра — сучасний clean-room successor старої VK-гри:
+
+«Пейнтбольные войны»
+
+але повністю в AIRSOFT-сетингу.
+
+Головний принцип:
+
+MANAGEMENT
+→ PREPARATION
+→ OPPONENT SELECTION
+→ AUTOMATIC BATTLE
+→ RESULT
+→ PROGRESSION
+→ REPEAT
+
+Гравець не керує стрільбою вручну.
+
+Один challenge = один battle = один round.
+
+==================================================
+2. CORE ROSTER / BATTLE SIZE
+==================================================
+
+Максимальний клубний roster:
+
+16 fighters.
+
+Усі куплені й боєздатні бійці клубу автоматично беруть участь у бою.
+
+Гравець НЕ формує окремий active squad вручну.
+
+Тому асиметричні бої природно можливі:
+
+1v2
+1v3
+2v5
+7v16
+16v16
+
+і т.д.
+
+Купівля нового fighter — це одночасно:
+
+- power increase;
+- нове фінансове навантаження;
+- потреба екіпірувати нового члена клубу.
+
+Неекіпірований або слабко екіпірований fighter все одно бере участь.
+
+==================================================
+3. FIGHTER STATS
+==================================================
+
+Основні три характеристики:
+
+Accuracy
+Endurance
+Agility
+
+Accuracy:
+впливає на chance to hit.
+
+Endurance:
+впливає на Max HP.
+
+Agility:
+впливає на evasion та action/initiative tempo.
+
+Не додавати зайві базові stats без окремого продуктного рішення.
+
+==================================================
+4. FIGHTER XP / TRAINING
+==================================================
+
+Затверджена модель:
+
+Battle XP
+→ Fighter Level
+→ нова межа доступного training
+→ конкретні stat upgrades купуються за soft currency.
+
+Окремої training currency немає.
+
+Fighter XP отримують бійці, які фактично брали участь у матчі.
+
+Оскільки всі куплені боєздатні fighters автоматично беруть участь, вони всі eligible for Fighter XP.
+
+XP curve:
+швидша на початку, поступово сповільнюється.
+
+Точні числа — BALANCE HYPOTHESIS.
+
+==================================================
+5. RECRUITMENT
+==================================================
+
+Перший fighter безкоштовний.
+
+На старті показати:
+
+3 FREE candidates
+
+і гравець вибирає одного.
+
+Стандартний Recruitment Center:
+
+6–7 candidates одночасно.
+
+Candidates мають:
+
+- різні starting stats;
+- різну ціну;
+- різну загальну стартову силу;
+- visual male/female variants.
+
+Основний tradeoff:
+
+CHEAP
+→ weak start
+
+EXPENSIVE
+→ stronger start
+
+Не використовувати hidden unreachable development caps.
+
+Слабкий дешевий recruit може з часом стати сильним ветераном через XP + training.
+
+Дорожчий recruit дає перевагу часу та витрат, але не недосяжну генетичну стелю.
+
+==================================================
+6. RECRUITMENT REFRESH
+==================================================
+
+Безкоштовний refresh:
+
+через 1 годину
+АБО
+після 10 матчів,
+
+що настане раніше.
+
+Це prototype rule, balance may change.
+
+Додатковий immediate refresh:
+
+за soft currency.
+
+==================================================
+7. RECRUIT DISMISSAL
+==================================================
+
+Fighter можна звільнити / продати назад лише за частину вартості.
+
+Поточний design target:
+
+приблизно 25–40%.
+
+Точне значення — balance hypothesis.
+
+==================================================
+8. CLUB LEVEL → RECRUIT QUALITY
+==================================================
+
+З ростом Club Level recruitment pool у середньому покращується.
+
+Вищий Club Level:
+→ більша ймовірність сильніших candidates.
+
+Але variance залишається.
+
+Не робити так, щоб на високих рівнях усі recruits були однаково сильними.
+
+==================================================
+9. HP / DAMAGE / ARMOR
+==================================================
+
+One-hit elimination СКАСОВАНО.
+
+Потрібні:
+
+Max HP
+Current HP
+Damage
+Armor / Protection
+
+Fighter вибуває, коли:
+
+Current HP <= 0.
+
+Бійці можуть переживати кілька влучань.
+
+==================================================
+10. PERSISTENT CURRENT HP
+==================================================
+
+Після offensive battle Current HP зберігається.
+
+Приклад:
+
+35 / 100 HP
+
+→ якщо не лікувати, наступний власний бій починається з 35 HP.
+
+==================================================
+11. HEALING
+==================================================
+
+Два способи:
+
+A. Immediate healing
+за soft currency.
+
+B. Free recovery
+автоматично з часом.
+
+Поточний prototype target:
+
+приблизно 1% Max HP за хвилину.
+
+Це НЕ final balance.
+
+Recovery працює й офлайн.
+
+==================================================
+12. MAX HP UPGRADE RULE
+==================================================
+
+Підвищення Max HP НЕ лікує fighter.
+
+Приклад:
+
+80 / 100
+→ Endurance training
+→ Max HP = 110
+
+результат:
+
+80 / 110
+
+а не 110 / 110.
+
+==================================================
+13. ZERO HP
+==================================================
+
+Fighter на 0 HP не бере участі у власному offensive battle.
+
+Він повинен відновитися хоча б до мінімального readiness threshold.
+
+Prototype target:
+
+приблизно 10% Max HP.
+
+==================================================
+14. ENERGY
+==================================================
+
+Persistent Energy system:
+
+НЕ ВИКОРИСТОВУВАТИ.
+
+==================================================
+15. BB INVENTORY
+==================================================
+
+BBs — shared CLUB RESOURCE.
+
+Не окремий запас на fighter.
+
+Всі постріли всіх fighters списуються з одного club BB stock.
+
+Максимальна місткість BB stock зростає разом із Club Level.
+
+==================================================
+16. BB SELECTION
+==================================================
+
+Не робити окремий BB selection для кожного fighter.
+
+Гравець обирає один active BB class для всієї команди / battle.
+
+Це принципово важливо для UX при roster 16 fighters.
+
+==================================================
+17. BB CONSUMPTION
+==================================================
+
+BB списуються за реальними simulated shots.
+
+Чим довше й активніше команда стріляє:
+→ тим більше BB витрачається.
+
+Атакуючий завжди витрачає свої real BB.
+
+Захисник у snapshot defense реальні BB НЕ витрачає.
+
+==================================================
+18. BB STARTER SUPPLY
+==================================================
+
+Стартовий запас Basic BB має вистачати приблизно на:
+
+5–7 перших матчів.
+
+Це prototype target.
+
+Поповнення BB повинно залишатися видимою частиною gameplay/economy.
+
+==================================================
+19. BB AUTO-BUY
+==================================================
+
+У progression пізніше можна відкрити:
+
+AUTO-BUY BASIC BB
+
+щоб прибрати рутину для досвідчених гравців.
+
+==================================================
+20. EMERGENCY BB
+==================================================
+
+Якщо:
+
+- запас Basic BB нижче приблизно 15% club capacity;
+- гравцю не вистачає soft currency для мінімального поповнення;
+
+то він може:
+
+раз на 3 години
+отримати
++500 Basic BB безкоштовно.
+
+Альтернатива:
+поповнити через Credits.
+
+Emergency reward дає ТІЛЬКИ Basic BB.
+
+Точні числа — balance hypothesis.
+
+==================================================
+21. BB CLASSES
+==================================================
+
+Передбачити 3–5 tiers.
+
+Current prototype direction:
+
+Basic:
++0%
+
+Improved:
+~+3%
+
+Advanced:
+~+5%
+
+High-End:
+~+10%
+
+Premium:
+до ~+15%
+
+Не всі tiers обов’язково мають бути pure damage.
+
+Можливі:
+damage / penetration tradeoffs.
+
+==================================================
+22. PREMIUM BB
+==================================================
+
+Найсильніший BB tier:
+
+Credits-only.
+
+Maximum effective advantage target:
+
+приблизно +15%.
+
+Не використовувати:
+x2 damage,
+guaranteed hit,
+ignore all armor.
+
+==================================================
+23. BATTLE END CONDITIONS
+==================================================
+
+Основна перемога:
+
+одна команда повністю втрачає боєздатних fighters.
+
+==================================================
+24. DRAW CONDITIONS
+==================================================
+
+DRAW дозволено.
+
+Нічия виникає, якщо:
+
+- останні fighters обох команд вибули одночасно;
+- обидві команди не мають ammo і не можуть завершити бій;
+- simulation safety cap досягнуто без переможця.
+
+Safety cap — внутрішній технічний захист від зависання.
+
+Не обов’язково показувати як таймер гравцю.
+
+==================================================
+25. DRAW REWARD
+==================================================
+
+Поточне рішення:
+
+Club XP:
+35% від standard win reward.
+
+Money:
+невелика/часткова reward policy відповідно до economy spec.
+
+Fighter XP:
+визначати згідно v3 reward table.
+
+Не вводити rating change за draw у Ranked.
+
+Ranked draw:
+
+0 rating.
+
+==================================================
+26. LOSS REWARD
+==================================================
+
+За поразку:
+
+Money:
+0.
+
+Fighter XP:
+25% стандартного win-equivalent XP.
+
+Club XP:
+тільки якщо окремо зафіксовано; не давати значної economic reward за loss.
+
+==================================================
+27. EQUIPMENT SLOTS
+==================================================
+
+Фінально 4 slots:
+
+1. Weapon
+2. Camouflage
+3. Head Protection
+4. Load-bearing / Armor
+
+==================================================
+28. HEAD PROTECTION
+==================================================
+
+Сюди входять:
+
+- goggles;
+- masks;
+- helmet;
+- інші head/face protection items.
+
+==================================================
+29. LOAD-BEARING / ARMOR
+==================================================
+
+Сюди входять:
+
+- chest rigs;
+- plate carriers;
+- tactical vests;
+- armor-related load-bearing gear.
+
+==================================================
+30. ARMOR TRADEOFF
+==================================================
+
+Базова модель:
+
+Light
+→ lower protection
+→ low/no Agility penalty
+
+Medium
+→ medium protection
+→ small Agility penalty
+
+Heavy
+→ stronger protection
+→ larger Agility penalty
+
+Armor penetration може взаємодіяти з BB/weapon type.
+
+Не робити надмірно складну балістику.
+
+==================================================
+31. WEAPON FAMILIES v1
+==================================================
+
+Для v1 дозволені сімейства:
+
+Pistol
+SMG
+Assault Rifle
+Shotgun
+DMR
+Sniper Rifle
+
+Не всі мають бути відкриті від початку.
+
+==================================================
+32. ART DIRECTION
+==================================================
+
+FINAL ART STYLE:
+
+OPEN.
+
+НЕ фіксувати production visual style зараз.
+
+Попередні concept images — reference only.
+
+Відомі user preferences для майбутнього art pass:
+
+- не обов’язково 3D;
+- ближче до класичного 2D battle presentation;
+- fighters повернуті більше боком / 3/4 profile;
+- stylized / low-poly-inspired 2D look розглядається;
+- head proportions приблизно +30% від реалістичних;
+- weapon / helmet / chest rig мають добре читатися;
+- універсальні male/female base fighter models;
+- карти масштабовані під 16v16.
+
+Але все це НЕ є фінально затвердженим art direction.
+
+Повернутися до ART DIRECTION наприкінці core design / implementation foundation.
+
+==================================================
+33. TEAM POWER
+==================================================
+
+Внутрішньо рахувати:
+
+TEAM POWER / BATTLE POWER.
+
+Може враховувати:
+
+- number of fighters;
+- fighter stats;
+- HP;
+- weapons;
+- MK tier;
+- armor;
+- head protection;
+- camouflage if combat-relevant;
+- active BB tier;
+- інші combat modifiers.
+
+Точна formula:
+
+BALANCE / IMPLEMENTATION DESIGN LATER.
+
+==================================================
+34. TEAM POWER UI
+==================================================
+
+НЕ показувати точну числову силу.
+
+Гравцю показувати лише приблизну категорію.
+
+Наприклад:
+
+Very Weak
+Weak
+Balanced
+Strong
+Very Strong
+
+Назви можна локалізувати пізніше.
+
+==================================================
+35. REWARD FOUNDATION
+==================================================
+
+Base Battle Value насамперед залежить від:
+
+Opponent Club Level.
+
+Після цього застосовується modifier за реальний power difference.
+
+Сильніший opponent:
+→ потенційно більша reward.
+
+Суттєво слабший opponent:
+→ reward сильно зменшується.
+
+==================================================
+36. REWARD TYPES
+==================================================
+
+Основні:
+
+Soft Currency
+Club XP
+Fighter XP
+
+==================================================
+37. REPEAT FRIEND REWARD
+==================================================
+
+Проти конкретного Steam friend можна грати необмежено.
+
+У межах 8-hour pair window:
+
+перша rating-eligible victory
+→ normal eligible reward.
+
+Наступні перемоги
+→ reduced reward.
+
+Після 3-ї перемоги підряд над тим самим другом у цьому window:
+
+Money:
+0
+
+Club XP:
+0
+
+Fighter XP:
+0
+
+до завершення cooldown window.
+
+==================================================
+38. FRIEND RATING WINDOW
+==================================================
+
+Для конкретної пари attacker → friend:
+
+одна rating-eligible win раз на 8 годин.
+
+Після першої перемоги:
+
+наступні бої не додають і не знімають rating у цьому pair window.
+
+Якщо attacker програв:
+може повторювати спроби до першої перемоги.
+
+Rating loss за повторні поразки від того самого friend:
+не застосовувати безмежно.
+
+Зберегти раніше затверджений anti-self-destruction / anti-farm principle.
+
+==================================================
+39. DEFENSE SNAPSHOT
+==================================================
+
+Defense uses:
+
+IMMUTABLE SNAPSHOT.
+
+Snapshot включає:
+
+- fighters;
+- stats;
+- equipment;
+- BB class;
+- rating;
+- ruleset/balance version;
+- other combat-relevant state.
+
+==================================================
+40. DEFENSE HP
+==================================================
+
+У defense battle:
+
+всі доступні fighters стартують зі 100% Max HP,
+
+навіть якщо live profile fighters зараз поранені.
+
+Defense battle НЕ змінює live Current HP.
+
+==================================================
+41. DEFENSE BB
+==================================================
+
+Defense використовує snapshot BB class.
+
+Реальні live BB захисника НЕ списуються.
+
+==================================================
+42. CONCURRENT DEFENSE
+==================================================
+
+Кілька одночасних attacker battles можуть використовувати одну immutable snapshot version.
+
+Heal/equip changes у live profile не змінюють battle, який уже створено.
+
+Нові battles використовують новішу snapshot version після committed change.
+
+==================================================
+43. DEFENSE RATING EXPOSURE
+==================================================
+
+Максимум:
+
+4 rating-impacting attacks на один profile за 24 години.
+
+Після cap:
+
+profile не повинен далі безмежно втрачати rating через defense.
+
+Точну post-cap matchmaking visibility визначити технічно.
+
+==================================================
+44. PROTECTION SHIELD
+==================================================
+
+За Credits продається protection shield.
+
+Durations:
+
+8 hours
+1 day
+3 days
+7 days
+
+Поки shield active:
+
+нові attacks на club блокуються.
+
+Already-started battle:
+не скасовується.
+
+==================================================
+45. SHIELD / ATTACK INTERACTION
+==================================================
+
+Не вводити додаткових auto-rules без окремого рішення.
+
+Зокрема:
+чи власна ranked attack знімає shield —
+залишити OPEN, якщо ще не затверджено.
+
+==================================================
+46. RANKED OPPONENT SELECTION
+==================================================
+
+Ranked matchmaking НЕ дає одного примусового opponent.
+
+Backend показує:
+
+3–5 candidates.
+
+Гравець сам обирає:
+
+- слабшого;
+- приблизно рівного;
+- сильнішого.
+
+Це частина gameplay risk/reward.
+
+==================================================
+47. RANKED DISPLAY
+==================================================
+
+Для opponent можна показувати:
+
+- Club Level;
+- rating;
+- fighter count;
+- approximate strength category;
+- potential reward category.
+
+НЕ показувати exact Team Power formula.
+
+==================================================
+48. RANKED DRAW
+==================================================
+
+Draw:
+
+0 rating.
+
+==================================================
+49. REVENGE
+==================================================
+
+Defense loss може створити:
+
+REVENGE AVAILABLE.
+
+Expiry:
+
+24 hours.
+
+==================================================
+50. REVENGE ATTEMPTS
+==================================================
+
+На одну Revenge opportunity:
+
+до 3 attempts.
+
+Якщо player виграв:
+Revenge consumed.
+
+Якщо програв:
+може повторити, доки:
+- не виграє;
+- не використає всі 3 attempts;
+- не закінчаться 24 години.
+
+==================================================
+51. REVENGE RATING REWARD
+==================================================
+
+Успішна Revenge повертає:
+
+120% rating,
+
+який був втрачений саме в конкретному defense battle.
+
+Приклад:
+
+Defense loss:
+-10 rating
+
+Successful Revenge:
++12 rating.
+
+Не рахувати 120% від current rating чи інших values.
+
+==================================================
+52. REVENGE NORMAL REWARD
+==================================================
+
+Успішний Revenge також дає:
+
+standard battle reward
+
+без додаткового reward multiplier.
+
+==================================================
+53. MONETIZATION MODEL
+==================================================
+
+Гра:
+
+PAID ON STEAM.
+
+Додатково:
+
+optional monetization through Credits.
+
+Це затверджена commercial model.
+
+==================================================
+54. PREMIUM CURRENCY
+==================================================
+
+Назва:
+
+Credits.
+
+Credits можна:
+
+- купувати за real money;
+- отримувати в обмеженій кількості через gameplay;
+- конвертувати в soft currency;
+- використовувати для premium systems.
+
+==================================================
+55. FREE CREDIT SOURCES
+==================================================
+
+Credits можуть видаватися:
+
+- achievements;
+- daily rewards;
+- 7-day consecutive login streak;
+- Club Level ups;
+- special events/milestones later.
+
+Faucet rate має бути контрольованим.
+
+==================================================
+56. EARLY UNLOCK
+==================================================
+
+Credits тільки РОЗБЛОКОВУЮТЬ предмет раніше.
+
+Сам предмет після unlock все одно купується за soft currency.
+
+==================================================
+57. EARLY UNLOCK DEPTH
+==================================================
+
+Maximum bypass:
+
++3 Club Levels.
+
+Не дозволяти купувати content далеко вперед по progression.
+
+==================================================
+58. WEAPON MK SYSTEM
+==================================================
+
+Base:
+normal progression.
+
+MK2:
+можна придбати за soft currency, але дорого.
+
+MK3:
+Credits-only.
+
+MK upgrade:
+
+- visual skin/change;
+- невеликий stat improvement.
+
+==================================================
+59. PREMIUM-ONLY ITEMS
+==================================================
+
+Premium-only weapon / armor items допускаються.
+
+Вони можуть бути сильніші за F2P базові аналоги приблизно:
+
++5–8%
+
+але не значно більше.
+
+==================================================
+60. GLOBAL PREMIUM ADVANTAGE CEILING
+==================================================
+
+Сумарна effective paid combat advantage над нормально екіпірованим F2P-аналогом того ж progression tier:
+
+TARGET CEILING:
+
+приблизно 15–20%.
+
+Це balance target.
+
+Потрібно контролювати сумарний stacking:
+
+premium gear
++ MK3
++ premium BB
++ other paid modifiers.
+
+==================================================
+61. CREDIT REFUNDS
+==================================================
+
+Consumable purchases / shields / BB / unlocks:
+
+не повертаються після коректного використання.
+
+Exception:
+
+- technical failure;
+- transaction not applied;
+- platform-level Steam refund behavior.
+
+==================================================
+62. COSMETICS
+==================================================
+
+Pure cosmetic monetization:
+
+можлива пізніше.
+
+Не пріоритет v1.
+
+==================================================
+63. TECH STACK
+==================================================
+
+Фінально зафіксувати:
+
+GAME CLIENT:
+Unity
+C#
+
+BACKEND:
+C#
+ASP.NET Core
+
+DATABASE:
+PostgreSQL
+
+PLATFORM:
+Steam-first
+
+STEAM INTEGRATION:
+Steamworks через відповідний C# integration layer.
+
+==================================================
+64. SHARED C# CONTRACTS
+==================================================
+
+Де це архітектурно безпечно й доцільно:
+
+shared C# contracts / DTO / domain primitives
+
+можуть використовуватися між:
+
+Unity client
+і
+ASP.NET Core backend.
+
+Не ділити server-authoritative logic так, щоб client міг бути trust source.
+
+==================================================
+65. BACKEND AUTHORITY
+==================================================
+
+Authoritative backend обов’язковий для:
+
+- account identity;
+- Credits;
+- economy-sensitive actions;
+- PvP;
+- rating;
+- matchmaking;
+- battle verification/resolution;
+- progression rewards;
+- snapshots;
+- leaderboards.
+
+==================================================
+66. ONLINE REQUIRED
+==================================================
+
+Online required для:
+
+- PvP;
+- Ranked;
+- Steam Friends;
+- Credits;
+- purchase/conversion;
+- matchmaking;
+- leaderboards;
+- authoritative economy changes.
+
+==================================================
+67. OFFLINE MODE
+==================================================
+
+Offline може дозволяти:
+
+- запуск клієнта;
+- cached/read-only club view;
+- potentially isolated PvE later.
+
+Offline НЕ може:
+
+- змінювати authoritative economy;
+- видавати Credits;
+- змінювати rating;
+- створювати authoritative progression без server validation.
+
+==================================================
+68. RETENTION SYSTEMS
+==================================================
+
+Затверджені/очікувані retention pillars:
+
+- Daily Rewards;
+- 7-day streak;
+- Recruitment refresh;
+- Free Recovery timer;
+- Revenge window;
+- Club Level progression;
+- Steam social rivalry.
+
+==================================================
+69. MODERATION
+==================================================
+
+Передбачити foundation для:
+
+- club name moderation;
+- emblem moderation, якщо буде UGC;
+- report flow;
+- account sanctions;
+- future user-generated content safety.
+
+Не overbuild moderation у першому milestone.
+
+==================================================
+70. BALANCE STATUS
+==================================================
+
+Усі конкретні числа, які не були явно затверджені як тверде product rule, мають залишатися:
+
+BALANCE HYPOTHESIS.
+
+Не перетворювати prototype targets у hidden final constants.
+
+==================================================
+71. UPDATE ALL DEPENDENT DOCUMENTS
+==================================================
+
+Онови щонайменше:
+
+AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2
+→ v3
+
+AIRSOFT_CLUB_GAME_UPDATED_PRODUCT_DECISION_SUMMARY_v2
+→ v3
+
+AIRSOFT_CORE_LOOP.md
+
+AIRSOFT_UI_FLOW.md
+
+AIRSOFT_FIGHTER_SYSTEM.md
+
+AIRSOFT_EQUIPMENT_SYSTEM.md
+
+AIRSOFT_COMBAT_SYSTEM.md
+
+AIRSOFT_ECONOMY.md
+
+STEAM_SOCIAL_PVP_ARCHITECTURE.md
+
+BACKEND_ARCHITECTURE.md
+
+DATA_MODEL.md
+
+MVP_IMPLEMENTATION_PLAN.md
+
+PRODUCT_DECISIONS.md
+
+ROADMAP
+
+PROJECT_BOUNDARY.md only if needed for consistency, without weakening it.
+
+==================================================
+72. SUPERSEDE CONFLICTING OLD RULES
+==================================================
+
+Позначити SUPERSEDED будь-які старі рішення, що суперечать v3.
+
+Особливо:
+
+- mandatory 3v3;
+- max roster 6;
+- manual active squad selection;
+- one-hit elimination;
+- non-ranked-only Steam Friends;
+- purely cosmetic skins;
+- 3 equipment slots;
+- final 3D art direction;
+- Project Airsoft reuse assumptions.
+
+==================================================
+73. PRODUCT DESIGN GATE OUTPUT
+==================================================
+
+Підготуй:
+
+AIRSOFT_CLUB_GAME_PRODUCT_DESIGN_GATE_v3.md
+
+Розділи:
+
+1. PROJECT BOUNDARY
+2. CONFIRMED PRODUCT RULES
+3. CONFIRMED COMBAT RULES
+4. CONFIRMED ECONOMY RULES
+5. CONFIRMED PVP / STEAM RULES
+6. CONFIRMED MONETIZATION RULES
+7. CONFIRMED TECH STACK
+8. BALANCE HYPOTHESES
+9. OPEN ART QUESTIONS
+10. REMAINING IMPLEMENTATION-LEVEL QUESTIONS
+11. SUPERSEDED DECISIONS
+12. GATE STATUS
+
+==================================================
+74. GATE STATUS
+==================================================
+
+Якщо всі документи узгоджені й немає суперечностей:
+
+познач:
+
+PRODUCT DESIGN GATE v3 — APPROVED FOR IMPLEMENTATION PREPARATION
+
+Але:
+
+IMPLEMENTATION NOT YET AUTHORIZED.
+
+==================================================
+75. FIRST IMPLEMENTATION PREP SCOPE
+==================================================
+
+Після finalization лише підготуй рекомендований scope майбутнього першого implementation milestone.
+
+Не реалізовуй його.
+
+Очікуваний напрям:
+
+- Unity/C# solution foundation;
+- pure C# Domain;
+- deterministic headless battle core;
+- fighter/weapon/armor/BB domain models;
+- MatchConfig;
+- MatchResult;
+- seeded RNG;
+- reproducible battle tests.
+
+НЕ включати в перший code milestone:
+
+- production UI;
+- Steamworks integration;
+- ASP.NET Core live backend;
+- PostgreSQL;
+- monetization;
+- Credits purchases;
+- matchmaking;
+- production art.
+
+==================================================
+76. VERIFICATION
+==================================================
+
+Після оновлення:
+
+- перевір усі внутрішні посилання;
+- перевір consistency між documents;
+- перевір, що немає активних superseded rules;
+- перевір PROJECT_BOUNDARY;
+- перевір Git diff;
+- commit only Airsoft_Club_Game changes.
+
+Поверни:
+
+- список оновлених документів;
+- короткий summary v3;
+- remaining implementation-level questions;
+- Git branch;
+- commit SHA;
+- підтвердження, що implementation не починався;
+- підтвердження, що Project Airsoft не змінювався.

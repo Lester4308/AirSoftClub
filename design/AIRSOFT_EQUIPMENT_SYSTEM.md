@@ -1,43 +1,32 @@
-# Airsoft equipment system — v2
+# Equipment / BB — v3
 
-USER APPROVED V2-03/16–23. [Pack v2](AIRSOFT_RECONSTRUCTION_PRODUCT_DECISION_PACK_v2.md). Historical E008/E010/E011/E019/E021 підтверджують gear fields/slots; MK/BB classes нові.
+Канон: [Gate v3](AIRSOFT_CLUB_GAME_PRODUCT_DESIGN_GATE_v3.md). Параметри: [Balance hypotheses](BALANCE_HYPOTHESES_v3.md).
 
-## Слоти та основні поля
+## Чотири slots
 
-Compact proposal Q-08: Weapon, Clothing/Armor, Eye/Face Protection. Mandatory protection зберігає historical readiness principle. Final slots, weapon families і каталог відкриті; дев'ять слотів автоматично не вводяться.
+| Slot | Вміст / роль |
+|---|---|
+| Weapon | Одна equipped weapon; family, damage/tempo/penetration profile, MK |
+| Camouflage | Видимий комплект; combat modifier лише якщо явно визначено |
+| Head Protection | Goggles, masks, helmets, інший head/face protection |
+| Load-bearing / Armor | Chest rigs, plate carriers, tactical vests та armor-related gear |
 
-Weapon definition:family, base damage, accuracy/handling/cadence, reload/ammo rules, level gate, normal Money price, optional Credits acquisition route. Armor:rating, mitigation contribution, possible agility/mobility penalty. Eye protection — validity slot; HP/armor — arcade game abstraction, не реальна safety simulation.
+Light: нижчий protection, низький/відсутній Agility penalty. Medium: середній protection, невеликий penalty. Heavy: сильніший protection, більший penalty. Проста взаємодія weapon/BB penetration з armor; формули та stacking head/body protection ще відкриті. Gear не є умовою включення owned боєздатного fighter.
 
-Більш сильний armor може зменшувати mobility; дорога weapon не обов'язково підходить до build. Penetration тільки якщо має зрозумілу користь; не додавати одночасно складну ballistics/attachments систему без рішення.
+Дозволені сімейства v1: Pistol, SMG, Assault Rifle, Shotgun, DMR, Sniper Rifle. Відкриваються поступово; не всі доступні на старті. Точний каталог, range model та unlock levels ще не обрано.
 
-## MK = appearance + small gameplay progression
+## Acquisition та MK
 
-Weapon Base → MK1 → MK2 → MK3. Кожен tier змінює appearance/skin і дає невелике покращення damage, accuracy або handling. Credits можуть відкривати tier. Further tiers лише після review.
+Base — normal progression. MK2 — дорого за soft currency. MK3 — Credits-only. MK дає visual change і невелике stat improvement. Статус MK1 та upgrade path OPEN (Q10); попереднє правило не переносити мовчки.
 
-TierDefinition прив'язаний до baseWeaponDefinition та balanceVersion; visualVariant і effective stat modifier разом. Не видавати MK за cosmetic-only item. Можлива окрема чиста косметика пізніше не змінює MK rule.
+Credits early unlock допускає максимум +3 Club Levels і дає лише entitlement: сам предмет після цього купується за soft currency. Premium-only weapon/armor допустимі з target ~+5–8% проти звичайного аналога. Усі paid modifiers разом обмежуються target ~15–20% effective advantage; не балансувати кожен ізольовано. Pure cosmetics можливі пізніше, не пріоритет v1.
 
-Межі:base family identity зберігається; no large multipliers, no guaranteed hit, invulnerability або guaranteed win. Exact stat improvements, step costs, cumulative cap і soft progression route OPEN Q-07/Q-11. Не встановлювати ціну або приріст із прикладів попередньої версії.
+## Shared club BB
 
-## Normal / early / premium acquisition
+BB stock належить клубу; не fighter. Ємність зростає з Club Level. Один active BB class обирається для всієї команди/бою; немає per-fighter BB selector. Класи зберігаються в club inventory; точна загальна/роздільна capacity policy — Q04.
 
-Normal:Club Level gate + Money purchase. Early:Credits доступ до item до ordinary level; Level7→gate10 — illustrative, не production unlock table. Entitlement лише unlock чи вже owned item Q-07.
+Усі реальні simulated shots атакуючих списуються зі спільного обраного stock. Defender використовує snapshot BB class і окремий simulated budget без debit live BB. Defender budget має бути скінченним і версійованим; кількість OPEN. Не прирівнювати кількість pellets до кількості пострілів без рішення Q04. Немає мовчазного auto-switch на premium чи auto-spend Credits.
 
-Premium-only collectible items допустимі з modest advantage, status та distinct appearance. Конкретні SKUs не approved. Credits-only top BB — можливий catalog direction. Власність premium item не підміняє entitlement перевірку, не дає права на impossible stats.
+Prototype 3–5 tiers: Basic +0%, Improved ~3%, Advanced ~5%, High-End ~10%, Premium до ~15% effective advantage. Можливі damage/penetration tradeoffs. Найсильніший tier Credits-only; x2 damage, guaranteed hit та ignore-all-armor заборонені.
 
-## Persistent BB classes
-
-Окремий inventory resource за class, купівля Money або Credits згідно catalog. Напрям 3–5 classes:Base/Improved/Advanced/High-end/Premium. Приклад 0/+3/+5/+10/~+15% — prototype hypotheses. Верхній target близько +15% damage або equivalent armor penetration/ballistic benefit; не повне ігнорування armor.
-
-Ammo assignment фіксується до battle. Змішування classes, per-fighter capacity, shared pool і magazine semantics OPEN Q-04. Сервер reserves обрану quantity; spent з event log; unspent повертається після settlement. Це proposal transaction model, не готовий balance.
-
-## Combined power review
-
-Оцінювати base item+early access+MK+BB+armor+fighter stats+чисельність разом. Окремий «невеликий» modifier може змінити кількість hits до elimination;+accuracy і faster cadence теж damage throughput. BB15% не дозволяє автоматично ще стільки ж penetration поза cap.
-
-Future test matrix:free normal path /early unlock /premium item /MK only /BB only /combined, різні Club Levels, HP ratios, team sizes, armor builds. Записати opportunity cost боєприпасів і survival cost. До цього жодна ціна/aggregate cap не final.
-
-## Ownership і зміни
-
-ItemInstance owner UUID, definition version, tier, acquisition source/commerce transaction. Upgrade витрачає дозволену currency і змінює один instance atomic; retry не додає tier. Assigned item не дублюється між двома live fighters. Historical snapshot copy не live ownership.
-
-Sell/dismiss/refund behavior OPEN; не переносити v1 resale25% або free-baseline gear promises. Accepted battle pins definitions; пізніша покупка/upgrade не змінює replay або power used for reward.
+Basic starter supply target 5–7 перших матчів. Пізніше progression відкриває AUTO-BUY BASIC BB за soft currency; unlock level, opt-in та spend cap ще визначити. Emergency Basic: stock <~15% capacity і soft недостатньо для min refill → +500 Basic раз на ~3 години; всі числа hypotheses. Альтернатива — свідоме поповнення через Credits. Emergency ніколи не видає premium BB.
