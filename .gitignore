@@ -10,3 +10,6 @@ UnityHost/Builds/
 UnityHost/UserSettings/
 UnityHost/*.csproj
 UnityHost/*.sln*
+
+# Steamworks.NET may create its sample AppID; never ship it as this game's identity.
+UnityHost/steam_appid.txt

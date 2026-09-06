@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 namespace Airsoft.Server;
+
 public sealed record CommandIntent(string Key, long Version, string Type, string Target = "", string Value = "", int Number = 0, bool Flag = false, int OfferVersion = 0, string CatalogVersion = Catalog.Version);
 public sealed record LoginIntent(string Account);
 public sealed class DevelopmentSessions
@@ -24,13 +25,47 @@ public static class Api
         if (s.PendingMatch == null) foreach (var f in s.Fighters.Where(f => f.Active)) f.Recover(Math.Max(now, f.RecoveryAt));
         var history = await db.Matches.Where(m => m.Attacker == owner || m.Defender == owner).OrderByDescending(m => m.AcceptedAt).Take(20)
             .Select(m => new { m.Id, m.Status, m.Mode, m.Attacker, m.Defender }).ToListAsync();
-        return new { s.Id, s.Name, s.Version, s.Wallet.Money, s.Wallet.Credits, s.Xp, s.Level, s.Rating, s.FreeRecruitClaimed,
-            s.Capacity, s.BbStock, s.ActiveBbTier, s.OfferVersion, s.Offers, s.OffersAt, s.CompletedSinceRefresh, s.PendingMatch, s.ShieldUntil,
-            Fighters = s.Fighters.Where(f => f.Active).Select(f => new { f.Id, f.Name, f.Accuracy, f.Endurance, f.Agility, f.Hp, f.MaxHp, f.Ready, f.Xp, f.Level, f.TrainingCap,
-                Equipment = f.Equipment.Select(e => new { Slot = e.Key.ToString(), Item = e.Value, Definition = s.Items[e.Value] }) }),
+        return new
+        {
+            s.Id,
+            s.Name,
+            s.Version,
+            s.Wallet.Money,
+            s.Wallet.Credits,
+            s.Xp,
+            s.Level,
+            s.Rating,
+            s.FreeRecruitClaimed,
+            s.Capacity,
+            s.BbStock,
+            s.ActiveBbTier,
+            s.OfferVersion,
+            s.Offers,
+            s.OffersAt,
+            s.CompletedSinceRefresh,
+            s.PendingMatch,
+            s.ShieldUntil,
+            Fighters = s.Fighters.Where(f => f.Active).Select(f => new
+            {
+                f.Id,
+                f.Name,
+                f.Accuracy,
+                f.Endurance,
+                f.Agility,
+                f.Hp,
+                f.MaxHp,
+                f.Ready,
+                f.Xp,
+                f.Level,
+                f.TrainingCap,
+                Equipment = f.Equipment.Select(e => new { Slot = e.Key.ToString(), Item = e.Value, Definition = s.Items[e.Value] })
+            }),
             Items = s.Items.Select(i => new { Id = i.Key, Definition = i.Value, Slot = Catalog.Get(i.Value).Slot.ToString(), Equipped = s.Fighters.Any(f => f.Equipment.Values.Contains(i.Key)) }),
             Catalog = Catalog.Items.Select(i => new { i.Id, Slot = i.Slot.ToString(), i.Mk, i.Money, i.Credits, i.Level }),
-            History = history, ServerNow = now, CatalogVersion = Catalog.Version };
+            History = history,
+            ServerNow = now,
+            CatalogVersion = Catalog.Version
+        };
     }
     public static void Map(WebApplication app)
     {
@@ -50,6 +85,11 @@ public static class Api
         app.MapPost("/api/command", async (CommandIntent c, HttpContext http, Store store, Battles battles) =>
         {
             string owner = Owner(http); long now = Now;
+            if (c.Type == "Attack" && c.Value == "Friend" && owner.StartsWith("steam-"))
+            {
+                var friends = await app.Services.GetRequiredService<SteamGateway>().Friends(owner[6..]);
+                if (!c.Target.StartsWith("steam-") || !friends.Contains(c.Target[6..])) throw new InvalidOperationException("Verified Steam friendship required");
+            }
             if (c.Type == "Attack") return Results.Content(await battles.Start(owner, c.Key, c.Version, new StartIntent(c.Target, c.Value, ""), now), "application/json");
             string json = await store.Command(owner, c.Key, Json.Write(c), c.Version, (db, s) =>
             {
@@ -79,8 +119,14 @@ public static class Api
         {
             string owner = Owner(http); await using var db = store.Open(); var m = await db.Matches.FindAsync(id);
             if (m == null || m.Attacker != owner && m.Defender != owner) return Results.NotFound();
-            return Results.Json(new { m.Id, m.Status, Input = m.Result == null ? "" : Convert.ToBase64String(m.Input), Result = m.Result == null ? "" : Convert.ToBase64String(m.Result),
-                Digest = m.Result == null ? "" : BattleWire.Digest(BattleWire.ReadResult(m.Result)) });
+            return Results.Json(new
+            {
+                m.Id,
+                m.Status,
+                Input = m.Result == null ? "" : Convert.ToBase64String(m.Input),
+                Result = m.Result == null ? "" : Convert.ToBase64String(m.Result),
+                Digest = m.Result == null ? "" : BattleWire.Digest(BattleWire.ReadResult(m.Result))
+            });
         });
     }
     public static string Owner(HttpContext http) => (string?)http.Items["owner"] ?? throw new UnauthorizedAccessException();

@@ -1,1 +1,7 @@
-{"name":"AirsoftClub.Unity","references":["Airsoft.Battle"]}
+{
+  "name": "AirsoftClub.Unity",
+  "references": [
+    "Airsoft.Battle",
+    "com.rlabrecque.steamworks.net"
+  ]
+}

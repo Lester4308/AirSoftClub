@@ -56,6 +56,9 @@ public sealed class ClubDb(DbContextOptions<ClubDb> options) : DbContext(options
     public DbSet<PolicyRow> Policies => Set<PolicyRow>();
     protected override void OnModelCreating(ModelBuilder b)
     {
+        b.Entity<SessionRow>().HasKey(x => x.TokenHash);
+        b.Entity<SessionRow>().HasIndex(x => x.TicketHash).IsUnique();
+        b.Entity<SessionRow>().HasOne<ClubRow>().WithMany().HasForeignKey(x => x.Owner).OnDelete(DeleteBehavior.Restrict);
         b.Entity<ClubRow>().ToTable("Clubs", t => t.HasCheckConstraint("club_nonnegative", "\"Money\" >= 0 AND \"Credits\" >= 0 AND \"Rating\" >= 0 AND \"Version\" >= 0"));
         b.Entity<ClubRow>().HasKey(x => x.Id); b.Entity<ClubRow>().Property(x => x.Version).IsConcurrencyToken();
         b.Entity<ClubRow>().Property(x => x.State).HasColumnType("jsonb");
