@@ -1,3 +1,5 @@
+> **Status update 2026-09-06:** межа незалежності нижче повністю чинна. Застарілі відомості про ще не створений Unity/core та відсутність дозволу стосуються design-gate етапу. Implementation001–002 вже verified; поточний pass — documentation-only. Новий канон: [Master v1](./AIRSOFT_CLUB_GAME_MASTER_DEVELOPMENT_SPEC_v1.md); майбутній execution scope: [Pack v1](./AIRSOFT_CLUB_GAME_AGENT_IMPLEMENTATION_PACK_v1.md), лише після явного запуску.
+
 # Обов'язкова межа проєкту
 
 Airsoft_Club_Game — НОВА ОКРЕМА ГРА, створена з нуля. Робоча назва не є фінальною комерційною назвою.

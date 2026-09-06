@@ -1,29 +1,26 @@
-# Remaining implementation-level questions — v3
+# Implementation questions Q01–Q15 — CLOSED
 
-Статус після Implementation 001: Q01–Q04 CLOSED / IMPLEMENTED-PREPARED для battle core; Q05–Q15 лишаються OPEN або IMPLEMENTATION PROPOSAL. [Точні правила, формули та межі](../implementation/IMPLEMENTATION_001.md). Жодне питання нижче не змінює підтверджені межі [Gate v3](AIRSOFT_CLUB_GAME_PRODUCT_DESIGN_GATE_v3.md).
+Актуальний реєстр синхронізовано з [Master v1](../AIRSOFT_CLUB_GAME_MASTER_DEVELOPMENT_SPEC_v1.md), розділ 14. Попередня версія з OPEN збережена у Git на d553cd3d9fee998a9764be04b63f8881658d299f. Reference § у таблиці нижче вказують на master, а не на цей короткий індекс.
 
-| ID | Питання / потрібне рішення | Коли закрити |
+**Усі Q01–Q15 CLOSED як узгоджені питання.** Residual values/implementation details не оголошуються ані фінальними, ані вже implemented.
+
+| ID | Актуальне закриття | Implementation status / residual |
 |---|---|---|
-| Q01 | CLOSED / IMPLEMENTED-PREPARED — Implementation 001: scaled Int64 (10000=1), checked overflow/truncation; configurable hit/evasion/tempo/HP/mitigation; seeded SplitMix64; same-time damage batches; simulated-duration draw та окремий technical guard failure. Prototype formulas у linked implementation spec. | Реалізовано для prototype core; final balance не закрито |
-| Q02 | CLOSED / IMPLEMENTED-PREPARED — exact readiness CurrentHP × 10 >= MaxHP: 0–9% NotReady, 10–100% Ready; no injury latch. MaxHP increase не змінює CurrentHP. Pure helper, без recovery timers. | Реалізовано й перевірено на boundaries |
-| Q03 | CLOSED / IMPLEMENTED-PREPARED — ready weaponless fighter бере участь і є ціллю, але не атакує; без fallback weapon/melee. Обидві сторони без можливості damage → NoProgress Draw. | Реалізовано й перевірено |
-| Q04 | CLOSED / IMPLEMENTED-PREPARED — finite defense budget = 100% captured club maximum capacity, caller supplied. Shared tier/budget; один BB за projectile, включно з burst/pellets; нестача → partial volley. Inventory capacity tiers/overflow/emergency service поза core і залишаються deferred, не реалізовані. | Combat subset реалізовано; inventory details deferred |
-| Q05 | Reward curves, draw Money/Fighter XP, loss Club XP, reduced-friend коефіцієнт, округлення та bounded power modifier; окремо налаштування XP кожного учасника. | До економічної реалізації |
-| Q06 | Початок 8-hour friend window і 24-hour exposure window, точний ліміт rating loss до першої friend win, rating formula/floors. Пропозиція: максимум одна rating loss на directed pair/window; не вважати затвердженим числом. | До live PvP |
-| Q07 | Post-cap discovery, reservation/settlement exposure, конфлікт глобального cap з Revenge. Не перевищувати 4 incoming rating impacts; не обіцяти Revenge recovery до перевірки eligibility. | До live PvP |
-| Q08 | Чи власна Ranked attack знімає shield — OPEN продуктне уточнення; не додавати auto-cancel. Час activation/acceptance вирішує backend. | До shields або Ranked launch |
-| Q09 | Revenge draw як attempt; reservation/expiry під час бою; rating іншої сторони, округлення 120%, захист від циклів Revenge-on-Revenge та штучного створення tickets. | До live Revenge |
-| Q10 | MK1: чи існує окремо від Base, його naming/acquisition/upgrade path. V3 визначає Base, MK2 і MK3; не вигадувати правило MK1. | До item catalog |
-| Q11 | Price tables, starter grants, soft/Credits conversion, free Credit faucets, платні spend limits, reward ceilings і premium-stack метрика ефективної переваги. | До економічного прототипу |
-| Q12 | Версії Unity/.NET/PostgreSQL, C# Steamworks layer, serialization, backward compatibility і shared-library target, хостинг, observability, migrations. | За відповідним milestone |
-| Q13 | Recruitment generation/refresh resets, match counter policy, resale base, доля gear при dismissal; одноразова free-recruit entitlement не відновлюється через resale/reset. | До recruitment |
-| Q14 | Recovery clock/remainder при зміні Max HP, concurrent offensive commands, snapshot publication після committed змін, мінімальна валідна defense roster. | До backend state lifecycle |
-| Q15 | Daily/streak timezone і пропуск дня, moderation workflow/санкції/UGC scope, reconciliation і refund support. | До social/economy launch |
+| Q01 | Accuracy hit; Agility evasion+tempo; Endurance HP; 5–95% prototype; no crit; fixed integers, seeded RNG, action-time; duration Draw, guard failure | Core verified; exact tuning prototype (§8) |
+| Q02 | Per-fighter 10% readiness, no latch, MaxHP change не scales CurrentHP | Helper verified; recovery service pending |
+| Q03 | Ready weaponless participates/targetable, no attack/fallback; both no-progress Draw | Verified |
+| Q04 | Defense BB=100% max capacity, finite/virtual; actual projectile accounting | Verified core + partial volley; inventory capacity/overflow pending |
+| Q05 | Win100/100/100; Draw25/35/50; Loss0/10/25; friend100/50/25/0; power bounded target0.1–1.5 | Economy pending; curves/rounding config |
+| Q06 | First rated directed-pair battle anchors8h; max1 loss; first win freezes later rating; rolling24h; floor0 | Pending; rating curve prototype ±5…20 |
+| Q07 | Reserve at rated start, not discovery; settle once; cap4 shared with Revenge; TTL | Pending; exact lease/post-cap UX implementation |
+| Q08 | Own Ranked removes shield; rated Revenge removes; Friend/non-rated does not; accepted incoming finishes | Pending |
+| Q09 | Revenge24h/3; draw attempt; in-flight expiry valid; start eligibility; deterministic120%; unique origin/start; no chains; no Friend/non-ranked tickets | Pending; exact rounding/counterparty policy distinction (§16) |
+| Q10 | Base=MK1; MK2 expensive soft; MK3 Credits | Catalog pending |
+| Q11 | Starter10 Credits; no soft→Credits; fixed configurable Credits→soft; no hard daily spend cap; combined15–20%; starter resources | Pending; exact prices/faucets/metric not final |
+| Q12 | Unity6000.3.21f1/C#/Standard2.1; ASP.NET Core current LTS; PostgreSQL/EF Core; wirev1; shared pure core; observability; Docker; secrets external | Unity/wire verified; backend version pin/hosting pending |
+| Q13 | Pool6–7 full regeneration;1h OR10 completed; reset both counters; one-time free; original-price resale; gear returns | Pending; refund fraction/distribution config |
+| Q14 | Server timestamp+remainder; no MaxHP scaling; concurrency control; post-commit snapshots; min defense1 independent live HP | Pending backend lifecycle |
+| Q15 | UTC00:00 daily/account; missed day→Day1; minimal UGC/no open chat; sanctions; idempotent ledger/reconciliation/refunds | Pending |
 
-Уточнення користувача від 2026-09-06 закрило межу friend reward: **перша повна, друга й третя зменшені, з четвертої нульові**. Після вичерпання нагород нулі зберігаються до завершення вікна; loss/draw не відкриває новий reward budget. Точний discount ще не затверджено.
 
-Окремий дозвіл на перший code milestone отримано в Implementation 001; Q01–Q04 конкретизовані й реалізовані як prototype core. Решта питань блокує відповідні наступні системи, а не підготовку документації. Art рішення залишається окремим майбутнім pass.
-
-## Q12 — verified technical sub-part, Implementation 002
-
-Q12 залишається OPEN. Підтверджено Unity 6000.3.21f1 LTS (c02631ffc030), .NET Standard 2.1 API/core target, Mono Editor та Windows player execution, explicit binary schema v1 для serialization. Shared local package використовує ті самі source files. [Evidence та IL2CPP blocker](../implementation/VERIFICATION_002.md): C++ conversion PASS, native Windows IL2CPP build/run не перевірено через відсутній backend module. Hosting, PostgreSQL, backend deployment та решта Q12 не закриті. Q05–Q11 і Q13–Q15 не змінені.
+Native Windows x64 IL2CPP blocker CLOSED: [final report](../implementation/VERIFICATION_002_IL2CPP_FINAL.md). Цей документаційний pass не повторює tests і не починає implementation003.

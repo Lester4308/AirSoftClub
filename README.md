@@ -1,5 +1,11 @@
 # Airsoft_Club_Game
 
+## Актуальна консолідація — Master v1, 2026-09-06
+
+Почати з [Master Development Spec v1](AIRSOFT_CLUB_GAME_MASTER_DEVELOPMENT_SPEC_v1.md) та [Agent Implementation Pack v1](AIRSOFT_CLUB_GAME_AGENT_IMPLEMENTATION_PACK_v1.md). Усі Q01–Q15 закриті на рівні рішень; balance hypotheses і residual details виділені окремо. Implementation001–002 завершені, native IL2CPP PASS. Цей pass змінює лише документацію; виконання pack потребує окремого стартового доручення.
+
+Нижче збережено попередні записи стану. Їхні старі OPEN/нестворені системи/обмеження окремих milestones читаються історично; актуальний статус і правила визначає master.
+
 ## Поточний стан — Implementation 002
 
 Unity host: UnityHost/ — **6000.3.21f1 LTS**. Pure battle core підключено одним local package, без копії simulator. [Як відкрити проєкт, запустити тести й builds](implementation/UNITY_INTEGRATION_002.md), [точні результати](implementation/VERIFICATION_002.md).

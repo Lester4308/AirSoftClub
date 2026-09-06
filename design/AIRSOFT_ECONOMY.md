@@ -1,3 +1,5 @@
+> **CONSOLIDATED / historical v3 reference — 2026-09-06.** Чинний канон: [Master Development Spec v1](../AIRSOFT_CLUB_GAME_MASTER_DEVELOPMENT_SPEC_v1.md); порядок подальшої роботи: [Agent Implementation Pack v1](../AIRSOFT_CLUB_GAME_AGENT_IMPLEMENTATION_PACK_v1.md). Текст нижче збережено як v3 source record: пізніші Q01–Q15 CLOSED, актуальна reward table, MK1, shields, refresh, daily/ledger та verified Implementation001–002 беруться з master. Старі OPEN, balance proposals і milestone authorization/status не є активними альтернативами. Поточний pass — лише документація; final art OPEN.
+
 # Economy / monetization — v3
 
 Статуси: USER APPROVED — product rule; BALANCE HYPOTHESIS — target; IMPLEMENTATION PROPOSAL — не остаточний вибір. [Balance register](BALANCE_HYPOTHESES_v3.md), [open questions](IMPLEMENTATION_QUESTIONS_v3.md).
