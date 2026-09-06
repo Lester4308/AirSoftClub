@@ -13,7 +13,7 @@ internal static partial class Program
     static void Reject(Action body) { try { body(); } catch (InvalidOperationException) { return; } catch (ArgumentException) { return; } throw new Exception("Expected rejection"); }
     static int Main()
     {
-        EconomyTests(); LifecycleTests(); PvpTests();
+        EconomyTests(); LifecycleTests(); PvpTests(); RetentionTests();
         Console.WriteLine($"CLUB SUMMARY passed={passed} failed={failed}");
         return failed == 0 ? 0 : 1;
     }

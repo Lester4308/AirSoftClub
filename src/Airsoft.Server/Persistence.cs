@@ -56,6 +56,8 @@ public sealed class ClubDb(DbContextOptions<ClubDb> options) : DbContext(options
     public DbSet<PolicyRow> Policies => Set<PolicyRow>();
     protected override void OnModelCreating(ModelBuilder b)
     {
+        b.Entity<OrderRow>().HasKey(x => x.Id);
+        b.Entity<OrderRow>().HasOne<ClubRow>().WithMany().HasForeignKey(x => x.Owner).OnDelete(DeleteBehavior.Restrict);
         b.Entity<SessionRow>().HasKey(x => x.TokenHash);
         b.Entity<SessionRow>().HasIndex(x => x.TicketHash).IsUnique();
         b.Entity<SessionRow>().HasOne<ClubRow>().WithMany().HasForeignKey(x => x.Owner).OnDelete(DeleteBehavior.Restrict);
@@ -101,6 +103,7 @@ public sealed class Store(string connection)
             var row = await db.Clubs.FindAsync(owner) ?? throw new InvalidOperationException("Account unavailable");
             if (row.Version != expectedVersion) throw new InvalidOperationException("Stale club version");
             var s = Json.Read<ClubState>(row.State);
+            if (s.RestrictedUntil > now) throw new InvalidOperationException("Account temporarily restricted");
             object result = await action(db, s); s.Version++; await Save(db, row, s, now);
             string response = Json.Write(result);
             db.Operations.Add(new OperationRow { Owner = owner, Key = key, Hash = hash, Response = response });

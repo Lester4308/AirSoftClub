@@ -13,7 +13,8 @@ namespace AirsoftClub.Unity
     {
         public string Id, Name, PendingMatch, CatalogVersion;
         public long Version, Money, Credits, Xp, ShieldUntil, ServerNow, OffersAt;
-        public int Level, Rating, Capacity, ActiveBbTier, OfferVersion, CompletedSinceRefresh;
+        public int Level, Rating, Capacity, ActiveBbTier, OfferVersion, CompletedSinceRefresh, Streak, Emblem;
+        public long LastDay;
         public bool FreeRecruitClaimed;
         public int[] BbStock;
         public FighterView[] Fighters;
@@ -203,6 +204,9 @@ namespace AirsoftClub.Unity
             if (!club.FreeRecruitClaimed && Btn("Choose starter recruit")) page = "Recruitment";
             if (Btn("Manage fighters")) page = "Roster"; if (Btn("Find an opponent")) page = "Opponents";
             GUILayout.Space(14); Text("Free recovery: approximately 1% Max HP per minute. Emergency Basic BB is available when stock and Money are low.");
+            Text("UTC daily • Current streak " + club.Streak + "/7. Missing a full day resets the streak.");
+            if (Btn("Claim daily Money")) StartCoroutine(Send(Intent("Daily")));
+            if (Btn("Claim earned progression Credits")) StartCoroutine(Send(Intent("Progression")));
             if (Btn("Claim emergency Basic")) StartCoroutine(Send(Intent("Emergency")));
             if (Btn("Convert 1 Credit → 100 Money")) StartCoroutine(Send(Intent("Convert", number: 1)));
             Text("Protection blocks new incoming attacks. Own Ranked cancels it; Friend/Practice keeps it.");
@@ -251,6 +255,7 @@ namespace AirsoftClub.Unity
             foreach (var i in club.Catalog)
             {
                 GUILayout.BeginHorizontal(GUI.skin.box); Text(i.Id + " • " + i.Slot + " • Level " + i.Level);
+                if (i.Level > club.Level && i.Level <= club.Level + 3 && i.Credits == 0 && Btn("Access / 1 Credit", GUILayout.Width(190))) StartCoroutine(Send(Intent("EarlyUnlock", i.Id)));
                 if (Btn(i.Credits > 0 ? "Buy / " + i.Credits + " Credits" : "Buy / " + i.Money + " Money", GUILayout.Width(250))) StartCoroutine(Send(Intent("Buy", i.Id))); GUILayout.EndHorizontal();
             }
         }

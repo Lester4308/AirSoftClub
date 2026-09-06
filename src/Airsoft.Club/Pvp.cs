@@ -29,6 +29,7 @@ public sealed class RevengeTicket
 }
 public sealed class PvpState
 {
+    public ModerationState Moderation { get; set; } = new();
     public List<FriendWindow> Friends { get; set; } = new();
     public List<Exposure> Exposures { get; set; } = new();
     public List<RevengeTicket> Tickets { get; set; } = new();

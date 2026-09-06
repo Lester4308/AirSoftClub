@@ -95,6 +95,9 @@ public sealed class ClubState
     public List<RecruitOffer> Offers { get; set; } = new();
     public HashSet<string> CompletedMatches { get; set; } = new();
     public HashSet<string> Unlocks { get; set; } = new();
+    public RetentionState Retention { get; set; } = new();
+    public long RestrictedUntil { get; set; }
+    public int Emblem { get; set; }
     public string? PendingMatch { get; set; }
     public long ShieldUntil { get; set; }
     public int Level => 1 + (int)(Xp / 1000);

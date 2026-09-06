@@ -14,7 +14,7 @@ internal static partial class Program
     {
         store = new Store(Environment.GetEnvironmentVariable("AIRSOFT_CONNECTION") ?? throw new Exception("Actual disposable PostgreSQL required"));
         await using (var db = store.Open()) { await db.Database.MigrateAsync(); Check(await db.Database.CanConnectAsync()); }
-        await PersistenceTests(); await BattleTests(); await PvpDatabaseTests(); await SteamTests();
+        await PersistenceTests(); await BattleTests(); await PvpDatabaseTests(); await SteamTests(); await CommerceTests();
         Console.WriteLine($"SERVER SUMMARY passed={passed} failed={failed}"); return failed == 0 ? 0 : 1;
     }
     static async Task PersistenceTests()

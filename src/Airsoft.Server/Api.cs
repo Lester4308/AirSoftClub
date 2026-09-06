@@ -91,7 +91,7 @@ public static class Api
                 if (!c.Target.StartsWith("steam-") || !friends.Contains(c.Target[6..])) throw new InvalidOperationException("Verified Steam friendship required");
             }
             if (c.Type == "Attack") return Results.Content(await battles.Start(owner, c.Key, c.Version, new StartIntent(c.Target, c.Value, ""), now), "application/json");
-            string json = await store.Command(owner, c.Key, Json.Write(c), c.Version, (db, s) =>
+            string json = await store.Command(owner, c.Key, Json.Write(c), c.Version, async (db, s) =>
             {
                 Clubs.Available(s);
                 switch (c.Type)
@@ -108,10 +108,19 @@ public static class Api
                     case "BbTier": _ = Catalog.Bb(c.Number); s.ActiveBbTier = c.Number; break;
                     case "Emergency": Clubs.Emergency(s, now); break;
                     case "Convert": s.Wallet.Convert(c.Key, c.Number, new()); break;
+                    case "Daily": Retention.Daily(s, now); break;
+                    case "Progression": Retention.Progression(s); break;
+                    case "EarlyUnlock": Retention.EarlyUnlock(s, c.Target, c.Key); break;
+                    case "Name": Moderation.Name(s, c.Value); break;
+                    case "Emblem": if (c.Number < 0 || c.Number > 7) throw new InvalidOperationException("Unknown emblem"); s.Emblem = c.Number; break;
+                    case "Report":
+                        if (!await db.Clubs.AnyAsync(x => x.Id == c.Target)) throw new InvalidOperationException("Target missing");
+                        var policyRow = await Battles.Policies(db); var policy = Json.Read<PvpState>(policyRow.State);
+                        Moderation.Report(policy.Moderation, owner, c.Target, c.Value, now); policyRow.State = Json.Write(policy); break;
                     case "Shield": Pvp.Shield(s, c.Number, now, c.Key); break;
                     default: throw new InvalidOperationException("Unknown intent");
                 }
-                return Task.FromResult<object>(new { Applied = true });
+                return new { Applied = true };
             }, now);
             return Results.Content(json, "application/json");
         });
