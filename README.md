@@ -1,5 +1,8 @@
 # Airsoft_Club_Game
 
+> **Development pass 2026-09-06:** implementation003–010 now has local code and verification; current scope, remaining gates and native/package evidence are in [Verification011](implementation/VERIFICATION_011.md), with [launch instructions](implementation/DEVELOPMENT_RUNBOOK.md). Earlier documentation-only/future status text below records the pre-execution checkpoint. The user's explicit development-pass request authorizes this work; Project Airsoft remains untouched.
+
+
 ## Актуальна консолідація — Master v1, 2026-09-06
 
 Почати з [Master Development Spec v1](AIRSOFT_CLUB_GAME_MASTER_DEVELOPMENT_SPEC_v1.md) та [Agent Implementation Pack v1](AIRSOFT_CLUB_GAME_AGENT_IMPLEMENTATION_PACK_v1.md). Усі Q01–Q15 закриті на рівні рішень; balance hypotheses і residual details виділені окремо. Implementation001–002 завершені, native IL2CPP PASS. Цей pass змінює лише документацію; виконання pack потребує окремого стартового доручення.

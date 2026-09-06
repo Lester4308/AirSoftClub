@@ -6,8 +6,17 @@ internal static partial class Program
     { var s = Clubs.Create(Guid.NewGuid().ToString("N"), 0); Clubs.Hire(s, s.Offers[0].Id, 1, true, 0, "free"); return s; }
     static void LifecycleTests()
     {
+        Test("auto Basic opt-in level threshold guard and no premium spend", () =>
+        {
+            var s = Starter(); s.BbStock[0] = 0; Check(!Clubs.AutoRefill(s, "off")); s.AutoBuyBasic = true; Check(!Clubs.AutoRefill(s, "locked"));
+            s.Xp = 2000; Check(Clubs.AutoRefill(s, "refill") && s.BbStock[0] == 500 && s.Wallet.Money == 950 && s.Wallet.Credits == 10);
+            s.BbStock[0] = 0; s.Wallet.Apply("poor", "fixture", -801, 0); Check(!Clubs.AutoRefill(s, "guard"));
+            s.Wallet.Apply("cash", "fixture", 500, 0); s.ActiveBbTier = 4; Check(!Clubs.AutoRefill(s, "premium") && s.Wallet.Credits == 10);
+        });
         Test("permanent free choice, consumed offer, roster16", () =>
         {
+            var shifted = Clubs.Create("shifted", 0); Clubs.Hire(shifted, shifted.Offers[0].Id, 1, false, 0, "paid-first");
+            Reject(() => Clubs.Hire(shifted, "1-3", 1, true, 0, "shifted-free"));
             var s = Starter(); Reject(() => Clubs.Hire(s, s.Offers[0].Id, 1, true, 0, "again"));
             s.Wallet.Apply("fixture", "fixture", 100000, 0);
             while (s.Fighters.Count < 16) { if (s.Offers.Count == 0) Clubs.Refresh(s, 0, 3, true, "refresh" + s.OfferVersion); Clubs.Hire(s, s.Offers[0].Id, s.OfferVersion, false, 0, Guid.NewGuid().ToString()); }

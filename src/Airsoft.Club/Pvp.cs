@@ -69,6 +69,7 @@ public static class Pvp
         if (c.Rated && (exposure == null || exposure.Committed || now >= exposure.LeaseUntil)) throw new InvalidOperationException("Exposure lease fenced");
         if (outcome == null) { if (exposure != null) p.Exposures.Remove(exposure); return; }
         var pair = p.Friends.SingleOrDefault(x => x.Attacker == a.Id && x.Defender == d.Id && x.Anchor == c.FriendAnchor);
+        int defenderRatingBefore = d.Rating;
         int gain = Math.Clamp(10 + (c.DefenderRating - c.AttackerRating) / 100, 5, 20);
         int delta = !c.Rated || outcome == MatchOutcome.Draw ? 0 : outcome == MatchOutcome.AttackerWin ? gain : -gain;
         if (c.Mode == "Friend" && (c.FriendWins > 0 || outcome == MatchOutcome.DefenderWin && c.FriendLossUsed)) delta = 0;
@@ -94,7 +95,7 @@ public static class Pvp
         }
         if (exposure != null)
         {
-            if (delta == 0) p.Exposures.Remove(exposure);
+            if (delta == 0 || c.Mode != "Revenge" && d.Rating == defenderRatingBefore) p.Exposures.Remove(exposure);
             else { exposure.Committed = true; exposure.At = now; }
         }
     }

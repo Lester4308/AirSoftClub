@@ -11,8 +11,10 @@ internal static partial class Program
     }
     static void Check(bool value) { if (!value) throw new Exception("Invariant failed"); }
     static void Reject(Action body) { try { body(); } catch (InvalidOperationException) { return; } catch (ArgumentException) { return; } throw new Exception("Expected rejection"); }
-    static int Main()
+    static int Main(string[] args)
     {
+        if (args.Length == 1 && args[0] == "--economy") return EconomyEvidence();
+        if (args.Length == 1 && args[0] == "--balance") return BalanceEvidence();
         EconomyTests(); LifecycleTests(); PvpTests(); RetentionTests();
         Console.WriteLine($"CLUB SUMMARY passed={passed} failed={failed}");
         return failed == 0 ? 0 : 1;

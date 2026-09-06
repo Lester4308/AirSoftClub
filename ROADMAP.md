@@ -1,5 +1,8 @@
 # Airsoft_Club_Game roadmap — Master v1
 
+> **Development pass 2026-09-06:** implementation003–010 now has local code and verification; current scope, remaining gates and native/package evidence are in [Verification011](implementation/VERIFICATION_011.md), with [launch instructions](implementation/DEVELOPMENT_RUNBOOK.md). Earlier documentation-only/future status text below records the pre-execution checkpoint. The user's explicit development-pass request authorizes this work; Project Airsoft remains untouched.
+
+
 Канон: [Master Development Spec](./AIRSOFT_CLUB_GAME_MASTER_DEVELOPMENT_SPEC_v1.md). Implementation001–002 complete; наступний pass ще не запущений.
 
 Milestone sequence нижче — план наступного окремо запущеного development pass; номери003+ не означають уже наявні commits.

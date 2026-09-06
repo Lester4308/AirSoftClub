@@ -1,5 +1,8 @@
 # Airsoft_Club_Game — agent rules
 
+> **Development pass 2026-09-06:** implementation003–010 now has local code and verification; current scope, remaining gates and native/package evidence are in [Verification011](implementation/VERIFICATION_011.md), with [launch instructions](implementation/DEVELOPMENT_RUNBOOK.md). Earlier documentation-only/future status text below records the pre-execution checkpoint. The user's explicit development-pass request authorizes this work; Project Airsoft remains untouched.
+
+
 Read and obey [PROJECT_BOUNDARY.md](PROJECT_BOUNDARY.md). This is an independent game. Do not modify, continue, import or inherit Project Airsoft / Airsoft Manager, its code, assets, rules, architecture or Git history. No reuse is adopted in [REUSE_DECISIONS.md](design/REUSE_DECISIONS.md); a proposal is not authorization to copy.
 
 ## Current canonical documentation — 2026-09-06

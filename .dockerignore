@@ -1,0 +1,9 @@
+Artifacts/
+.git/
+UnityHost/
+tests/
+design/
+research/
+**/bin/
+**/obj/
+**/*.user

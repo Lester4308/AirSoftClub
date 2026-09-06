@@ -15,7 +15,7 @@ namespace AirsoftClub.Unity
         public long Version, Money, Credits, Xp, ShieldUntil, ServerNow, OffersAt;
         public int Level, Rating, Capacity, ActiveBbTier, OfferVersion, CompletedSinceRefresh, Streak, Emblem;
         public long LastDay;
-        public bool FreeRecruitClaimed;
+        public bool FreeRecruitClaimed, AutoBuyBasic;
         public int[] BbStock;
         public FighterView[] Fighters;
         public OfferView[] Offers;
@@ -32,6 +32,7 @@ namespace AirsoftClub.Unity
     [Serializable] public class RivalView { public string Id, Name, Category; public int Level, Rating, Fighters; public bool Protected; }
     [Serializable] public class RivalsView { public RivalView[] Opponents; }
     [Serializable] public class LoginView { public string Token; }
+    [Serializable] public class SteamLoginRequest { public string Ticket; }
     [Serializable] public class LoginRequest { public string Account; }
     [Serializable] public class CommandRequest
     {
@@ -40,12 +41,12 @@ namespace AirsoftClub.Unity
         public int Number, OfferVersion;
         public bool Flag;
     }
-    [Serializable] public class MatchView { public string Id, MatchId, Status, Input, Result, Digest; }
+    [Serializable] public class MatchView { public string Id, MatchId, Status, Input, Result, Digest; public long RewardMoney, RewardClubXp, RewardFighterXp; }
     public sealed class ClubClient : MonoBehaviour
     {
         const string Endpoint = "http://127.0.0.1:5080";
         string account, token = "", page = "Club", status = "Connect to your local development server.", selectedFighter = "", lastPayload, selectedTarget = "";
-        string mode = "Practice";
+        string mode = "Practice", rewardSummary = "";
         ClubView club;
         RivalView[] rivals = Array.Empty<RivalView>();
         bool busy, smoke, failed, smokeFailure;
@@ -97,6 +98,21 @@ namespace AirsoftClub.Unity
             if (!failed) { PlayerPrefs.SetString("club-development-account", account); PlayerPrefs.Save(); yield return Refresh(); }
             busy = false;
         }
+        IEnumerator SteamLogin()
+        {
+            busy = true; string ticket = null; bool finished = false;
+            var adapter = GetComponent<SteamIdentityAdapter>() ?? gameObject.AddComponent<SteamIdentityAdapter>();
+            adapter.Begin(value => { ticket = value; finished = true; }, error => { status = error; finished = true; });
+            float deadline = Time.realtimeSinceStartup + 15;
+            while (!finished && Time.realtimeSinceStartup < deadline) yield return null;
+            if (ticket != null)
+            {
+                yield return Request("/steam/login", JsonUtility.ToJson(new SteamLoginRequest { Ticket = ticket }), text => token = JsonUtility.FromJson<LoginView>(text).Token);
+                if (!failed) yield return Refresh();
+            }
+            else if (!finished) status = "Steam callback timed out; request a fresh ticket.";
+            adapter.Cancel(); busy = false;
+        }
         IEnumerator Refresh()
         {
             yield return Request("/api/club", null, text => { club = JsonUtility.FromJson<ClubView>(text); if (selectedFighter == "" && club.Fighters.Length > 0) selectedFighter = club.Fighters[0].Id; });
@@ -132,6 +148,7 @@ namespace AirsoftClub.Unity
             }
             if (view != null && view.Status == "Completed")
             {
+                rewardSummary = $"Money +{view.RewardMoney} • Club XP +{view.RewardClubXp} • Each participating fighter XP +{view.RewardFighterXp}";
                 replayInput = BattleWire.ReadConfig(Convert.FromBase64String(view.Input)); replayResult = BattleWire.ReadResult(Convert.FromBase64String(view.Result));
                 hp.Clear(); foreach (var f in replayInput.Attacker.Fighters) hp["A" + f.Id] = f.StartingHp.Raw;
                 foreach (var f in replayInput.Defender.Fighters) hp["D" + f.Id] = f.StartingHp.Raw;
@@ -179,6 +196,7 @@ namespace AirsoftClub.Unity
                 Text("Build your club. Equip your fighters. Challenge a rival."); GUILayout.Space(24);
                 Text("Development account"); GUI.SetNextControlName("account"); account = GUILayout.TextField(account, 44, GUILayout.Width(480), GUILayout.Height(32));
                 if (Btn("Connect", GUILayout.Width(220))) StartCoroutine(Login());
+                if (Btn("Steam sandbox sign-in", GUILayout.Width(280))) StartCoroutine(SteamLogin());
             }
             else
             {
@@ -237,7 +255,7 @@ namespace AirsoftClub.Unity
             GUILayout.BeginHorizontal(); if (Btn("Free refresh")) StartCoroutine(Send(Intent("Refresh"))); if (Btn("Refresh / 50 Money")) StartCoroutine(Send(Intent("Refresh", flag: true))); GUILayout.EndHorizontal();
             for (int n = 0; n < club.Offers.Length; n++)
             {
-                var o = club.Offers[n]; bool free = !club.FreeRecruitClaimed && n < 3;
+                var o = club.Offers[n]; bool free = !club.FreeRecruitClaimed && (o.Id.EndsWith("-0") || o.Id.EndsWith("-1") || o.Id.EndsWith("-2"));
                 GUILayout.BeginHorizontal(GUI.skin.box); Text($"{o.Name}     ACC {o.Accuracy}  END {o.Endurance}  AGI {o.Agility}");
                 if (Btn(free ? "Choose FREE" : "Hire / " + o.Price + " Money", GUILayout.Width(250))) StartCoroutine(Send(Intent("Hire", o.Id, flag: free))); GUILayout.EndHorizontal();
             }
@@ -245,6 +263,8 @@ namespace AirsoftClub.Unity
         void Supply()
         {
             Text("Shared ammunition • one active tier for the whole club");
+            Text("Auto Basic unlocks at Club Level3: opt-in, below100 BB, leaves at least100 Money, never spends Credits.");
+            if (club.Level >= 3 && Btn(club.AutoBuyBasic ? "Disable auto Basic" : "Enable auto Basic")) StartCoroutine(Send(Intent("AutoBuyBasic", flag: !club.AutoBuyBasic)));
             for (int n = 0; n < 5; n++)
             {
                 GUILayout.BeginHorizontal(); Text($"Tier {n}  {club.BbStock[n]}/{club.Capacity}");
@@ -286,7 +306,7 @@ namespace AirsoftClub.Unity
             Text($"{Math.Min(replayTime, replayResult.SimulatedDurationMs) / 1000:0.0}s  •  BB used {replayResult.Attacker.BbConsumed} / {replayResult.Defender.BbConsumed}");
             if (Btn("Skip to saved result")) replayTime = replayResult.SimulatedDurationMs + 1;
             GUILayout.BeginHorizontal(); Team(replayInput.Attacker, "A", "YOUR CLUB"); Team(replayInput.Defender, "D", "DEFENSE"); GUILayout.EndHorizontal();
-            if (replayTime >= replayResult.SimulatedDurationMs) { GUILayout.Label(replayResult.Outcome.ToString(), title); Text("Settlement saved • " + replayResult.Reason); }
+            if (replayTime >= replayResult.SimulatedDurationMs) { GUILayout.Label(replayResult.Outcome.ToString(), title); Text("Settlement saved • " + replayResult.Reason); Text(rewardSummary); }
         }
         void Team(TeamSnapshot team, string side, string heading)
         {

@@ -1,5 +1,8 @@
 # AIRSOFT CLUB GAME — MASTER DEVELOPMENT SPEC v1
 
+> **Development pass 2026-09-06:** implementation003–010 now has local code and verification; current scope, remaining gates and native/package evidence are in [Verification011](implementation/VERIFICATION_011.md), with [launch instructions](implementation/DEVELOPMENT_RUNBOOK.md). Earlier documentation-only/future status text below records the pre-execution checkpoint. The user's explicit development-pass request authorizes this work; Project Airsoft remains untouched.
+
+
 Дата консолідації: **2026-09-06**. Проєкт: **Airsoft_Club_Game**. Мова продуктних рішень: українська; identifiers коду збережені англійською.
 
 **Єдине актуальне джерело правил розробки.** Документ об'єднує Product Design Gate v3, Implementation 001–002 та наступні затвердження Q01–Q15. Закриття питань не означає готовності всіх систем або фінального балансу. Цей pass — лише документація; подальша реалізація запускається окремим дорученням із companion execution pack.

@@ -4,6 +4,12 @@ internal static partial class Program
 {
     static void PvpTests()
     {
+        Test("zero floor impact releases exposure and creates no revenge", () =>
+        {
+            var p = new PvpState(); var a = Starter(); var d = Starter(); d.Rating = 0;
+            var c = Pvp.Accept(p, a, d, "Ranked", "zero", 0); Pvp.Finish(p, a, d, "zero", c, MatchOutcome.AttackerWin, 1);
+            Check(d.Rating == 0 && p.Exposures.Count == 0 && p.Tickets.Count == 0);
+        });
         Test("directed friend first loss first win rating then zero", () =>
         {
             var p = new PvpState(); var a = Starter(); var d = Starter(); int initial = a.Rating;

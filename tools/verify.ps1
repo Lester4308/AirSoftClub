@@ -4,6 +4,8 @@ dotnet build AirsoftClubGame.sln -c Release
 if ($LASTEXITCODE -ne 0) { throw 'Build failed' }
 dotnet run --project tests/Airsoft.Battle.Tests -c Release --no-build
 if ($LASTEXITCODE -ne 0) { throw 'Tests failed' }
+dotnet run --project tests/Airsoft.Club.Tests -c Release --no-build
+if ($LASTEXITCODE -ne 0) { throw 'Club domain tests failed' }
 dotnet run --project tests/Airsoft.Battle.Tests -c Release --no-build -- --simulate 10000
 if ($LASTEXITCODE -ne 0) { throw 'Simulation failed' }
 dotnet format whitespace AirsoftClubGame.sln --verify-no-changes --no-restore

@@ -20,6 +20,7 @@ public sealed class Battles(Store store)
             var defender = Json.Read<ClubState>(target.State);
             if (defender.ShieldUntil > now) throw new InvalidOperationException("Target protected");
             if (target.Defense == null) throw new InvalidOperationException("No defense roster");
+            Clubs.AutoRefill(s, "auto-basic:" + key);
             var offense = Clubs.Snapshot(s, false, now);
             if (offense.BbBudget < 1) throw new InvalidOperationException("Refill BB before attack");
             var defense = BattleWire.ReadTeam(target.Defense);
@@ -50,7 +51,7 @@ public sealed class Battles(Store store)
         if (captured.Status != "Pending") return;
         // Resolve outside transaction. Only this trusted worker computes results; client has no result endpoint.
         var result = new BattleEngine().Run(BattleWire.ReadConfig(captured.Input));
-        await Settle(id, captured.Fence, result, now);
+        if (await Settle(id, captured.Fence, result, now)) Settlements.Add(1);
     }
     internal Task<bool> Settle(string id, int fence, MatchResult result, long now) => store.Transaction(async db =>
     {
@@ -83,7 +84,7 @@ public sealed class Battles(Store store)
         s.BbStock[s.ActiveBbTier] -= result.Attacker.BbConsumed;
         Clubs.Completed(s, id); s.PendingMatch = null; s.Version++;
         row.Result = BattleWire.WriteResult(result); row.Status = "Completed";
-        await Store.Save(db, owner, s, now); Settlements.Add(1); return true;
+        await Store.Save(db, owner, s, now); return true;
     });
     public static async Task<PolicyRow> Policies(ClubDb db)
     {

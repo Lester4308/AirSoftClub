@@ -87,6 +87,7 @@ public sealed class ClubState
     public List<Fighter> Fighters { get; set; } = new();
     public Dictionary<string, string> Items { get; set; } = new();
     public int[] BbStock { get; set; } = new int[5];
+    public bool AutoBuyBasic { get; set; }
     public int ActiveBbTier { get; set; }
     public long EmergencyAt { get; set; } = -10800000;
     public long OffersAt { get; set; }
@@ -105,9 +106,11 @@ public sealed class ClubState
 }
 public static class Clubs
 {
+    public const int StarterBb = 60;
+    public static bool IsStarterOffer(string id) => id.EndsWith("-0", StringComparison.Ordinal) || id.EndsWith("-1", StringComparison.Ordinal) || id.EndsWith("-2", StringComparison.Ordinal);
     public static ClubState Create(string id, long now)
     {
-        var s = new ClubState { Id = id }; s.Wallet.Starter(new()); s.BbStock[0] = 500;
+        var s = new ClubState { Id = id }; s.Wallet.Starter(new()); s.BbStock[0] = StarterBb;
         Refresh(s, now, 1); return s;
     }
     public static void Available(ClubState s)
@@ -136,7 +139,7 @@ public static class Clubs
         if (s.Fighters.Count(x => x.Active) >= 16) throw new InvalidOperationException("Roster full");
         if (version != s.OfferVersion) throw new InvalidOperationException("Stale recruitment quote");
         var offer = s.Offers.SingleOrDefault(x => x.Id == offerId) ?? throw new InvalidOperationException("Offer unavailable");
-        if (free && (s.FreeRecruitClaimed || !s.Offers.Take(3).Contains(offer))) throw new InvalidOperationException("Starter recruit unavailable");
+        if (free && (s.FreeRecruitClaimed || !IsStarterOffer(offer.Id))) throw new InvalidOperationException("Starter recruit unavailable");
         s.Wallet.Apply(operation, "hire:" + offerId, free ? 0 : -offer.Price, 0);
         var fighter = new Fighter
         {
@@ -195,6 +198,11 @@ public static class Clubs
         if (s.BbStock[tier] >= s.Capacity) throw new InvalidOperationException("BB stock full");
         s.Wallet.Apply(operation, "bb:" + tier, tier == 4 ? 0 : -(50 + tier * 20), tier == 4 ? -1 : 0);
         s.BbStock[tier] = Math.Min(s.Capacity, s.BbStock[tier] + 500);
+    }
+    public static bool AutoRefill(ClubState s, string operation)
+    {
+        if (!s.AutoBuyBasic || s.Level < 3 || s.ActiveBbTier != 0 || s.BbStock[0] >= 100 || s.Wallet.Money < 150) return false;
+        Refill(s, 0, operation); return true;
     }
     public static void Emergency(ClubState s, long now)
     {

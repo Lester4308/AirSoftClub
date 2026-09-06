@@ -5,6 +5,12 @@ internal static partial class Program
 {
     static async Task PvpDatabaseTests()
     {
+        await Test("wallet projection cannot diverge from immutable ledger", async () =>
+        {
+            string id = await Armed();
+            await Reject(() => store.Command(id, "tamper", "tamper", 1, (db, s) => { s.Wallet.Money++; return Task.FromResult<object>(true); }, 0));
+            await using var db = store.Open(); Check((await db.Clubs.FindAsync(id))!.Money == 900);
+        });
         await Test("actual PostgreSQL fifth incoming start race rejected", async () =>
         {
             string target = await Armed(); var attackers = new List<string>(); for (int n = 0; n < 5; n++) attackers.Add(await Armed());

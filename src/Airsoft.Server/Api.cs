@@ -79,8 +79,15 @@ public static class Api
         app.MapGet("/api/opponents", async (HttpContext http, Store store) =>
         {
             string owner = Owner(http); await using var db = store.Open();
-            var rows = await db.Clubs.Where(c => c.Id != owner && c.Defense != null && c.Id.StartsWith("dev-bot-")).Take(5).ToListAsync();
+            var self = (await db.Clubs.FindAsync(owner))!; string prefix = owner.StartsWith("steam-") ? "steam-" : "dev-";
+            var rows = await db.Clubs.Where(c => c.Id != owner && c.Defense != null && c.Id.StartsWith(prefix)).OrderBy(c => Math.Abs(c.Rating - self.Rating)).ThenBy(c => c.Id).Take(5).ToListAsync();
             return Results.Json(new { Opponents = rows.Select(r => { var s = Json.Read<ClubState>(r.State); return new { s.Id, s.Name, s.Level, s.Rating, Fighters = s.Fighters.Count(f => f.Active), Category = "Development rival", Protected = s.ShieldUntil > Now }; }) });
+        });
+        app.MapGet("/api/leaderboard", async (HttpContext http, Store store) =>
+        {
+            string prefix = Owner(http).StartsWith("steam-") ? "steam-" : "dev-"; await using var db = store.Open();
+            var rows = await db.Clubs.Where(c => c.Id.StartsWith(prefix) && c.Defense != null).OrderByDescending(c => c.Rating).ThenBy(c => c.Id).Take(20).ToListAsync();
+            return Results.Json(new { Leaders = rows.Select(c => new { c.Id, Name = Json.Read<ClubState>(c.State).Name, c.Rating }) });
         });
         app.MapPost("/api/command", async (CommandIntent c, HttpContext http, Store store, Battles battles) =>
         {
@@ -94,6 +101,7 @@ public static class Api
             string json = await store.Command(owner, c.Key, Json.Write(c), c.Version, async (db, s) =>
             {
                 Clubs.Available(s);
+                if (c.CatalogVersion != Catalog.Version) throw new InvalidOperationException("Stale policy/catalog quote");
                 switch (c.Type)
                 {
                     case "Hire": Clubs.Hire(s, c.Target, c.OfferVersion, c.Flag, now, c.Key); break;
@@ -106,6 +114,7 @@ public static class Api
                     case "Unequip": if (!Enum.TryParse<Slot>(c.Value, out var slot)) throw new InvalidOperationException("Unknown slot"); Clubs.Owned(s, c.Target).Equipment.Remove(slot); break;
                     case "Refill": Clubs.Refill(s, c.Number, c.Key); break;
                     case "BbTier": _ = Catalog.Bb(c.Number); s.ActiveBbTier = c.Number; break;
+                    case "AutoBuyBasic": if (c.Flag && s.Level < 3) throw new InvalidOperationException("Auto-buy unlocks at Club Level3"); s.AutoBuyBasic = c.Flag; break;
                     case "Emergency": Clubs.Emergency(s, now); break;
                     case "Convert": s.Wallet.Convert(c.Key, c.Number, new()); break;
                     case "Daily": Retention.Daily(s, now); break;

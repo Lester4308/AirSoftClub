@@ -35,7 +35,7 @@ internal static partial class Program
                 Check(await db.Ledger.CountAsync(x => x.Owner == a && x.Operation.StartsWith("match:")) == 1);
                 var input = BattleWire.ReadConfig(accepted); var result = BattleWire.ReadResult(row.Result!);
                 Check(BattleWire.Digest(result) == BattleWire.Digest(new BattleEngine().Run(input)));
-                Check(owner.BbStock[0] == 500 - result.Attacker.BbConsumed);
+                Check(owner.BbStock[0] == Clubs.StarterBb - result.Attacker.BbConsumed);
             }
         });
         await Test("concurrent offense and expired worker no rewards", async () =>
@@ -44,7 +44,7 @@ internal static partial class Program
             string response = await battles.Start(a, "a", 1, new StartIntent(d), 0);
             await Reject(() => battles.Start(a, "b", 2, new StartIntent(d), 0)); await battles.Resolve(MatchId(response), 120000);
             await using var db = store.Open(); var s = Json.Read<ClubState>((await db.Clubs.FindAsync(a))!.State);
-            Check(s.PendingMatch == null && s.CompletedSinceRefresh == 0 && s.BbStock[0] == 500);
+            Check(s.PendingMatch == null && s.CompletedSinceRefresh == 0 && s.BbStock[0] == Clubs.StarterBb);
             Check((await db.Matches.FindAsync(MatchId(response)))!.Status == "Failed");
         });
         await Test("snapshot publication after commit and rollback", async () =>

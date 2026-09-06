@@ -119,7 +119,12 @@ public sealed class Store(string connection)
         row.Version = state.Version; row.Money = state.Wallet.Money; row.Credits = state.Wallet.Credits; row.Rating = state.Rating;
         row.State = Json.Write(state);
         row.Defense = state.Fighters.Any(f => f.Active) ? Airsoft.Battle.BattleWire.WriteTeam(Clubs.Snapshot(state, true, now)) : null;
-        var existing = await db.Ledger.Where(x => x.Owner == state.Id).Select(x => x.Operation).ToListAsync();
+        var persistedLedger = await db.Ledger.Where(x => x.Owner == state.Id).ToListAsync();
+        if (state.Wallet.Entries.Select(e => e.Operation).Distinct().Count() != state.Wallet.Entries.Count ||
+            state.Wallet.Entries.Sum(e => e.MoneyDelta) != state.Wallet.Money || state.Wallet.Entries.Sum(e => e.CreditsDelta) != state.Wallet.Credits ||
+            persistedLedger.Any(old => !state.Wallet.Entries.Any(e => e.Operation == old.Operation && e.Reason == old.Reason && e.MoneyDelta == old.Money && e.CreditsDelta == old.Credits)))
+            throw new InvalidOperationException("Wallet ledger conservation violated");
+        var existing = persistedLedger.Select(x => x.Operation).ToList();
         foreach (var e in state.Wallet.Entries.Where(e => !existing.Contains(e.Operation)))
             db.Ledger.Add(new LedgerRow { Owner = state.Id, Operation = e.Operation, Reason = e.Reason, Money = e.MoneyDelta, Credits = e.CreditsDelta });
     }
