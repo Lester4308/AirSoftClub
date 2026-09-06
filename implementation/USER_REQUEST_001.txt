@@ -1,0 +1,782 @@
+Працюй тільки в окремому репозиторії:
+
+C:/Users/Ihor/Documents/ChatGPT/Airsoft_Club_Game/
+
+Project Airsoft / Airsoft Manager НЕ змінювати.
+
+Поточна design gate точка:
+
+PRODUCT DESIGN GATE v3 — APPROVED FOR IMPLEMENTATION PREPARATION
+
+Поточна verified design commit:
+
+b12e317eb60ed43b1443252999ffa5f0908fd7de
+
+Мета цього milestone:
+
+IMPLEMENTATION 001 — DETERMINISTIC HEADLESS BATTLE CORE
+
+Це перший дозволений code milestone нового Airsoft_Club_Game.
+
+==================================================
+0. GREEN GATE
+==================================================
+
+Перед змінами перевір:
+
+- правильний repository;
+- current branch;
+- HEAD;
+- working tree;
+- staging area;
+- upstream/ahead/behind;
+- відсутність змін у Project Airsoft.
+
+Якщо є невідомі або небезпечні зміни:
+не перезаписувати їх.
+
+Якщо repo clean:
+створи окрему implementation branch від актуальної design foundation.
+
+Не змішувати design documentation cleanup з battle implementation без потреби.
+
+==================================================
+1. SCOPE
+==================================================
+
+Реалізувати тільки:
+
+PURE C# deterministic headless battle domain/core.
+
+НЕ реалізовувати зараз:
+
+- production UI;
+- Unity scenes;
+- Steamworks;
+- ASP.NET Core backend;
+- PostgreSQL;
+- live PvP;
+- Credits;
+- monetization;
+- recruitment;
+- healing service;
+- matchmaking;
+- leaderboards;
+- production art.
+
+Unity може бути project/container host, але combat core повинен бути максимально pure C# і testable без сцени.
+
+==================================================
+2. ARCHITECTURE GOAL
+==================================================
+
+Combat core має бути придатним пізніше для використання:
+
+- Unity client;
+- ASP.NET Core authoritative backend;
+- automated simulations;
+- deterministic replay/debug;
+- balance testing.
+
+Не прив’язувати core formulas до:
+
+MonoBehaviour
+GameObject
+Transform
+Time.deltaTime
+UnityEngine.Random
+
+Domain/core має бути platform-agnostic настільки, наскільки це практично.
+
+==================================================
+3. AUTHORITATIVE NUMERIC MODEL
+==================================================
+
+Не використовувати float/double для authoritative combat calculations.
+
+Реалізувати deterministic fixed-point / scaled-integer numeric approach.
+
+Потрібно мати централізований abstraction/value type або чітко документований integer scale.
+
+Приклад concept:
+
+10000 = 1.0000
+
+Але конкретну реалізацію вибери так, щоб:
+
+- arithmetic була deterministic;
+- overflow був контрольований;
+- rounding rules були явними;
+- tests покривали boundaries.
+
+Не розкидати magic scaling constants по коду.
+
+==================================================
+4. SEEDED RNG
+==================================================
+
+Реалізувати власний deterministic seeded RNG abstraction.
+
+НЕ використовувати:
+
+UnityEngine.Random
+System.Random як прихований implementation detail без гарантії compatibility/reproducibility.
+
+RNG має:
+
+- приймати explicit seed;
+- давати reproducible sequence;
+- мати deterministic integer/range operations;
+- бути injectable/testable.
+
+Match із тим самим:
+
+MatchConfig
+TeamSnapshotA
+TeamSnapshotB
+Seed
+RulesetVersion
+
+повинен давати той самий MatchResult.
+
+==================================================
+5. CORE DATA CONTRACTS
+==================================================
+
+Реалізувати мінімальні immutable/read-only contracts/value objects для:
+
+FighterSnapshot
+WeaponDefinition / WeaponSnapshot
+Armor/Loadout combat values
+BbTierDefinition
+TeamSnapshot
+MatchConfig
+MatchResult
+BattleEvent
+RulesetVersion
+
+Не overbuild inventory/backend entities.
+
+Combat core повинен отримувати вже підготовлений snapshot.
+
+==================================================
+6. FIGHTER COMBAT STATS
+==================================================
+
+Основні fighter stats:
+
+Accuracy
+Endurance
+Agility
+
+Rules:
+
+Accuracy
+→ впливає на hit chance.
+
+Endurance
+→ визначає Max HP.
+
+Agility
+→ впливає на:
+- evasion;
+- action/tempo timing.
+
+Не додавати crit stat або інші базові fighter stats.
+
+==================================================
+7. HP MODEL
+==================================================
+
+Fighter має:
+
+MaxHP
+StartingHP / CurrentHP inside battle.
+
+Для offensive fixture:
+Starting HP може бути менше Max HP.
+
+Для defense fixtures:
+caller передає snapshot із 100% Max HP.
+
+Combat core НЕ повинен сам знати про live recovery timers.
+
+Elimination condition:
+
+HP <= 0.
+
+==================================================
+8. WEAPONLESS FIGHTER
+==================================================
+
+READY fighter без Weapon:
+
+- бере участь;
+- є валідною ціллю;
+- може отримувати damage;
+- НЕ може атакувати.
+
+Не видавати автоматично:
+
+free pistol
+melee attack
+fists
+fallback weapon.
+
+Якщо обидві сторони більше не мають жодного fighter, здатного завдати шкоди:
+Draw.
+
+==================================================
+9. HIT CHANCE
+==================================================
+
+Реалізувати configurable formula framework, де:
+
+Fighter Accuracy
++
+Weapon Accuracy contribution
+-
+Target Evasion from Agility/equipment
+
+формують hit chance.
+
+Prototype cap:
+
+minimum 5%
+maximum 95%
+
+Це prototype values, але для milestone їх можна винести в RulesetConfig, а не hardcode по всьому коду.
+
+Не робити critical hits.
+
+==================================================
+10. EVASION
+==================================================
+
+Agility впливає на evasion.
+
+Не використовувати 1:1 пряме віднімання без configurable coefficients.
+
+Formula coefficients повинні бути централізовані в battle rules/config.
+
+==================================================
+11. TEMPO / ACTION SCHEDULING
+==================================================
+
+Не використовувати просту round-robin чергу.
+
+Реалізувати event/action-time simulation.
+
+Кожен fighter має deterministic next-action timing.
+
+Tempo залежить щонайменше від:
+
+- Agility;
+- weapon tempo/rate-of-fire value;
+- equipment penalty, якщо передано в combat snapshot.
+
+Battle core працює по simulated time, не по real wall-clock time.
+
+==================================================
+12. DAMAGE
+==================================================
+
+Базова структура:
+
+Weapon Damage
+× BB modifier
+→ Raw Damage
+
+після чого:
+
+Armor / Protection
++
+Penetration interaction
+→ Effective Damage.
+
+Не використовувати просту модель, де сильна armor легко зводить damage до 0 через flat subtraction.
+
+Використати configurable mitigation approach.
+
+==================================================
+13. PENETRATION / PROTECTION
+==================================================
+
+Weapon/BB можуть мати penetration contribution.
+
+Armor має protection.
+
+Concept:
+
+EffectiveProtection = max(0, Protection - Penetration)
+
+після чого EffectiveProtection перетворюється в mitigation.
+
+Конкретну функцію зробити:
+- deterministic;
+- bounded;
+- configurable;
+- протестованою.
+
+Не дозволяти infinite/100% mitigation у нормальному діапазоні fixtures.
+
+==================================================
+14. BB MODEL
+==================================================
+
+BBs — shared team resource.
+
+На один battle одна команда використовує один active BB tier.
+
+Combat core приймає:
+
+Attacker BB tier
+Attacker BB budget
+
+Defender BB tier
+Defender virtual BB budget
+
+==================================================
+15. DEFENSE BB BUDGET
+==================================================
+
+Для defense fixtures правило вже затверджене:
+
+virtual defense BB budget
+=
+100% максимальної BB capacity club snapshot.
+
+Combat core не звертається до live inventory.
+
+Caller передає finite defender budget.
+
+==================================================
+16. BB CONSUMPTION
+==================================================
+
+BB списуються за simulated projectiles.
+
+Single shot:
+відповідна кількість BB.
+
+Burst:
+списати число projectiles burst.
+
+Shotgun:
+pellet/projectile accounting має бути explicit.
+
+Не створювати ammo з повітря.
+
+Якщо BB недостатньо для planned attack:
+визначити deterministic allowed behavior і покрити тестом.
+
+Не робити negative ammo.
+
+==================================================
+17. NO-AMMO RULE
+==================================================
+
+Fighter/team без доступних BB:
+
+не може виконувати ranged attack.
+
+Якщо одна сторона ще може завдавати damage:
+battle продовжується.
+
+Якщо обидві сторони не можуть більше завдати damage:
+Draw.
+
+==================================================
+18. DRAW RULES
+==================================================
+
+Підтримати Draw.
+
+Draw occurs when:
+
+1. simultaneous final elimination;
+2. both sides can no longer make progress / deal damage;
+3. Maximum Simulated Battle Duration reached without winner.
+
+Не використовувати hidden Team Power tie-break.
+
+==================================================
+19. SIMULTANEOUS ELIMINATION
+==================================================
+
+Battle event resolution має бути визначена так, щоб genuinely simultaneous final elimination могла завершитись Draw.
+
+Не вирішувати її випадково iteration order колекції.
+
+Document exact deterministic event ordering / same-time resolution policy.
+
+==================================================
+20. SIMULATED TIME CAP
+==================================================
+
+Primary gameplay safety cap:
+
+Maximum Simulated Battle Duration.
+
+НЕ action-count gameplay cap.
+
+MaxBattleDuration має бути configurable Ruleset value.
+
+Точне final число не затверджене.
+
+Для test/prototype fixtures вибери розумне temporary value і явно познач:
+
+BALANCE HYPOTHESIS / PROTOTYPE CONFIG.
+
+Якщо simulated time cap reached:
+Draw.
+
+==================================================
+21. TECHNICAL EVENT GUARD
+==================================================
+
+Окремо реалізувати дуже великий technical event-count guard тільки як захист від:
+
+bug
+infinite loop
+corrupt scheduling.
+
+Це НЕ gameplay draw rule.
+
+При його спрацюванні:
+- deterministic failure/result path;
+- explicit diagnostic;
+- test.
+
+Не маскувати bug як звичайний balance draw без логування.
+
+==================================================
+22. TARGET SELECTION
+==================================================
+
+Для v1 потрібна проста deterministic target-selection policy.
+
+Не реалізовувати складний tactical AI.
+
+Policy має:
+
+- обирати тільки alive/valid targets;
+- бути deterministic при одному seed;
+- дозволяти small seeded variance;
+- не залежати від unordered collection iteration.
+
+Можна використати weighted choice / deterministic score.
+
+Document decision.
+
+==================================================
+23. TEAM SIZE
+==================================================
+
+Core повинен підтримувати:
+
+1..16 fighters per side.
+
+Обов’язкові fixtures/tests:
+
+1v1
+1v2
+2v1
+3v3
+8v8
+16v16
+
+Також:
+weaponless mixed roster.
+
+==================================================
+24. MATCH RESULT
+==================================================
+
+MatchResult має щонайменше містити:
+
+Outcome:
+AttackerWin
+DefenderWin
+Draw
+
+SimulatedDuration
+
+Final team/fighter HP state
+
+BB consumed per side
+
+Eliminated fighters
+
+Battle events / summary information достатні для debugging/replay
+
+Seed
+
+RulesetVersion
+
+Не включати economy rewards у battle core milestone.
+
+==================================================
+25. REPRODUCIBILITY
+==================================================
+
+Обов’язковий test:
+
+100 або більше повторів одного MatchConfig + snapshots + seed
+→ byte/logically identical authoritative result.
+
+Також:
+
+different seed
+→ може давати інший result/event sequence,
+але завжди valid/invariant-safe.
+
+==================================================
+26. INVARIANTS
+==================================================
+
+Tests повинні гарантувати:
+
+- HP ніколи не вище MaxHP у combat result;
+- ammo ніколи не < 0;
+- dead fighter не атакує;
+- weaponless fighter не атакує;
+- eliminated fighter не повертається;
+- no invalid target;
+- result always terminates;
+- same seed = same result;
+- max 16 per side enforced/validated;
+- empty invalid team config rejected або явно handled відповідно до chosen contract.
+
+==================================================
+27. FIXTURES
+==================================================
+
+Створи невеликий deterministic test catalog.
+
+Наприклад:
+
+Weapons:
+Basic Pistol
+Basic SMG
+Basic AR
+Basic Shotgun
+Basic DMR
+Basic Sniper
+
+Armor:
+None/Light
+Medium
+Heavy
+
+BB:
+Basic
+Improved
+Advanced
+High-End
+Premium
+
+Цифри тимчасові.
+
+Явно позначити:
+PROTOTYPE TEST VALUES — NOT FINAL BALANCE.
+
+Не створювати production item catalog.
+
+==================================================
+28. MASS SIMULATION HARNESS
+==================================================
+
+Додати test/simulation utility, яка може проганяти:
+
+1,000
+10,000
+або більше
+
+headless battles без Unity scene.
+
+Мета:
+- termination;
+- win-rate sanity;
+- draw-rate;
+- duration distribution;
+- ammo consumption;
+- obvious formula pathologies.
+
+Не фіналізувати баланс на основі одного набору fixtures.
+
+==================================================
+29. REQUIRED TEST SCENARIOS
+==================================================
+
+Обов’язково покрити:
+
+- equal 1v1;
+- stronger Accuracy vs weaker Accuracy;
+- higher Agility evasion effect;
+- higher Agility tempo effect;
+- higher Endurance HP effect;
+- armor reduces effective damage;
+- penetration reduces armor effectiveness;
+- BB modifier works;
+- no weapon;
+- one side no ammo;
+- both sides no ammo;
+- simultaneous last elimination;
+- simulated-time Draw;
+- technical event guard;
+- 16v16 termination;
+- fixed-point rounding boundaries;
+- hit chance min 5%;
+- hit chance max 95%;
+- deterministic RNG.
+
+==================================================
+30. READINESS BOUNDARY
+==================================================
+
+Q02 approved rule:
+
+prototype readiness threshold:
+10% Max HP.
+
+Readiness itself may live outside battle core if cleaner.
+
+But add a deterministic pure-domain helper/policy:
+
+0–9%:
+NotReady
+
+10–100%:
+Ready
+
+No injury latch.
+
+Use integer/fixed-point comparison.
+
+Max HP increase does not scale Current HP.
+
+Do not implement recovery timers in this milestone.
+
+==================================================
+31. DOCUMENTATION
+==================================================
+
+Update/create implementation docs explaining:
+
+- architecture;
+- numeric model;
+- RNG;
+- event scheduling;
+- formulas;
+- ruleset config;
+- invariants;
+- test fixtures;
+- prototype balance assumptions.
+
+Update IMPLEMENTATION_QUESTIONS_v3.md:
+
+Q01
+Q02
+Q03
+Q04
+
+→ CLOSED / IMPLEMENTED-PREPARED
+
+with exact approved rules.
+
+Do not silently close Q05+.
+
+==================================================
+32. NO PREMATURE SYSTEMS
+==================================================
+
+Do NOT implement yet:
+
+reward curves
+rating
+friend cooldowns
+Revenge
+shield
+Recruitment
+Credits
+healing clock
+Steam identity
+backend persistence.
+
+Only define interfaces if strictly needed to avoid bad coupling.
+
+==================================================
+33. VERIFICATION GATE
+==================================================
+
+Before commit run all relevant:
+
+- build/compile;
+- unit tests;
+- deterministic repeat tests;
+- mass simulation;
+- static checks available in repo.
+
+Report:
+
+- exact commands;
+- passed/failed counts;
+- warnings;
+- simulation summary;
+- average/min/max simulated duration;
+- draw rate;
+- termination rate;
+- any suspicious balance behavior.
+
+Balance oddities do NOT require redesign unless they reveal architectural/formula defects.
+
+==================================================
+34. GIT DISCIPLINE
+==================================================
+
+Commit only changes for Airsoft_Club_Game.
+
+Suggested commit message:
+
+feat: add deterministic headless battle core
+
+Return:
+
+- branch;
+- commit SHA;
+- changed files;
+- architecture summary;
+- formulas used;
+- temporary prototype constants;
+- test results;
+- mass simulation results;
+- remaining risks/questions;
+- confirmation Project Airsoft untouched.
+
+==================================================
+35. STOP CONDITION
+==================================================
+
+Після успішної реалізації та verification:
+
+STOP.
+
+Не переходь до:
+
+UI
+Steam
+backend
+economy
+recruitment
+art
+
+без нового explicit implementation prompt.
+
+Цей milestone завершений лише тоді, коли deterministic headless battle core:
+- компілюється;
+- тестується;
+- підтримує 1v1–16v16;
+- завершується гарантовано;
+- відтворюється по seed;
+- не порушує HP/ammo/invariant rules.

@@ -1,13 +1,13 @@
 # Remaining implementation-level questions — v3
 
-Статус: OPEN або IMPLEMENTATION PROPOSAL. Це не схвалені приховані правила. Жодне питання нижче не змінює підтверджені межі [Gate v3](AIRSOFT_CLUB_GAME_PRODUCT_DESIGN_GATE_v3.md).
+Статус після Implementation 001: Q01–Q04 CLOSED / IMPLEMENTED-PREPARED для battle core; Q05–Q15 лишаються OPEN або IMPLEMENTATION PROPOSAL. [Точні правила, формули та межі](../implementation/IMPLEMENTATION_001.md). Жодне питання нижче не змінює підтверджені межі [Gate v3](AIRSOFT_CLUB_GAME_PRODUCT_DESIGN_GATE_v3.md).
 
 | ID | Питання / потрібне рішення | Коли закрити |
 |---|---|---|
-| Q01 | Формули Accuracy/evasion/tempo, damage/penetration/protection, стартові HP; fixed-point чи інший відтворюваний числовий формат; tie resolution та safety cap. | Перед реалізацією battle core |
-| Q02 | Readiness: поріг для кожного пораненого чи latch після 0 HP; округлення порога, відновлення, Max HP upgrade та часових меж. 0 HP точно не допускається до власної атаки. | Перед health model |
-| Q03 | Поведінка fighter без Weapon: він обов'язково бере участь, але чи може атакувати і як виникає no-progress draw; не видавати неузгоджену безкоштовну зброю. | Перед battle core |
-| Q04 | Скінченний simulated BB budget захисту незалежно від live stock, ємність по tiers/загальна, overflow emergency grant, burst/pellet облік, поводження при вичерпанні обраного класу. | Перед battle core |
+| Q01 | CLOSED / IMPLEMENTED-PREPARED — Implementation 001: scaled Int64 (10000=1), checked overflow/truncation; configurable hit/evasion/tempo/HP/mitigation; seeded SplitMix64; same-time damage batches; simulated-duration draw та окремий technical guard failure. Prototype formulas у linked implementation spec. | Реалізовано для prototype core; final balance не закрито |
+| Q02 | CLOSED / IMPLEMENTED-PREPARED — exact readiness CurrentHP × 10 >= MaxHP: 0–9% NotReady, 10–100% Ready; no injury latch. MaxHP increase не змінює CurrentHP. Pure helper, без recovery timers. | Реалізовано й перевірено на boundaries |
+| Q03 | CLOSED / IMPLEMENTED-PREPARED — ready weaponless fighter бере участь і є ціллю, але не атакує; без fallback weapon/melee. Обидві сторони без можливості damage → NoProgress Draw. | Реалізовано й перевірено |
+| Q04 | CLOSED / IMPLEMENTED-PREPARED — finite defense budget = 100% captured club maximum capacity, caller supplied. Shared tier/budget; один BB за projectile, включно з burst/pellets; нестача → partial volley. Inventory capacity tiers/overflow/emergency service поза core і залишаються deferred, не реалізовані. | Combat subset реалізовано; inventory details deferred |
 | Q05 | Reward curves, draw Money/Fighter XP, loss Club XP, reduced-friend коефіцієнт, округлення та bounded power modifier; окремо налаштування XP кожного учасника. | До економічної реалізації |
 | Q06 | Початок 8-hour friend window і 24-hour exposure window, точний ліміт rating loss до першої friend win, rating formula/floors. Пропозиція: максимум одна rating loss на directed pair/window; не вважати затвердженим числом. | До live PvP |
 | Q07 | Post-cap discovery, reservation/settlement exposure, конфлікт глобального cap з Revenge. Не перевищувати 4 incoming rating impacts; не обіцяти Revenge recovery до перевірки eligibility. | До live PvP |
@@ -22,4 +22,4 @@
 
 Уточнення користувача від 2026-09-06 закрило межу friend reward: **перша повна, друга й третя зменшені, з четвертої нульові**. Після вичерпання нагород нулі зберігаються до завершення вікна; loss/draw не відкриває новий reward budget. Точний discount ще не затверджено.
 
-До старту першого code milestone достатньо окремого дозволу та конкретизації Q01–Q04 для тестових fixtures. Решта питань блокує відповідні наступні системи, а не підготовку документації. Art рішення залишається окремим майбутнім pass.
+Окремий дозвіл на перший code milestone отримано в Implementation 001; Q01–Q04 конкретизовані й реалізовані як prototype core. Решта питань блокує відповідні наступні системи, а не підготовку документації. Art рішення залишається окремим майбутнім pass.

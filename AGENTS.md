@@ -14,4 +14,4 @@ Paid Steam game plus optional Credits. Early unlock at most +3 Club Levels grant
 
 Preserve USER APPROVED, BALANCE HYPOTHESIS, IMPLEMENTATION PROPOSAL, OPEN and historical evidence distinctions. Do not turn approximate targets into final constants. See [open questions](design/IMPLEMENTATION_QUESTIONS_v3.md).
 
-**IMPLEMENTATION NOT YET AUTHORIZED.** Current task is documentation only. Do not scaffold code, install engines, create databases, integrate Steam, produce production art, publish or deploy based on this gate. A subsequent explicit user instruction is required. Work only inside this independent project.
+**Implementation 001 is explicitly authorized:** pure C# deterministic headless battle core, tests and simulation harness only. Read [implementation scope](implementation/IMPLEMENTATION_001.md). Q01–Q04 are closed for this prototype; Q05+ remain open. Do not start UI, Unity scenes, Steam, backend/database, economy, recruitment, healing clocks, live PvP, production art, publication or deployment. Stop after this milestone; further systems require a new explicit prompt. Work only inside this independent project.
