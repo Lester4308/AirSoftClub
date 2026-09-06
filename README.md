@@ -1,6 +1,13 @@
 # Airsoft_Club_Game
 
-## Поточний стан — Implementation 001
+## Поточний стан — Implementation 002
+
+Unity host: UnityHost/ — **6000.3.21f1 LTS**. Pure battle core підключено одним local package, без копії simulator. [Як відкрити проєкт, запустити тести й builds](implementation/UNITY_INTEGRATION_002.md), [точні результати](implementation/VERIFICATION_002.md).
+
+.NET, EditMode, PlayMode та Windows Mono golden result збігаються. IL2CPP conversion у C++ пройдено; повний Windows IL2CPP native build/run має documented blocker — відсутній matching backend module. До наступних gameplay/UI/backend систем не переходили.
+
+
+## Попередній стан — Implementation 001
 
 Окремим запитом користувача дозволено й реалізовано pure C# deterministic headless battle core. [Architecture / formulas / scope](implementation/IMPLEMENTATION_001.md), [verification](implementation/VERIFICATION_001.md). Запуск усіх перевірок: powershell -ExecutionPolicy Bypass -File tools/verify.ps1.
 

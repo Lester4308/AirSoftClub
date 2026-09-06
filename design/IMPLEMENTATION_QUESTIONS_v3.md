@@ -23,3 +23,7 @@
 Уточнення користувача від 2026-09-06 закрило межу friend reward: **перша повна, друга й третя зменшені, з четвертої нульові**. Після вичерпання нагород нулі зберігаються до завершення вікна; loss/draw не відкриває новий reward budget. Точний discount ще не затверджено.
 
 Окремий дозвіл на перший code milestone отримано в Implementation 001; Q01–Q04 конкретизовані й реалізовані як prototype core. Решта питань блокує відповідні наступні системи, а не підготовку документації. Art рішення залишається окремим майбутнім pass.
+
+## Q12 — verified technical sub-part, Implementation 002
+
+Q12 залишається OPEN. Підтверджено Unity 6000.3.21f1 LTS (c02631ffc030), .NET Standard 2.1 API/core target, Mono Editor та Windows player execution, explicit binary schema v1 для serialization. Shared local package використовує ті самі source files. [Evidence та IL2CPP blocker](../implementation/VERIFICATION_002.md): C++ conversion PASS, native Windows IL2CPP build/run не перевірено через відсутній backend module. Hosting, PostgreSQL, backend deployment та решта Q12 не закриті. Q05–Q11 і Q13–Q15 не змінені.

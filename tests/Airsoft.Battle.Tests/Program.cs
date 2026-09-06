@@ -27,6 +27,7 @@ internal static class Program
 
     public static int Main(string[] args)
     {
+        if (args.Length == 1 && args[0] == "--generate-golden") { Integration002.Generate(); return 0; }
         if (args.Length == 2 && args[0] == "--simulate")
         {
             if (!int.TryParse(args[1], out int count) || count < 1 || count > 1_000_000) return 2;
@@ -34,6 +35,7 @@ internal static class Program
         }
         if (args.Length != 0) { Console.Error.WriteLine("Usage: [--simulate count]"); return 2; }
         RunTests();
+        Test("Integration 002 wire/golden roundtrips", Integration002.Verify);
         Console.WriteLine($"TEST SUMMARY passed={passed} failed={failed}");
         return failed == 0 ? 0 : 1;
     }

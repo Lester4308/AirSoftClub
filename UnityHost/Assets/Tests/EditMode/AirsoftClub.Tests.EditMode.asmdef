@@ -1,0 +1,1 @@
+{"name":"AirsoftClub.Tests.EditMode","references":["Airsoft.Battle","AirsoftClub.Unity"],"includePlatforms":["Editor"],"optionalUnityReferences":["TestAssemblies"]}

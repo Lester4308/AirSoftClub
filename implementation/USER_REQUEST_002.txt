@@ -1,0 +1,767 @@
+Працюй тільки в окремому репозиторії:
+
+C:/Users/Ihor/Documents/ChatGPT/Airsoft_Club_Game/
+
+Project Airsoft / Airsoft Manager НЕ змінювати.
+
+Поточна verified implementation point:
+
+Branch:
+codex/implementation-001-battle-core
+
+Commit:
+943d987147b82e63e8f26fe46f2f1cf002c19d09
+
+IMPLEMENTATION 001:
+PASSED
+
+==================================================
+0. MILESTONE
+==================================================
+
+IMPLEMENTATION 002 — UNITY HOST & COMBAT CORE INTEGRATION GATE
+
+Мета:
+
+підняти мінімальний Unity host для нового Airsoft_Club_Game, підключити вже реалізований pure C# deterministic battle core і довести:
+
+1. core коректно працює в Unity runtime;
+2. deterministic results збігаються між standalone .NET tests і Unity;
+3. serialization boundary стабільний;
+4. IL2CPP-compatible path не має очевидних блокерів.
+
+Це НЕ UI milestone.
+
+Це НЕ gameplay presentation milestone.
+
+==================================================
+1. GREEN GATE
+==================================================
+
+Перед змінами:
+
+- перевір repository;
+- branch;
+- HEAD;
+- working tree;
+- staging;
+- upstream/ahead/behind;
+- підтвердь, що Project Airsoft untouched.
+
+Якщо tree clean:
+
+створи нову branch від verified implementation commit.
+
+Suggested branch:
+
+codex/implementation-002-unity-host
+
+Не змінюй історію Implementation 001.
+
+==================================================
+2. SCOPE
+==================================================
+
+Дозволено:
+
+- Unity project/bootstrap;
+- Unity-compatible assembly structure;
+- integration existing pure C# battle core;
+- EditMode tests;
+- PlayMode smoke tests;
+- serialization contracts;
+- deterministic golden fixtures;
+- IL2CPP compatibility/build checks;
+- minimal technical scene/bootstrap object лише якщо необхідно.
+
+НЕ дозволено:
+
+- production UI;
+- battle HUD;
+- art;
+- fighter models;
+- map implementation;
+- Steamworks;
+- backend;
+- PostgreSQL;
+- matchmaking;
+- economy;
+- Credits;
+- Recruitment;
+- Healing UI;
+- PvP implementation.
+
+==================================================
+3. UNITY VERSION
+==================================================
+
+Вибери актуальну стабільну LTS/production-ready Unity version, сумісну з:
+
+- C#/.NET Standard 2.1 core;
+- PC/Steam;
+- IL2CPP;
+- future Windows build.
+
+Зафіксуй exact version у документації.
+
+Не вибирай experimental/beta version.
+
+==================================================
+4. PROJECT STRUCTURE
+==================================================
+
+Структуруй Unity side так, щоб battle core залишався відокремленим.
+
+Очікувана логіка:
+
+/src немесе shared pure C# core
+→ referenced by standalone tests
+→ referenced by Unity assemblies
+
+Unity-specific code:
+окремо.
+
+Не копіюй source files вручну в кілька місць.
+
+Має бути single source of truth.
+
+==================================================
+5. PURE CORE MUST REMAIN PURE
+==================================================
+
+Implementation 001 core не повинен отримати залежності на:
+
+UnityEngine
+MonoBehaviour
+ScriptableObject
+GameObject
+Transform
+Time
+UnityEngine.Random
+
+Unity integration має адаптуватися до core, не навпаки.
+
+==================================================
+6. ASSEMBLY DEFINITIONS
+==================================================
+
+Створи чіткі assembly boundaries.
+
+Щонайменше conceptually:
+
+AirsoftClub.Core
+AirsoftClub.Unity
+AirsoftClub.Tests.EditMode
+AirsoftClub.Tests.PlayMode
+
+Назви можеш адаптувати до repo conventions.
+
+Уникай circular references.
+
+==================================================
+7. CORE REFERENCE
+==================================================
+
+Unity має використовувати той самий battle implementation, що вже пройшов:
+
+45/45 tests
+100/100 deterministic repeats
+10,000/10,000 mass simulations
+
+Не створювати Unity-specific duplicate battle simulator.
+
+==================================================
+8. GOLDEN FIXTURE
+==================================================
+
+Створи deterministic GOLDEN MATCH fixture.
+
+Він повинен містити:
+
+- explicit RulesetVersion;
+- explicit Seed;
+- attacker snapshot;
+- defender snapshot;
+- weapons;
+- armor;
+- BB tier/budget;
+- starting HP.
+
+Збережи canonical expected result.
+
+==================================================
+9. CROSS-RUNTIME DETERMINISM
+==================================================
+
+Обов’язкова перевірка:
+
+same golden input
+
+у standalone .NET test environment
+і
+Unity EditMode/runtime
+
+→ той самий authoritative result.
+
+Порівнювати щонайменше:
+
+Outcome
+SimulatedDuration
+Final HP
+BB consumed
+eliminations
+event sequence або deterministic event digest
+Seed
+RulesetVersion
+
+==================================================
+10. RESULT DIGEST
+==================================================
+
+Якщо повне byte-for-byte порівняння serialization недоцільне, введи stable deterministic digest/hash authoritative MatchResult.
+
+Digest повинен залежати від:
+
+- ordered authoritative result fields;
+- ordered events;
+- explicit serialization/canonicalization rules.
+
+Не використовувати runtime-dependent object hash codes.
+
+==================================================
+11. SERIALIZATION BOUNDARY
+==================================================
+
+Потрібен чіткий serialization path для майбутнього:
+
+Unity Client
+↔ Backend
+
+На цьому milestone НЕ реалізовувати backend.
+
+Але перевірити serialization для:
+
+MatchConfig
+TeamSnapshot
+FighterSnapshot
+MatchResult
+BattleEvent
+RulesetVersion
+
+==================================================
+12. SERIALIZATION FORMAT
+==================================================
+
+Вибери простий, deterministic-friendly format.
+
+JSON допускається для v1 integration/debug path.
+
+Але:
+
+- не покладатися на unordered dictionary serialization;
+- explicit field naming/order where relevant;
+- version contracts;
+- nullable/default handling;
+- backward compatibility notes.
+
+Не overbuild protobuf/messagepack без необхідності.
+
+==================================================
+13. ROUNDTRIP TESTS
+==================================================
+
+Для ключових contracts:
+
+serialize
+→ deserialize
+→ compare
+
+має давати logical identity.
+
+Обов’язково:
+
+MatchConfig
+TeamSnapshot
+MatchResult
+
+==================================================
+14. UNITY EDITMODE TESTS
+==================================================
+
+Створи EditMode tests для:
+
+- core can execute;
+- golden deterministic match;
+- same seed repeat;
+- different seed validity;
+- serialization roundtrip;
+- readiness helper;
+- fixed-point boundaries if relevant;
+- 16v16 smoke.
+
+==================================================
+15. UNITY PLAYMODE TEST
+==================================================
+
+Мінімальний PlayMode smoke test:
+
+Unity runtime запускає battle through adapter/host
+
+без scene gameplay presentation.
+
+Test має підтвердити:
+
+- initialization;
+- battle execution;
+- termination;
+- expected deterministic golden result.
+
+==================================================
+16. MINIMAL TECHNICAL SCENE
+==================================================
+
+Якщо PlayMode потребує scene:
+
+створи лише мінімальну технічну scene.
+
+Наприклад:
+
+Bootstrap/TestHarness
+
+Без:
+
+- production camera;
+- map;
+- fighter GameObjects;
+- HUD;
+- graphics.
+
+Не перетворювати її на gameplay prototype scene.
+
+==================================================
+17. IL2CPP
+==================================================
+
+Перевірити core та integration на IL2CPP compatibility.
+
+Особливо:
+
+- reflection usage;
+- unsupported runtime APIs;
+- generic/AOT issues;
+- serialization;
+- numeric implementation;
+- RNG;
+- immutable contracts;
+- records/struct support залежно від Unity runtime.
+
+==================================================
+18. IL2CPP BUILD TARGET
+==================================================
+
+Primary target:
+
+Windows 64-bit Standalone
+IL2CPP
+
+як майбутня Steam-база.
+
+Зроби мінімальний build/compile validation.
+
+Якщо повний executable build неможливий через environment/toolchain:
+
+зроби максимально можливу IL2CPP/AOT compilation validation і чітко report blocker.
+
+Не заявляй PASSED, якщо реальної перевірки не було.
+
+==================================================
+19. MANAGED BUILD
+==================================================
+
+Окремо перевір managed/Mono Editor path.
+
+Потрібно бачити, що:
+
+Editor tests
+і
+runtime integration
+
+не мають різних results.
+
+==================================================
+20. FIXED-POINT VALIDATION
+==================================================
+
+Перевір, що scaled integer math:
+
+10000 = 1.0
+
+поводиться однаково у standalone .NET та Unity runtime.
+
+Особливо:
+
+- multiplication;
+- division;
+- negative handling;
+- clamping;
+- rounding;
+- overflow boundaries.
+
+==================================================
+21. RNG VALIDATION
+==================================================
+
+SplitMix64 sequence має бути однаковою:
+
+.NET
+Unity Editor
+Unity runtime
+
+для fixed test seeds.
+
+Додати explicit vector tests.
+
+==================================================
+22. COLLECTION ORDER
+==================================================
+
+Audit battle code на залежності від iteration order:
+
+Dictionary
+HashSet
+unordered LINQ assumptions
+
+Authoritative result не повинен залежати від runtime-specific ordering.
+
+Якщо знайдеш ризик:
+виправ deterministic ordering.
+
+==================================================
+23. TIME
+==================================================
+
+Не використовувати:
+
+Time.time
+Time.deltaTime
+DateTime.Now
+wall clock
+
+в authoritative battle.
+
+Simulated time залишається pure deterministic domain value.
+
+==================================================
+24. MASS SIMULATION INSIDE UNITY
+==================================================
+
+Не потрібно повторювати повні 10,000 battles у PlayMode, якщо це надто повільно.
+
+Але зроби Unity-side headless batch sanity run:
+
+наприклад 100–1,000 battles
+
+і порівняй invariants.
+
+Standalone 10,000 harness з Implementation 001 має залишитися робочим.
+
+==================================================
+25. PERFORMANCE BASELINE
+==================================================
+
+Зніми приблизну technical performance baseline для core execution у Unity environment.
+
+Особливо:
+
+1v1
+8v8
+16v16
+
+Не оптимізуй передчасно.
+
+Просто report:
+
+- execution duration;
+- allocations, якщо легко виміряти;
+- очевидні hotspots.
+
+==================================================
+26. NO UNITY RNG
+==================================================
+
+Будь-яка Unity-specific integration code не повинна замінити domain RNG на:
+
+UnityEngine.Random.
+
+Seed входить у battle явно.
+
+==================================================
+27. NO SCRIPTABLEOBJECT AUTHORITY
+==================================================
+
+ScriptableObject може бути майбутнім authoring format.
+
+Але authoritative runtime combat input має перетворюватися у pure immutable domain definitions/snapshots.
+
+Не передавати ScriptableObject як core entity.
+
+==================================================
+28. RULESET VERSION
+==================================================
+
+Перевір RulesetVersion boundary.
+
+Golden fixture повинен explicitly включати version.
+
+Serialization теж.
+
+Пізніше backend має мати можливість replay старого battle з відповідною ruleset version.
+
+Не реалізовувати version migration engine зараз.
+
+==================================================
+29. COMPATIBILITY NOTES
+==================================================
+
+Створи документ:
+
+UNITY_INTEGRATION_002.md
+
+Включити:
+
+- Unity version;
+- scripting backend;
+- API compatibility level;
+- assembly layout;
+- core reference path;
+- serialization choice;
+- IL2CPP status;
+- deterministic verification;
+- known limitations.
+
+==================================================
+30. UPDATE IMPLEMENTATION QUESTIONS
+==================================================
+
+Не закривати Q05–Q15.
+
+Q12 technical version sub-part можна оновити лише тією інформацією, яку реально підтвердили:
+
+Unity version
+.NET/API compatibility
+serialization choice
+shared-library target
+
+Hosting/PostgreSQL/backend deployment лишити OPEN.
+
+==================================================
+31. TEST MATRIX
+==================================================
+
+Мінімум:
+
+Standalone .NET:
+existing full verification still passes.
+
+Unity EditMode:
+all integration tests pass.
+
+Unity PlayMode:
+smoke/golden tests pass.
+
+IL2CPP:
+build/AOT validation pass або documented blocker.
+
+==================================================
+32. PRESERVE IMPLEMENTATION 001
+==================================================
+
+Після Unity integration повторно запусти:
+
+tools/verify.ps1
+
+і підтвердь, що Implementation 001 regression suite не зламана.
+
+Expected:
+
+45+ tests pass
+100/100 deterministic repeat
+10,000 battle mass simulation remains valid
+
+якщо suite count не змінився.
+
+==================================================
+33. DO NOT CHANGE BALANCE
+==================================================
+
+Не змінюй prototype battle formulas лише для того, щоб Unity tests пройшли.
+
+Якщо cross-runtime mismatch виник:
+виправ deterministic/compatibility defect.
+
+Не rebalance:
+
+HP
+hit chance
+tempo
+damage
+armor
+BB
+120-second cap
+
+у цьому milestone без необхідності.
+
+==================================================
+34. ERROR HANDLING
+==================================================
+
+Unity adapter повинен повертати/пропускати domain validation errors явно.
+
+Не swallow exceptions silently.
+
+Technical event guard failure:
+має бути diagnostic failure, не normal Draw.
+
+==================================================
+35. BUILD HYGIENE
+==================================================
+
+Не комітити:
+
+Library/
+Temp/
+Logs/
+obj/
+Build/
+Builds/
+UserSettings/
+IDE cache
+
+unless repo rules explicitly say otherwise.
+
+Онови Unity .gitignore appropriately.
+
+==================================================
+36. META FILES
+==================================================
+
+Unity .meta files, що відповідають committed Assets/Packages/ProjectSettings content, мають бути versioned коректно.
+
+Не видаляти їх випадково.
+
+==================================================
+37. PACKAGES
+==================================================
+
+Використовуй мінімальний package set.
+
+Не додавай:
+
+Steamworks
+Addressables
+DOTS
+Netcode
+UI packages beyond defaults
+
+без потреби цього milestone.
+
+Unity Test Framework — так, якщо потрібно.
+
+==================================================
+38. README
+==================================================
+
+Онови repo README або implementation index:
+
+як:
+- відкрити Unity project;
+- запустити EditMode tests;
+- запустити PlayMode tests;
+- запустити standalone verification;
+- виконати IL2CPP validation/build.
+
+==================================================
+39. VERIFICATION REPORT
+==================================================
+
+Створи:
+
+implementation/VERIFICATION_002.md
+
+З точними:
+
+commands
+Unity version
+test counts
+build results
+IL2CPP status
+golden result comparison
+serialization tests
+mass simulation sanity
+performance observations
+warnings/errors
+
+==================================================
+40. ACCEPTANCE CRITERIA
+==================================================
+
+Milestone PASSED тільки якщо:
+
+- Unity project opens/compiles;
+- existing pure C# core remains pure;
+- standalone verification remains green;
+- Unity EditMode deterministic golden test passes;
+- Unity PlayMode smoke passes;
+- same input/seed produces same authoritative result across runtime boundaries;
+- serialization roundtrip passes;
+- SplitMix64 vectors match;
+- fixed-point math matches;
+- 16v16 executes;
+- IL2CPP compatibility validated to maximum environment capability;
+- no Project Airsoft changes.
+
+==================================================
+41. GIT
+==================================================
+
+Suggested commit:
+
+feat: integrate deterministic battle core with unity
+
+Return:
+
+- branch;
+- commit SHA;
+- Unity exact version;
+- changed files;
+- assembly structure;
+- serialization format;
+- standalone test result;
+- EditMode result;
+- PlayMode result;
+- IL2CPP result;
+- golden fixture result/digest;
+- performance baseline;
+- blockers/risks;
+- confirmation working tree clean;
+- confirmation Project Airsoft untouched.
+
+==================================================
+42. STOP
+==================================================
+
+Після verification та commit:
+
+STOP.
+
+Не переходити до:
+
+Q05 economy
+Recruitment
+UI
+Steam
+backend
+art
+PvP
+
+без нового explicit prompt.

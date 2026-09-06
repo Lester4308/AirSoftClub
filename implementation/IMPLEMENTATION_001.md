@@ -14,7 +14,7 @@ MatchResult includes status, nullable outcome, reason, simulated milliseconds, p
 
 ## Numeric model
 
-[Fixed](../src/Airsoft.Battle/Fixed.cs): signed Int64 raw units, **10000 = 1.0000**. Add/subtract/multiply/divide use checked arithmetic. Multiplication and division truncate toward zero after the indicated operation, including negative boundary tests. There are no authoritative float/double calculations. Intermediate overflow throws rather than wrapping; domain validation bounds operational inputs so standard simulation cannot overflow.
+[Fixed](../src/Airsoft.Battle/Runtime/Fixed.cs): signed Int64 raw units, **10000 = 1.0000**. Add/subtract/multiply/divide use checked arithmetic. Multiplication and division truncate toward zero after the indicated operation, including negative boundary tests. There are no authoritative float/double calculations. Intermediate overflow throws rather than wrapping; domain validation bounds operational inputs so standard simulation cannot overflow.
 
 Stats <=10000; weapon damage/protection/penetration <=10000; BB multiplier >0 and <=2; HP <=1000100; weapon interval 1–60000 ms; 1–64 projectiles; BB budget 0–1000000; duration 1–3600000 ms. These are representational/validation bounds, not balance targets. Revisit them with a ruleset/contract version change if future content needs more.
 
@@ -22,7 +22,7 @@ Readiness uses exact comparison currentHP * 10 >= MaxHP with 0 < currentHP <= Ma
 
 ## Rules and formulas
 
-All coefficients and caps live in immutable [BattleRules](../src/Airsoft.Battle/Rules.cs). Defaults are **BALANCE HYPOTHESIS / PROTOTYPE CONFIG**, version prototype-001.
+All coefficients and caps live in immutable [BattleRules](../src/Airsoft.Battle/Runtime/Rules.cs). Defaults are **BALANCE HYPOTHESIS / PROTOTYPE CONFIG**, version prototype-001.
 
 | Formula | Prototype defaults |
 |---|---|
@@ -43,7 +43,7 @@ Exactly three base fighter stats: Accuracy, Endurance, Agility. No critical hits
 
 ## RNG and target selection
 
-[SeededRandom](../src/Airsoft.Battle/Random.cs) implements SplitMix64 with explicit unsigned wraparound, increment 0x9E3779B97F4A7C15, mixing multipliers 0xBF58476D1CE4E5B9 and 0x94D049BB133111EB. NextUInt32 returns the high 32 bits. Seed 0 is valid; golden-vector tests freeze the sequence.
+[SeededRandom](../src/Airsoft.Battle/Runtime/Random.cs) implements SplitMix64 with explicit unsigned wraparound, increment 0x9E3779B97F4A7C15, mixing multipliers 0xBF58476D1CE4E5B9 and 0x94D049BB133111EB. NextUInt32 returns the high 32 bits. Seed 0 is valid; golden-vector tests freeze the sequence.
 
 NextInt(bound) uses multiply-high: (UInt64(nextUInt32) × bound) >> 32. It consumes exactly one RNG draw and always terminates, avoiding a rejection loop. There is at most one source-value difference between range bucket populations; this tiny quantization bias is accepted for this prototype. This is not cryptographic randomness.
 

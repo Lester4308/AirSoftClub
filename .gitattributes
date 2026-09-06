@@ -1,0 +1,5 @@
+# Unity serializes empty YAML values with trailing spaces; preserve its native format.
+*.meta whitespace=-blank-at-eol
+*.asset whitespace=-blank-at-eol
+*.unity whitespace=-blank-at-eol
+*.bytes binary
