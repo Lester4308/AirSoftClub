@@ -1,3 +1,5 @@
+
+> **Approved reconciliation 2026-09-06:** the user confirmed that the Revenge target loses no rating. Rated attacker win restores floor(actual origin loss × 120 / 100), without normal rating gain; it still consumes the target’s shared incoming exposure slot. At cap, accept non-rated with no recovery and retain own shield. Any win closes the ticket. Existing friend-window anti-farm limits remain; no extra reward multiplier. The previous counterparty-debit blocker is superseded. See implementation/VERIFICATION_012.md.
 # AIRSOFT CLUB GAME — MASTER DEVELOPMENT SPEC v1
 
 > **Development pass 2026-09-06:** implementation003–010 now has local code and verification; current scope, remaining gates and native/package evidence are in [Verification011](implementation/VERIFICATION_011.md), with [launch instructions](implementation/DEVELOPMENT_RUNBOOK.md). Earlier documentation-only/future status text below records the pre-execution checkpoint. The user's explicit development-pass request authorizes this work; Project Airsoft remains untouched.
@@ -311,9 +313,9 @@ Own **Ranked attack знімає shield**. Own **Revenge з rating impact** те
 
 Eligibility, attempt reservation і право на recovery фіксуються на start. Якщо expiry настає під час accepted battle — він нормально завершується. Retried start idempotent; не дублює ticket/attempt. Successful Revenge не створює Revenge у відповідь; **Revenge-on-Revenge chain заборонений**.
 
-Successful eligible Revenge повертає **120% actual rating lost у конкретному origin defense battle**. Приклад: -10 → +12. Не 120% current rating, не додатковий normal Ranked win gain зверху. Origin actual loss після floor — база; нульова втрата не дає recovery. Deterministic integer rounding обов'язковий, точний режим ще треба записати як implementation decision.
+Successful eligible Revenge повертає **120% actual rating lost у конкретному origin defense battle**. Приклад: -10 → +12. Не 120% current rating, не додатковий normal Ranked win gain зверху. Origin actual loss після floor — база; нульова втрата не дає recovery. Grounded integer rounding: floor(actual loss × 120 / 100), checked Int64 intermediate.
 
-Плюс **standard battle reward без extra multiplier**, із загальними eligibility/anti-farm restrictions. Non-rated Revenge при cap не обіцяє 120% recovery. Shield не обходиться, expiry не продовжується автоматично. Counterparty rating debit та деталізація friend-target cross-mode reward до live launch — residual product-sensitive work (§16), не вигадана approved zero-sum formula.
+Плюс **standard battle reward без extra multiplier**, із загальними eligibility/anti-farm restrictions. Non-rated Revenge при cap не обіцяє 120% recovery. Shield не обходиться, expiry не продовжується автоматично. Ціль Revenge не втрачає рейтинг (user clarification 2026-09-06). Recovery використовує floor(actual loss × 120 / 100); rated recovery займає спільний exposure slot. Чинний friend-window anti-farm budget зберігається між modes.
 
 ## 10. Rewards, wallets, monetization, retention
 
@@ -506,7 +508,7 @@ Tests мають охоплювати exact boundaries, invalid inputs, crash/re
 | Q06 | First rated directed-pair battle anchors8h; max1 loss; first win freezes later rating; rolling24h; floor0 | Pending; rating curve prototype ±5…20 |
 | Q07 | Reserve at rated start, not discovery; settle once; cap4 shared with Revenge; TTL | Pending; exact lease/post-cap UX implementation |
 | Q08 | Own Ranked removes shield; rated Revenge removes; Friend/non-rated does not; accepted incoming finishes | Pending |
-| Q09 | Revenge24h/3; draw attempt; in-flight expiry valid; start eligibility; deterministic120%; unique origin/start; no chains; no Friend/non-ranked tickets | Pending; exact rounding/counterparty policy distinction (§16) |
+| Q09 | Revenge24h/3; draw attempt; in-flight expiry valid; start eligibility; deterministic120%; unique origin/start; no chains; no Friend/non-ranked tickets | Implemented012; floor rounding, target rating unchanged; domain/PostgreSQL verified |
 | Q10 | Base=MK1; MK2 expensive soft; MK3 Credits | Catalog pending |
 | Q11 | Starter10 Credits; no soft→Credits; fixed configurable Credits→soft; no hard daily spend cap; combined15–20%; starter resources | Pending; exact prices/faucets/metric not final |
 | Q12 | Unity6000.3.21f1/C#/Standard2.1; ASP.NET Core current LTS; PostgreSQL/EF Core; wirev1; shared pure core; observability; Docker; secrets external | Unity/wire verified; backend version pin/hosting pending |
@@ -544,7 +546,7 @@ Tests мають охоплювати exact boundaries, invalid inputs, crash/re
 | TTL/lease, pair anchor transaction, post-cap reject vs non-rated | Grounded policy, atomic checks; прозоре UI, no fifth impact |
 | Exact .NET/PostgreSQL/EF/wrapper | Verify official compatibility, pin; не міняти затверджений stack |
 | Shield renewal/stacking, auto-buy soft safeguards, Day7 next cycle | Conservative configurable local implementation; не вигадувати premium spending/нові promises |
-| Revenge counterparty rating debit, cross-mode reward semantics із friend target | Product-sensitive: документувати alternatives; локальні seams/tests можна зробити, перед live settlement потрібне явне рішення, якщо approved rules не дають однозначного результату |
+| Revenge counterparty/cross-mode | CLOSED: target rating unchanged; shared exposure cap and existing friend anti-farm budget preserved. |
 | Refund після витрачених Credits, debt/suspension policy | Reconciliation foundation дозволена; реальну фінансову policy не вигадувати |
 | Final commercial prices, production hosting/publishing, final art | Окреме рішення/дозвіл власника |
 

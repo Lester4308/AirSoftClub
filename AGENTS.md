@@ -1,3 +1,5 @@
+> **Current verification012:** Revenge counterparty policy is approved (target rating unchanged), live local path enabled, rewards display corrected; manual visual gate blocked by Windows capture API. See [Verification012](implementation/VERIFICATION_012.md). Previous011 statuses are historical.
+
 # Airsoft_Club_Game — agent rules
 
 > **Development pass 2026-09-06:** implementation003–010 now has local code and verification; current scope, remaining gates and native/package evidence are in [Verification011](implementation/VERIFICATION_011.md), with [launch instructions](implementation/DEVELOPMENT_RUNBOOK.md). Earlier documentation-only/future status text below records the pre-execution checkpoint. The user's explicit development-pass request authorizes this work; Project Airsoft remains untouched.

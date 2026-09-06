@@ -1,3 +1,5 @@
+
+> **Approved reconciliation 2026-09-06:** the user confirmed that the Revenge target loses no rating. Rated attacker win restores floor(actual origin loss × 120 / 100), without normal rating gain; it still consumes the target’s shared incoming exposure slot. At cap, accept non-rated with no recovery and retain own shield. Any win closes the ticket. Existing friend-window anti-farm limits remain; no extra reward multiplier. The previous counterparty-debit blocker is superseded. See implementation/VERIFICATION_012.md.
 # AIRSOFT CLUB GAME — AGENT IMPLEMENTATION PACK v1
 
 Дата: **2026-09-06**. Companion: **AIRSOFT_CLUB_GAME_MASTER_DEVELOPMENT_SPEC_v1.md**.
@@ -179,7 +181,7 @@ Remaining production limitation:
 - Regression не вдається локалізувати без ризику порушити verified baseline; не замасковувати її.
 - Product-sensitive ambiguity не має однозначного grounded трактування.
 
-Конкретні residual product-sensitive приклади з master: rating debit іншій стороні Revenge; матеріальний cross-mode friend/revenge reward conflict; policy після refund already-spent Credits. Можна завершити interfaces, simulations, tests і disabled feature path; не ввімкнути вигадану live policy.
+Конкретні residual product-sensitive приклади з master: policy після refund already-spent Credits. Можна завершити interfaces, simulations, tests і disabled feature path; не ввімкнути вигадану live policy.
 
 Про blocker повідомити: **що саме блокується, перевірений факт, що вже зроблено, яке одне рішення/доступ потрібне**. Продовжити незалежні tasks. Не називати весь проєкт blocked, якщо можна реалізувати наступний незалежний milestone. Елімінація blocker не є підставою автоматично робити незатверджений live запуск.
 
@@ -227,7 +229,7 @@ Remaining production limitation:
 
 **Gate:**A→B separate B→A;first loss then win then loss rating0;fourth reward0 and no resets;boundary8h/24h;two starts race for fourth slot;discovery no reservation;TTL+late settlement no fifth;zero-impact draw release;shield vs in-flight,Friend vs Ranked vs rated/nonrated Revenge;expiry during accepted Revenge;draw third attempt;one origin/duplicate start;floor-adjusted actual origin loss;no stacked normal win gain;no Revenge-on-Revenge ticket.
 
-Залишкову неоднозначність counterparty debit/cross-mode semantics ізолювати й задокументувати; не вигадувати approved live behavior. Standard Revenge reward не отримує нового multiplier, загальний cap завжди діє.
+Counterparty policy CLOSED 2026-09-06: target loses no rating; existing friend anti-farm budget remains across modes. Standard Revenge reward не отримує нового multiplier, загальний cap завжди діє.
 
 **Продовжити:**008; unresolved live policy не блокує visual replay/management.
 

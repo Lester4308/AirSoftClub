@@ -40,7 +40,7 @@ dotnet run --project tests/Airsoft.Club.Tests -c Release -- --economy
 
 HTTP verification requires a running backend. Stop that backend before rebuilding changed server sources (Windows locks the executable). DB tests use unique fixture accounts, preserve existing data, and use actual PostgreSQL. Do not run verification against production data. EF migrations are forward/versioned; migration down or volume removal is not part of normal verification.
 
-Native UI smoke uses --club-ui-smoke against the running backend. It creates an isolated dev account and attempts roster/result screenshots. Hidden windows produced black/no frames on this environment and are not visual evidence. Visible-window capture needs explicit user permission in this agent environment. Normal interactive launch is for the player to see/control the game.
+Native UI smoke uses --club-ui-smoke against the running backend. It creates an isolated dev account and attempts roster/result screenshots. Hidden windows produced black/no frames on this environment and are not visual evidence. Visible launch was explicitly authorized on2026-09-06; use tools/verify-ui.ps1 -Visible for an automated visible pass. Manual input verification remains separate. Normal interactive launch is for the player to see/control the game.
 
 ## Architecture and operational limits
 
@@ -51,7 +51,7 @@ Health:/health; schema/DB readiness:/ready. Structured console logs and System.D
 ## Explicit external/product gates
 
 - Steam app entitlement, STEAM_APP_ID and server-only STEAM_PUBLISHER_KEY are absent. Adapter fixtures are not sandbox proof. Steamworks.NET2025.164.1 is pinned; sample AppID480 is ignored. The explicit Steam sandbox sign-in button uses the adapter, but actual sign-in/discovery rollout remains unverified without credentials.
-- Revenge acceptance is disabled pending the master-reserved counterparty rating/cross-mode product decision. Ticket/recovery policy is unit-tested through an isolated development seam.
+- Revenge is enabled: target loses no rating, rated recovery uses floor(120% origin actual loss), shared exposure cap4; cap fallback is non-rated without recovery. Tickets are shown under Opponents. See Verification012 for fresh evidence and manual visual-capture limitation.
 - Live payment provider integration, real prices, spent-Credits refund/debt policy, authorized moderation provisioning and production deployment are not enabled. Durable payment reconciliation is tested using explicit provider fixtures.
 - Premium DPS/effective-HP ratio is below20%, but measured wins are substantially higher than50%. Competitive balance is not final or proven by that metric alone.
 - Final art, localization/accessibility polish, keyboard/scaling visual QA, production load/security review, hosting and release remain separate gates.
