@@ -22,7 +22,8 @@ if ($Stage.EndsWith('Run')) {
   $arguments += @('-runTests','-testPlatform',$Stage,'-testResults',('"' + $results + '"'))
  }
 }
-$process = Start-Process -FilePath $exe -ArgumentList $arguments -WindowStyle Hidden -PassThru -Wait
+$process = Start-Process -FilePath $exe -ArgumentList $arguments -WindowStyle Hidden -PassThru
+$process.WaitForExit()
 if ($process.ExitCode -ne 0) { throw "$Stage exit $($process.ExitCode); see $log" }
 if ($Stage -eq 'EditMode' -or $Stage -eq 'PlayMode') {
  [xml]$xml = Get-Content -LiteralPath $results
