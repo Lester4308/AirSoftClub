@@ -14,6 +14,7 @@ internal static partial class Program
     static int Main(string[] args)
     {
         if (args.Length == 1 && args[0] == "--economy") return EconomyEvidence();
+        if (args.Length == 1 && args[0] == "--early-access") return EarlyAccessEvidence();
         if (args.Length == 1 && args[0] == "--balance") return BalanceEvidence();
         EconomyTests(); LifecycleTests(); PvpTests(); RetentionTests(); AlphaTests();
         Console.WriteLine($"CLUB SUMMARY passed={passed} failed={failed}");
