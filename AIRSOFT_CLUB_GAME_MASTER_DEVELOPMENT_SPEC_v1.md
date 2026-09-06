@@ -1,3 +1,5 @@
+> **USER APPROVED direction014:** progression + monetization driven; premium combat advantage intentional. Blanket +3 and strict total stack15–20% are SUPERSEDED. Current policy and measurements: [Monetization014](implementation/MONETIZATION_BALANCE_014.md).
+
 > **Functional Alpha013 checkpoint:** local functional acceptance verified; see [Functional Alpha report](implementation/FUNCTIONAL_ALPHA_013.md). Steam sandbox/final art remain external/later. Early-access premium-stack audit exceeds target at levels1–2 and is explicitly NOT balance approval. Earlier implementation statuses are historical.
 
 
@@ -354,7 +356,7 @@ Starter grants: **1 free fighter (choice of 3), 10 Credits, soft на базов
 
 Гра платна у Steam; optional Credits. «F2P-аналог» у balance discussion — власник платної гри без купівлі Credits.
 
-Credits early unlock: максимум **+3 Club Levels**, дає **access entitlement**, сам item купується **окремо за soft**. Premium-only gear допускається з target ~**5–8%** над базовим аналогом; strongest BB до ~**15%**; **повний paid stack має бути в межах 15–20% effective combat advantage** проти нормально equipped аналога того самого progression tier. Не складати незалежно 8% + 15% + MK3 і називати це виконанням ceiling.
+Credits early unlock: Level1 unavailable; Level2 +1; Level3–4 +2; Level5+ +3. Credits buy permanent access; item purchased separately with Money. Depth pricing configurable relative1×/2×/4×. Before natural unlock, individual gear contribution targets +20–25% versus best current-band normal gear; cap releases automatically at natural level without rebuy. Total premium stack may exceed this individual limit; measure pathological multipliers. The old strict combined15–20% ceiling is SUPERSEDED by user direction014. Core loop must remain playable without payment.
 
 Ceiling — approved design constraint, але виконання ще не доведено. Треба визначити метрику, порівнювати повні builds, однакові roster/progression/HP, багато seeds/scenarios; raw win-rate delta не тотожна effective power. Price/faucet tables, exact metric і premium item catalog не фінальні. Pure cosmetics — later, не priority v1.
 
@@ -491,7 +493,7 @@ Mass stats: attacker4913, defender5001, draw86 (0.86%); duration min1552 / mean6
 | I20 | One permanent free recruit; dismissal gear return; training/XP не refund |
 | I21 | Refresh resets both counters; settlement retry не додає completed battle вдруге |
 | I22 | Daily unique UTC account/date; missed day resets; client clock не authority |
-| I23 | Early unlock≤+3 access only; item soft separately; no soft→Credits |
+| I23 | Progressive early depth0/1/2/3 by level; access only; item soft separately; no soft→Credits |
 | I24 | Paid stack tested разом; no client grants/secret keys; immutable ledger/reconciliation |
 
 Tests мають охоплювати exact boundaries, invalid inputs, crash/retry, concurrency, rollback і cross-mode abuse. Passing unit tests не є доказом live Steam або production database operations.
@@ -512,7 +514,7 @@ Tests мають охоплювати exact boundaries, invalid inputs, crash/re
 | Q08 | Own Ranked removes shield; rated Revenge removes; Friend/non-rated does not; accepted incoming finishes | Pending |
 | Q09 | Revenge24h/3; draw attempt; in-flight expiry valid; start eligibility; deterministic120%; unique origin/start; no chains; no Friend/non-ranked tickets | Implemented012; floor rounding, target rating unchanged; domain/PostgreSQL verified |
 | Q10 | Base=MK1; MK2 expensive soft; MK3 Credits | Catalog pending |
-| Q11 | Starter10 Credits; no soft→Credits; fixed configurable Credits→soft; no hard daily spend cap; combined15–20%; starter resources | Pending; exact prices/faucets/metric not final |
+| Q11 | Starter10 Credits; no soft→Credits; fixed configurable Credits→soft; no hard daily spend cap; intentional premium advantage; starter resources | Pending; exact prices/faucets/metric not final |
 | Q12 | Unity6000.3.21f1/C#/Standard2.1; ASP.NET Core current LTS; PostgreSQL/EF Core; wirev1; shared pure core; observability; Docker; secrets external | Unity/wire verified; backend version pin/hosting pending |
 | Q13 | Pool6–7 full regeneration;1h OR10 completed; reset both counters; one-time free; original-price resale; gear returns | Pending; refund fraction/distribution config |
 | Q14 | Server timestamp+remainder; no MaxHP scaling; concurrency control; post-commit snapshots; min defense1 independent live HP | Pending backend lifecycle |
@@ -532,7 +534,7 @@ Tests мають охоплювати exact boundaries, invalid inputs, crash/re
 | Rating | Difference-based, prototype ±5…20 | Floors, repeated pairs, zero origin loss, capped targets |
 | Progression | XP/caps, unlock levels, recruitment quality, capacity | Early/late pacing, viable cheap veteran |
 | Credits | Prices, fixed exchange rate, faucet amounts | Ledger conservation, sustainable sinks/faucets |
-| Premium ceiling | 15–20% total constraint; metric undefined | Paired full-build simulations, predeclared metric |
+| Premium contribution014 | Individual early item~20–25%; total stack ceiling superseded | Paired full-build simulations; report bounded stacking and F2P viability |
 
 Не лишаються гіпотезами старі альтернативи Draw Money10%, Draw FighterXP35%, Loss ClubXP0 або friend discount OPEN: Q05 їх замінив. 10 starter Credits — точне затвердження, не «small amount TBD».
 
@@ -599,7 +601,7 @@ Milestone sequence нижче — план наступного окремо з�
 | Shield own Ranked interaction OPEN | Own Ranked cancels; rated Revenge cancels; Friend/non-rated keeps |
 | Draw Revenge attempt OPEN / in-flight expiry cancels | Draw consumes attempt; accepted battle finishes; no chains |
 | Separate Base and MK1 / cosmetic-only MK | Base=MK1; MK2soft/MK3Credits; small stats allowed |
-| Early unlock grants item / unlimited bypass | Access only; soft purchase separately; +3levels max |
+| Early unlock grants item / unlimited bypass | Access only; soft purchase separately; progressive depth0/1/2/3 |
 | Zero/unspecified starter Credits / bidirectional exchange | Starter10; only Credits→soft at configurable fixed rate |
 | Final3D art / automatic Project Airsoft reuse | Art OPEN; independent project; no approved reuse |
 | Backend stack unspecified | Unity/C#/ASP.NET Core/PostgreSQL/EF; exact backend pins deferred |

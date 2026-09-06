@@ -122,6 +122,7 @@ public sealed class Store(string connection)
         var assigned = state.Fighters.SelectMany(f => f.Equipment.Values).ToArray();
         if (assigned.Distinct().Count() != assigned.Length || assigned.Any(id => !state.Items.ContainsKey(id))) throw new InvalidOperationException("Equipment ownership violation");
         row.Version = state.Version; row.Money = state.Wallet.Money; row.Credits = state.Wallet.Credits; row.Rating = state.Rating;
+        state.CatalogRevision = Catalog.Version;
         row.State = Json.Write(state);
         row.Defense = state.Fighters.Any(f => f.Active) ? Airsoft.Battle.BattleWire.WriteTeam(Clubs.Snapshot(state, true, now)) : null;
         var persistedLedger = await db.Ledger.Where(x => x.Owner == state.Id).ToListAsync();
@@ -133,6 +134,19 @@ public sealed class Store(string connection)
         foreach (var e in state.Wallet.Entries.Where(e => !existing.Contains(e.Operation)))
             db.Ledger.Add(new LedgerRow { Owner = state.Id, Operation = e.Operation, Reason = e.Reason, Money = e.MoneyDelta, Credits = e.CreditsDelta, At = now });
     }
+    public Task<int> RefreshCatalog(long now) => Transaction(async db =>
+    {
+        int changed = 0;
+        foreach (var row in await db.Clubs.ToListAsync())
+        {
+            var s = Json.Read<ClubState>(row.State);
+            if (s.CatalogRevision == Catalog.Version || s.PendingMatch != null) continue;
+            s.CatalogRevision = Catalog.Version; s.Version++; row.Version = s.Version;
+            row.Defense = s.Fighters.Any(f => f.Active) ? Airsoft.Battle.BattleWire.WriteTeam(Clubs.Snapshot(s, true, now)) : null;
+            row.State = Json.Write(s); changed++;
+        }
+        return changed;
+    });
     public Task<ClubState> Create(string owner, long now) => Transaction(async db =>
     {
         var prior = await db.Clubs.FindAsync(owner); if (prior != null) return Json.Read<ClubState>(prior.State);

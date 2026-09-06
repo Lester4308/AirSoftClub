@@ -26,8 +26,8 @@ public static class Retention
     public static void EarlyUnlock(ClubState s, string item, string operation)
     {
         var definition = Catalog.Get(item);
-        if (definition.Credits > 0 || definition.Level <= s.Level || definition.Level > s.Level + AlphaConfig.EarlyLevels || s.Unlocks.Contains(item)) throw new InvalidOperationException("Early unlock unavailable");
-        s.Wallet.Apply(operation, "access:" + item, 0, -AlphaConfig.EarlyCredits); s.Unlocks.Add(item);
+        if (!EarlyAccess.CanUnlock(s, definition)) throw new InvalidOperationException("Early unlock unavailable");
+        s.Wallet.Apply(operation, "access:" + item, 0, -EarlyAccess.Price(definition.Level - s.Level)); s.Unlocks.Add(item);
     }
 }
 public sealed class PurchaseOrder

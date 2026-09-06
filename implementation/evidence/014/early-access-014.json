@@ -1,0 +1,77 @@
+{
+  "Metric": "Best available sustained DPS x relative effective HP at equal base stats; includes early-access catalog paths and High-End soft BB",
+  "MaxRatio": 1.2167894080266172450409854006,
+  "StrictStackCeilingSuperseded": true,
+  "Rows": [
+    {
+      "Level": 1,
+      "Normal": "Pistol-MK2/armor1/bb3",
+      "Paid": "Pistol-MK3/armor1/bb4",
+      "Ratio": 1.0608282342288915281047733847,
+      "MeasuredStack": 1.0608282342288915281047733847
+    },
+    {
+      "Level": 2,
+      "Normal": "Smg-MK2/armor2/bb3",
+      "Paid": "AssaultRifle-MK2/armor3/bb4",
+      "Ratio": 1.2167894080266172450409854006,
+      "MeasuredStack": 1.2167894080266172450409854006
+    },
+    {
+      "Level": 3,
+      "Normal": "AssaultRifle-MK2/armor3/bb3",
+      "Paid": "AssaultRifle-MK3/armor3/bb4",
+      "Ratio": 1.0608343662338990673294649077,
+      "MeasuredStack": 1.0608343662338990673294649077
+    },
+    {
+      "Level": 4,
+      "Normal": "AssaultRifle-MK2/armor3/bb3",
+      "Paid": "AssaultRifle-MK3/armor3/bb4",
+      "Ratio": 1.0608343662338990673294649077,
+      "MeasuredStack": 1.0608343662338990673294649077
+    },
+    {
+      "Level": 5,
+      "Normal": "AssaultRifle-MK2/armor3/bb3",
+      "Paid": "AssaultRifle-MK3/armor3/bb4",
+      "Ratio": 1.0608343662338990673294649077,
+      "MeasuredStack": 1.0608343662338990673294649077
+    },
+    {
+      "Level": 6,
+      "Normal": "AssaultRifle-MK2/armor3/bb3",
+      "Paid": "AssaultRifle-MK3/armor3/bb4",
+      "Ratio": 1.0608343662338990673294649077,
+      "MeasuredStack": 1.0608343662338990673294649077
+    },
+    {
+      "Level": 7,
+      "Normal": "AssaultRifle-MK2/armor3/bb3",
+      "Paid": "AssaultRifle-MK3/armor3/bb4",
+      "Ratio": 1.0608343662338990673294649077,
+      "MeasuredStack": 1.0608343662338990673294649077
+    },
+    {
+      "Level": 8,
+      "Normal": "AssaultRifle-MK2/armor3/bb3",
+      "Paid": "AssaultRifle-MK3/armor3/bb4",
+      "Ratio": 1.0608343662338990673294649077,
+      "MeasuredStack": 1.0608343662338990673294649077
+    },
+    {
+      "Level": 9,
+      "Normal": "AssaultRifle-MK2/armor3/bb3",
+      "Paid": "AssaultRifle-MK3/armor3/bb4",
+      "Ratio": 1.0608343662338990673294649077,
+      "MeasuredStack": 1.0608343662338990673294649077
+    },
+    {
+      "Level": 10,
+      "Normal": "AssaultRifle-MK2/armor3/bb3",
+      "Paid": "AssaultRifle-MK3/armor3/bb4",
+      "Ratio": 1.0608343662338990673294649077,
+      "MeasuredStack": 1.0608343662338990673294649077
+    }
+  ]
+}

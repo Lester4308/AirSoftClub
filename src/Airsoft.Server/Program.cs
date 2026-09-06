@@ -42,6 +42,7 @@ app.Use(async (http, next) =>
 });
 app.MapGet("/health", () => Results.Ok(new { status = "alive" }));
 app.MapGet("/ready", async (Store store) => { await using var db = store.Open(); return await db.Database.CanConnectAsync() && !(await db.Database.GetPendingMigrationsAsync()).Any() ? Results.Ok() : Results.StatusCode(503); });
+await app.Services.GetRequiredService<Store>().RefreshCatalog(Api.Now);
 Api.Map(app);
 DevelopmentTools.Map(app);
 app.MapPost("/steam/login", async (SteamLogin intent, SteamSessions sessions) => Results.Json(new { Token = await sessions.Login(intent.Ticket, Api.Now) }));

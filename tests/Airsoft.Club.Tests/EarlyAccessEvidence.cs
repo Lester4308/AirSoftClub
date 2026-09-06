@@ -6,15 +6,15 @@ internal static partial class Program
     static int EarlyAccessEvidence()
     {
         var rows = new List<object>(); decimal maximum = 0;
-        for (int level = 1; level <= 6; level++)
+        for (int level = 1; level <= 10; level++)
         {
             (decimal Score, string Build) Best(bool paid)
             {
                 decimal best = 0; string name = "";
-                foreach (var weapon in Catalog.Items.Where(i => i.Slot == Slot.Weapon && (i.Level <= level || paid && i.Credits == 0 && i.Level <= level + AlphaConfig.EarlyLevels) && (paid || i.Credits == 0)))
-                    for (int weight = 1; weight <= Math.Min(3, level + (paid ? AlphaConfig.EarlyLevels : 0)); weight++)
+                foreach (var weapon in Catalog.Items.Where(i => i.Slot == Slot.Weapon && (i.Level <= level || paid && i.Credits == 0 && i.Level <= level + EarlyAccess.Depth(level)) && (paid || i.Credits == 0)))
+                    for (int weight = 1; weight <= Math.Min(3, level + (paid ? EarlyAccess.Depth(level) : 0)); weight++)
                     {
-                        var s = Clubs.Create("metric", 0); s.ActiveBbTier = paid ? 4 : 3;
+                        var s = Clubs.Create("metric", 0); s.Xp = (level - 1) * 1000; s.ActiveBbTier = paid ? 4 : 3;
                         var f = new Fighter { Id = "f", Accuracy = 10, Endurance = 10, Agility = 10, Hp = 1000000 }; s.Fighters.Add(f);
                         foreach (var slot in Enum.GetValues<Slot>()) { string id = slot.ToString(); s.Items[id] = slot == Slot.Weapon ? weapon.Id : slot + "-" + weight; f.Equipment[slot] = id; }
                         var team = Clubs.Snapshot(s, true, 0); var actor = team.Fighters[0]; var rules = new BattleRules();
@@ -27,10 +27,10 @@ internal static partial class Program
                 return (best, name);
             }
             var normal = Best(false); var paid = Best(true); decimal ratio = paid.Score / normal.Score; maximum = Math.Max(maximum, ratio);
-            rows.Add(new { Level = level, Normal = normal.Build, Paid = paid.Build, Ratio = ratio, AboveTarget = ratio > 1.20m });
+            rows.Add(new { Level = level, Normal = normal.Build, Paid = paid.Build, Ratio = ratio, MeasuredStack = ratio });
         }
-        var result = new { Metric = "Best available sustained DPS x relative effective HP at equal base stats; includes early-access catalog paths and High-End soft BB", MaxRatio = maximum, TuningRequired = maximum > 1.20m, Rows = rows };
-        Directory.CreateDirectory("Artifacts"); File.WriteAllText("Artifacts/early-access-013.json", JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }));
+        var result = new { Metric = "Best available sustained DPS x relative effective HP at equal base stats; includes early-access catalog paths and High-End soft BB", MaxRatio = maximum, StrictStackCeilingSuperseded = true, Rows = rows };
+        Directory.CreateDirectory("Artifacts"); File.WriteAllText("Artifacts/early-access-014.json", JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }));
         Console.WriteLine(JsonSerializer.Serialize(result)); return 0; // Evidence, not approval of final balance.
     }
 }

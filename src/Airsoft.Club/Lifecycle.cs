@@ -8,7 +8,7 @@ public sealed record ItemDefinition(string Id, Slot Slot, int Mk, long Money, lo
     int Protection = 0, int AgilityPenalty = 0);
 public static class Catalog
 {
-    public const string Version = "catalog-013-v1";
+    public const string Version = "catalog-014-v1";
     public static readonly ItemDefinition[] Items = Build();
     static ItemDefinition[] Build()
     {
@@ -78,6 +78,7 @@ public sealed record RecruitOffer(string Id, int Accuracy, int Endurance, int Ag
 public sealed class ClubState
 {
     public string Id { get; set; } = "";
+    public string CatalogRevision { get; set; } = "";
     public string Name { get; set; } = "Development club";
     public long Version { get; set; }
     public Wallet Wallet { get; set; } = new();
@@ -230,12 +231,11 @@ public static class Clubs
             {
                 var item = Catalog.Get(s.Items[instance]);
                 if (item.Slot == Slot.Weapon)
-                    weapon = new WeaponSnapshot(item.Id, item.Family, Fixed.FromInt(item.Damage) * Fixed.Ratio(item.Mk == 3 ? AlphaConfig.Mk3Permille : item.Mk == 2 ? AlphaConfig.Mk2Permille : 1000, 1000),
-                        Fixed.Zero, Fixed.Zero, item.Interval, item.Projectiles);
-                else { protection += item.Protection; penalty += item.AgilityPenalty; }
+                    weapon = EarlyAccess.Native(item);
+                else { protection += EarlyAccess.Protection(s, item); penalty += item.AgilityPenalty; }
             }
-            fighters.Add(new FighterSnapshot(f.Id, Fixed.FromInt(f.Accuracy), Fixed.FromInt(f.Endurance), Fixed.FromInt(f.Agility),
-                Fixed.FromRaw(defense ? f.MaxHp : f.Hp), weapon, new ArmorLoadout(Fixed.FromInt(protection), Fixed.Zero, Fixed.FromInt(penalty))));
+            fighters.Add(EarlyAccess.Cap(s, new FighterSnapshot(f.Id, Fixed.FromInt(f.Accuracy), Fixed.FromInt(f.Endurance), Fixed.FromInt(f.Agility),
+                Fixed.FromRaw(defense ? f.MaxHp : f.Hp), weapon, new ArmorLoadout(Fixed.FromInt(protection), Fixed.Zero, Fixed.FromInt(penalty)))));
         }
         if (fighters.Count == 0) throw new InvalidOperationException("No eligible fighters");
         return new TeamSnapshot(fighters, Catalog.Bb(s.ActiveBbTier), defense ? s.Capacity : s.BbStock[s.ActiveBbTier]);

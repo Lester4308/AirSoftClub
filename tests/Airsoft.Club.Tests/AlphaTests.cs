@@ -3,12 +3,12 @@ internal static partial class Program
 {
     static void AlphaTests()
     {
-        Test("alpha gradual weapon unlock and access-only maximum three levels", () =>
+        Test("alpha gradual weapon unlock and access-only progressive depth", () =>
         {
             var s = Starter(); Reject(() => Clubs.Buy(s, "SniperRifle-MK1", "locked"));
             Reject(() => Retention.EarlyUnlock(s, "SniperRifle-MK1", "too-far"));
             Reject(() => Retention.EarlyUnlock(s, "Shotgun-MK3", "premium"));
-            long money = s.Wallet.Money; Retention.EarlyUnlock(s, "Shotgun-MK1", "access");
+            long money = s.Wallet.Money; s.Xp = 2000; Retention.EarlyUnlock(s, "Shotgun-MK1", "access");
             Check(s.Items.Count == 0 && s.Wallet.Money == money && s.Wallet.Credits == 9);
             Clubs.Buy(s, "Shotgun-MK1", "buy"); Check(s.Items.Count == 1 && s.Wallet.Money == money - AlphaConfig.Mk1Money);
         });

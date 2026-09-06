@@ -5,7 +5,7 @@ internal static partial class Program
 {
     static TeamSnapshot BalanceTeam(int size, WeaponFamily family, int armor, bool premium)
     {
-        var s = Clubs.Create("balance", 0); s.Fighters.Clear(); s.ActiveBbTier = premium ? 4 : 0;
+        var s = Clubs.Create("balance", 0); s.Xp = 10000; s.Fighters.Clear(); s.ActiveBbTier = premium ? 4 : 0;
         for (int n = 0; n < size; n++)
         {
             var f = new Fighter { Id = n.ToString("D2"), Accuracy = 10, Endurance = 10, Agility = 10, Hp = 1000000 }; s.Fighters.Add(f);

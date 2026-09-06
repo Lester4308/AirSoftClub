@@ -3,7 +3,7 @@ namespace Airsoft.Club;
 // Versioned server-side prototype values. Product invariants remain fixed; tuning is not final balance.
 public static class AlphaConfig
 {
-    public const string Version = "alpha-013-v1";
+    public const string Version = "alpha-014-v1";
     public const int MaxRoster = 16, StarterBb = 60, FighterXpPerLevel = 100, ClubXpPerLevel = 1000;
     public const int TrainingBaseCap = 15, TrainingCapPerLevel = 5, TrainingMoney = 25;
     public const int CapacityBase = 1000, CapacityPerLevel = 500, CapacityMaximum = 1000000;
@@ -11,7 +11,7 @@ public static class AlphaConfig
     public const int RecruitCount = 7, RecruitMatches = 10, RecruitRefreshMoney = 50, RecruitStatBase = 5, RecruitVariance = 10, RecruitPricePerStat = 5, ResalePercent = 30;
     public const int BbRefill = 500, EmergencyPercent = 15, AutoBuyLevel = 3, AutoBuyThreshold = 100, AutoBuyMinimumMoney = 150;
     public const int Mk1Money = 100, Mk2Money = 600, Mk3Credits = 6, Mk2Permille = 1020, Mk3Permille = 1035;
-    public const int EarlyLevels = 3, EarlyCredits = 1, DailyMoney = 100, DailyStep = 10, SeventhDayCredits = 1;
+    public const int EarlyLevels = 3, EarlyItemCapPercent = 125, EarlyCredits = 1, DailyMoney = 100, DailyStep = 10, SeventhDayCredits = 1;
     public const int FirstBattleCredits = 2, LevelCredits = 1, CreditLevelLimit = 10;
     public const int RatingBase = 10, RatingDivisor = 100, RatingMin = 5, RatingMax = 20, IncomingCap = 4;
     public const long BattleLeaseMs = 120000;

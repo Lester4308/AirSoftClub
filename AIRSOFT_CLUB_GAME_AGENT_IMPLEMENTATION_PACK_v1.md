@@ -1,3 +1,5 @@
+> **Direction014 overrides historical premium constraints:** use [Monetization014](implementation/MONETIZATION_BALANCE_014.md). Premium advantage is intentional; individual early-item cap replaces the former strict total-stack ceiling.
+
 > **Functional Alpha013 checkpoint:** local functional acceptance verified; see [Functional Alpha report](implementation/FUNCTIONAL_ALPHA_013.md). Steam sandbox/final art remain external/later. Early-access premium-stack audit exceeds target at levels1–2 and is explicitly NOT balance approval. Earlier implementation statuses are historical.
 
 
@@ -115,7 +117,7 @@ Green Gate не вимагає user confirmation при exact/known safe state. 
 | Shields |8h/1d/3d/7d;blocks incoming;own Ranked/rated Revenge cancels;Friend/non-rated keeps |
 | Revenge |24h/3 attempts,Draw counts,120%actual origin loss,start eligibility,no chains |
 | Recruitment |3 free choices→one permanent grant;6–7 pool;1h OR10completed;both reset;gear returns |
-| Premium |Base=MK1,MK2soft,MK3Credits;starter10Credits;only Credits→soft;early access+3 then soft item |
+| Premium |Base=MK1,MK2soft,MK3Credits;starter10Credits;only Credits→soft;early depth L1:0/L2:1/L3–4:2/L5+:3 then soft item |
 | Authority |Server-owned economy/rating/identity/results;immutable ledger,once-only settlement |
 | Art |Final art OPEN; placeholders не фінальне затвердження |
 
@@ -255,7 +257,7 @@ Counterparty policy CLOSED 2026-09-06: target loses no rating; existing friend a
 
 ### 010 — Credits, Retention, Moderation & Commerce Foundation
 
-**Виконай:** controlled daily/achievement/ClubLevel grants,UTC daily/streak,starter10;fixed Credits→soft;early unlock access≤+3/soft item purchase,MK3/premium/shields;trusted SKU/order states,immutable ledger,reconciliation retries,refund/chargeback processing seam;minimal names/emblem/report/sanctions interfaces,no open text chat.
+**Виконай:** controlled daily/achievement/ClubLevel grants,UTC daily/streak,starter10;fixed Credits→soft;progressive early access0/1/2/3 by level, individual contribution cap/natural release/soft item purchase,MK3/premium/shields;trusted SKU/order states,immutable ledger,reconciliation retries,refund/chargeback processing seam;minimal names/emblem/report/sanctions interfaces,no open text chat.
 
 **Gate:**account/date unique claim;UTC midnight,missed full day→Day1;duplicate achievement/level grant;conversion stale quote;entitlement vs item purchase;payment verified but DB grant fails then recovers once;unknown payment state;duplicate callbacks;refund/reversal idempotency;unauthorized moderation denied/audited. Real-money transactions не запускати. Sandbox results відокремити від mocks.
 
@@ -267,7 +269,7 @@ Counterparty policy CLOSED 2026-09-06: target loses no rating; existing friend a
 
 **Gate:**повний local loop,regression suite,actual DB tests,deterministic parity,10000 mass simulations,EditMode/PlayMode,Mono/native IL2CPP і16v16 smoke. Якщо core/wire untouched — old golden зберігається. Performance/profile тільки за фактичною потребою; не optimize через припущення.
 
-Premium ceiling не доводиться одиничним win-rate: predeclare metric,matched tiers/rosters/HP,seeds/scenarios,full gear+MK3+BB stack. Якщо evidence перевищує constraint — налаштувати prototype config у дозволених межах і повторити affected checks; не приховувати результат або підняти ceiling.
+Premium direction014: measure paired full builds across progression tiers. Individual early item contribution target~20–25%; total premium build can be materially stronger. Reject technical singularities, not intentional commercial advantage. Exact prices and final balance remain hypotheses.
 
 **Завершення pass:** deliver verified local build/source/docs/commits та список конкретних production gates. Не переходити автоматично до012 live release/final art.
 

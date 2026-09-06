@@ -12,7 +12,7 @@ internal static partial class Program
         Test("achievement/level grants once and access separate from item", () =>
         {
             var s = Starter(); s.CompletedMatches.Add("match"); s.Xp = 1000; Retention.Progression(s); Retention.Progression(s); Check(s.Wallet.Credits == 13);
-            s.Xp = 0; Retention.EarlyUnlock(s, "HeadProtection-3", "unlock"); Check(s.Items.Count == 0); Clubs.Buy(s, "HeadProtection-3", "buy"); Check(s.Items.Count == 1 && s.Wallet.Credits == 12);
+            s.Xp = 1000; Retention.EarlyUnlock(s, "HeadProtection-3", "unlock"); Check(s.Items.Count == 0); Clubs.Buy(s, "HeadProtection-3", "buy"); Check(s.Items.Count == 1 && s.Wallet.Credits == 12);
         });
         Test("trusted order ownership, duplicate payment and refund", () =>
         {

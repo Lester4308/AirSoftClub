@@ -1,3 +1,5 @@
+> **Current user direction014:** progression + monetization driven; intentional premium combat advantage. Blanket early+3 and strict total premium15–20% ceiling are superseded. See [Monetization014](implementation/MONETIZATION_BALANCE_014.md). Visual prototype authorized; final art and Steam sandbox remain open.
+
 > **Functional Alpha013 checkpoint:** local functional acceptance verified; see [Functional Alpha report](implementation/FUNCTIONAL_ALPHA_013.md). Steam sandbox/final art remain external/later. Early-access premium-stack audit exceeds target at levels1–2 and is explicitly NOT balance approval. Earlier implementation statuses are historical.
 
 > **Current verification012:** Revenge counterparty policy is approved (target rating unchanged), live local path enabled, rewards display corrected; manual visual gate blocked by Windows capture API. See [Verification012](implementation/VERIFICATION_012.md). Previous011 statuses are historical.
