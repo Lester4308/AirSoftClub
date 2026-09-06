@@ -1,0 +1,11 @@
+# Implementation 005 — actual PostgreSQL authority foundation
+
+ASP.NET Core net10.0, SDK10.0.302; EF Core/Relational/Design10.0.8 explicitly pinned and dotnet-ef10.0.8. Npgsql EF provider10.0.2. Package lock records transitive versions. Explicit EF runtime references fix a discovered10.0.4/10.0.8 transitive conflict; clean builds/tests use one runtime version.
+
+Compatibility checked against official [.NET LTS policy](https://dotnet.microsoft.com/en-us/platform/support/policy), [Npgsql10 release notes](https://www.npgsql.org/efcore/release-notes/10.0.html) and [PostgreSQL versioning](https://www.postgresql.org/support/versioning/). PostgreSQL18.6 image is pinned by digest in compose.yaml. Docker29.7.2, actual healthy container on loopback55432. No production DB or deployment touched.
+
+Versioned EF migrations create clubs, operations, append-only ledger, matches and policy persistence; FK ownership, composite operation/ledger uniqueness, version concurrency and nonnegative wallet/rating checks. Club-owned fighters/offers/items/BB are versioned JSON aggregate state: application validation checks roster/HP/assignment uniqueness and ownership before persistence; no client may write aggregate JSON. Separate relational child projections are deferred until query pressure justifies them. Defense bytes become externally readable only after the same transaction commits. Cross-process advisory transaction lock intentionally serializes development mutations; production partitioning/load verification remains a gate.
+
+Development passwords generated under ignored Artifacts, supplied through environment, never committed. Health/readiness endpoints exist. Start/migration: tools/start-db.ps1 -Migrate; real database tests: tools/verify-server.ps1. Tests use unique account IDs and preserve existing data.
+
+Verification: five PostgreSQL integration scenarios PASS: migration/create/reopen, last-resource simultaneous commands, stale version, response-loss dedup/payload conflict, injected rollback, DB nonnegative/FK rejection. Domain14/14 previously passed. No in-memory provider is used. Ledger mutation rejection added as a forward migration. Observability/application routes and battle recovery follow006. Project Airsoft untouched.
