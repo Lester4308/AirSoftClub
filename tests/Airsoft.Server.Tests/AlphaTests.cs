@@ -7,6 +7,28 @@ internal static partial class Program
     { try { await action(); return true; } catch (InvalidOperationException) { return false; } }
     static async Task AlphaDatabaseTests()
     {
+        await Test("catalog refresh republishes legacy capped defense once without charging", async () =>
+        {
+            string id = await Armed();
+            await using (var db = store.Open())
+            {
+                var row = (await db.Clubs.FindAsync(id))!;
+                var s = Json.Read<ClubState>(row.State); s.CatalogRevision = "catalog-013-v1";
+                s.Items[s.Fighters[0].Equipment[Slot.Weapon]] = "AssaultRifle-MK2";
+                s.Unlocks.Add("AssaultRifle-MK2"); row.State = Json.Write(s);
+                await db.SaveChangesAsync();
+            }
+            await store.RefreshCatalog(1);
+            await using (var db = store.Open())
+            {
+                var row = (await db.Clubs.FindAsync(id))!; var s = Json.Read<ClubState>(row.State);
+                var team = Airsoft.Battle.BattleWire.ReadTeam(row.Defense!);
+                Check(s.CatalogRevision == Catalog.Version && s.Version == 2 && row.Money == 900 && s.Unlocks.Contains("AssaultRifle-MK2"));
+                Check(team.Fighters[0].Weapon!.Damage.Raw < EarlyAccess.Native(Catalog.Get("AssaultRifle-MK2")).Damage.Raw);
+            }
+            await store.RefreshCatalog(2);
+            await using (var db = store.Open()) Check((await db.Clubs.FindAsync(id))!.Version == 2);
+        });
         await Test("development attacks cannot cross into Steam identity scope", async () =>
         {
             string id = "dev-scope-" + Guid.NewGuid().ToString("N"); await store.Create(id, 0);
@@ -40,6 +62,7 @@ internal static partial class Program
             await using (var db = store.Open())
             {
                 var m = (await db.Matches.FindAsync(matchId))!; var receipt = Json.Read<SettlementReceipt>(m.Settlement);
+                Check(Json.Read<CapturedEconomy>(m.Economy).Appearance.Length == 2);
                 Check(receipt.Schema == 1 && receipt.At == 3 && m.AttackerVersion == 1 && m.DefenderVersion == 1 && m.CatalogVersion == Catalog.Version);
                 Check((await db.Clubs.FindAsync(a))!.Rating == 100 + receipt.AttackerRatingDelta);
                 Check((await db.Clubs.FindAsync(d))!.Rating == 100 + receipt.DefenderRatingDelta);

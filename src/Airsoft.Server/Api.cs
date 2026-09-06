@@ -84,7 +84,7 @@ public static class Api
                 Equipment = f.Equipment.Select(e => new { Slot = e.Key.ToString(), Item = e.Value, Definition = s.Items[e.Value] })
             }),
             Items = s.Items.Select(i => new { Id = i.Key, Definition = i.Value, Slot = Catalog.Get(i.Value).Slot.ToString(), Equipped = s.Fighters.Any(f => f.Equipment.Values.Contains(i.Key)) }),
-            Catalog = Catalog.Items.Select(i => new { i.Id, Slot = i.Slot.ToString(), i.Mk, i.Money, i.Credits, i.Level, Access = i.Level <= s.Level || s.Unlocks.Contains(i.Id), i.Damage, i.Interval, i.Projectiles, i.Protection, i.AgilityPenalty }),
+            Catalog = Catalog.Items.Select(i => new { i.Id, Slot = i.Slot.ToString(), i.Mk, i.Money, i.Credits, i.Level, Access = i.Level <= s.Level || s.Unlocks.Contains(i.Id), i.Damage, i.Interval, i.Projectiles, i.Protection, i.AgilityPenalty, EarlyAllowed = EarlyAccess.CanUnlock(s, i), EarlyPrice = EarlyAccess.CanUnlock(s, i) ? EarlyAccess.Price(i.Level - s.Level) : 0, EarlyCapped = i.Level > s.Level }),
             RevengeTickets = policy.Tickets.Where(t => t.Owner == owner && !t.Consumed && t.Attempts < 3 && t.Expires > now),
             History = history.Select(m => new
             {
@@ -197,6 +197,7 @@ public static class Api
                 RewardFighterXp = reward.FighterXp,
                 m.Id,
                 m.Status,
+                Appearance = Json.Read<CapturedEconomy>(m.Economy).Appearance,
                 Input = m.Result == null ? "" : Convert.ToBase64String(m.Input),
                 Result = m.Result == null ? "" : Convert.ToBase64String(m.Result),
                 Digest = m.Result == null ? "" : BattleWire.Digest(BattleWire.ReadResult(m.Result))

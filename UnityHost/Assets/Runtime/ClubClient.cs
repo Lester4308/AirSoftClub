@@ -38,7 +38,7 @@ namespace AirsoftClub.Unity
     [Serializable] public class EquipmentView { public string Slot, Item, Definition; }
     [Serializable] public class OfferView { public string Id, Name; public int Accuracy, Endurance, Agility; public long Price; }
     [Serializable] public class ItemView { public string Id, Definition, Slot; public bool Equipped; }
-    [Serializable] public class CatalogView { public string Id, Slot; public long Money, Credits; public int Mk, Level, Damage, Interval, Projectiles, Protection, AgilityPenalty; public bool Access; }
+    [Serializable] public class CatalogView { public string Id, Slot; public long Money, Credits; public int Mk, Level, Damage, Interval, Projectiles, Protection, AgilityPenalty; public bool Access, EarlyAllowed, EarlyCapped; public int EarlyPrice; }
     [Serializable] public class RevengeView { public string Origin, Target; public int ActualLoss, Attempts; public long Expires; }
     [Serializable] public class HistoryView { public string Id, Status, Mode, Attacker, Defender, Outcome; public long AcceptedAt, Money; public int RatingDelta; public bool RatingKnown; }
     [Serializable] public class RivalView { public string Id, Name, Category; public int Level, Rating, Fighters; public bool Protected; }
@@ -53,13 +53,15 @@ namespace AirsoftClub.Unity
         public int Number, OfferVersion;
         public bool Flag;
     }
-    [Serializable] public class MatchView { public string Id, MatchId, Status, Input, Result, Digest; public long RewardMoney, RewardClubXp, RewardFighterXp; public int RatingDelta; public bool RatingKnown; }
+    [Serializable] public class AppearanceView { public string Id, Side; public bool Head, Rig, Camo; }
+    [Serializable] public class MatchView { public AppearanceView[] Appearance; public string Id, MatchId, Status, Input, Result, Digest; public long RewardMoney, RewardClubXp, RewardFighterXp; public int RatingDelta; public bool RatingKnown; }
     public sealed class ClubClient : MonoBehaviour
     {
         const string Endpoint = "http://127.0.0.1:5080";
         string account, token = "", page = "Club", status = "Connect to your local development server.", selectedFighter = "", lastPayload, selectedTarget = "";
         string mode = "Practice", rewardSummary = "", profileName = "", lastEndpoint = "/api/command";
-        bool steamSession;
+        bool steamSession, showPremium;
+        AppearanceView[] appearance = Array.Empty<AppearanceView>();
         LeaderView[] leaders = Array.Empty<LeaderView>();
         ClubView club;
         RivalView[] rivals = Array.Empty<RivalView>();
@@ -86,6 +88,7 @@ namespace AirsoftClub.Unity
             smoke = Environment.GetCommandLineArgs().Contains("--club-ui-smoke");
             account = PlayerPrefs.GetString("club-development-account", "dev-" + Guid.NewGuid().ToString("N").Substring(0, 12));
             if (Environment.GetCommandLineArgs().Contains("--club-reconnect-smoke")) { smoke = true; StartCoroutine(ReconnectWalkthrough()); return; }
+            if (Environment.GetCommandLineArgs().Contains("--visual-matrix")) { smoke = true; StartCoroutine(VisualWalkthrough()); return; }
             if (smoke) { account = "dev-smoke-" + Guid.NewGuid().ToString("N").Substring(0, 12); StartCoroutine(Walkthrough()); }
         }
         IEnumerator Request(string path, string payload, Action<string> success)
@@ -164,6 +167,7 @@ namespace AirsoftClub.Unity
             if (view != null && view.Status == "Completed")
             {
                 rewardSummary = $"Money +{view.RewardMoney} • Club XP +{view.RewardClubXp} • Each participating fighter XP +{view.RewardFighterXp} • Rating {(view.RatingKnown ? view.RatingDelta.ToString("+0;-0;0") : "historical unknown")}";
+                appearance = view.Appearance ?? Array.Empty<AppearanceView>();
                 replayInput = BattleWire.ReadConfig(Convert.FromBase64String(view.Input)); replayResult = BattleWire.ReadResult(Convert.FromBase64String(view.Result));
                 hp.Clear(); foreach (var f in replayInput.Attacker.Fighters) hp["A" + f.Id] = f.StartingHp.Raw;
                 foreach (var f in replayInput.Defender.Fighters) hp["D" + f.Id] = f.StartingHp.Raw;
@@ -201,9 +205,9 @@ namespace AirsoftClub.Unity
         void OnGUI()
         {
             Styles(); GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture, ScaleMode.StretchToFill, false, 0, new Color(.055f, .085f, .11f), 0, 0);
-            float scale = Mathf.Min(Screen.width / 1280f, Screen.height / 800f); GUI.matrix = Matrix4x4.Scale(new Vector3(scale, scale, 1));
+            float scale = Mathf.Min(Screen.width / 1280f, Screen.height / 800f); GUI.matrix = Matrix4x4.TRS(new Vector3((Screen.width - 1280 * scale) / 2, 0, 0), Quaternion.identity, new Vector3(scale, scale, 1));
             GUILayout.BeginArea(new Rect(28, 20, 1224, 760));
-            GUILayout.Label("AIRSOFT / CLUB", title); GUILayout.Label("LOCAL DEVELOPMENT • Placeholder interface • Server-authoritative • No live Steam or payments", small);
+            GUILayout.Label("AIRSOFT CLUB", title); GUILayout.Label("Build your squad  •  Train. Equip. Challenge.  •  Visual prototype", small);
             GUILayout.Space(12);
             GUI.enabled = !busy;
             if (club == null)
@@ -216,11 +220,11 @@ namespace AirsoftClub.Unity
             else
             {
                 Text($"{club.Name}  •  Level {club.Level}  /  XP {club.Xp}  •  Rating {club.Rating}     Money {club.Money}     Credits {club.Credits}");
-                GUILayout.BeginHorizontal(); foreach (string tab in new[] { "Club", "Roster", "Recruitment", "Supply", "Opponents", "History", "Status" }) if (Btn(tab)) { page = tab; scroll = Vector2.zero; }
-                if (Btn("Refresh")) StartCoroutine(Retry()); if (Btn("Reconnect")) StartCoroutine(steamSession ? SteamLogin() : Login()); GUILayout.EndHorizontal();
-                GUILayout.Space(10); scroll = GUILayout.BeginScrollView(scroll, GUILayout.Height(555));
+                GUILayout.BeginHorizontal(); foreach (string tab in new[] { "Club", "Roster", "Recruitment", "Training", "Shop", "BB", "Recovery", "Opponents", "History", "Settings" }) if (Btn(tab)) { page = tab; scroll = Vector2.zero; }
+                GUILayout.EndHorizontal(); GUILayout.BeginHorizontal(); if (Btn("Refresh state")) StartCoroutine(Retry()); if (Btn("Reconnect")) StartCoroutine(steamSession ? SteamLogin() : Login()); GUILayout.EndHorizontal();
+                GUILayout.Space(10); scroll = GUILayout.BeginScrollView(scroll, GUILayout.Height(510));
                 if (page == "Club") Hub(); else if (page == "Roster") Roster(); else if (page == "Recruitment") Recruitment();
-                else if (page == "Supply") Supply(); else if (page == "Opponents") Opponents(); else if (page == "History") History(); else if (page == "Battle") Battle(); else if (page == "Status") StatusPage();
+                else if (page == "Supply" || page == "Shop" || page == "BB") Supply(); else if (page == "Opponents") Opponents(); else if (page == "History") History(); else if (page == "Battle") Battle(); else if (page == "Status" || page == "Settings") StatusPage(); else if (page == "Training" || page == "Recovery" || page == "Equipment") Roster();
                 GUILayout.EndScrollView();
             }
             GUI.enabled = true; GUILayout.Space(8); GUILayout.Label((busy ? "Working... " : "") + status, small);
@@ -229,7 +233,17 @@ namespace AirsoftClub.Unity
         }
         void Hub()
         {
-            GUILayout.Label("YOUR NEXT MOVE", title);
+            GUILayout.Label("YOUR CLUB", title);
+            Text("Next Club level: " + (club.Xp % 1000) + " / 1000 XP • Equipment access expands as your club grows.");
+            if (club.Fighters.Length > 0)
+            {
+                var strip = GUILayoutUtility.GetRect(1100, 110);
+                for (int n = 0; n < Math.Min(8, club.Fighters.Length); n++)
+                {
+                    var f = club.Fighters[n]; var weapon = f.Equipment.FirstOrDefault(e => e.Slot == "Weapon")?.Definition;
+                    VisualPrototype.Fighter(new Rect(strip.x + n * 125, strip.y, 110, 100), f.Id, true, weapon, f.Equipment.Any(e => e.Slot == "HeadProtection"), f.Equipment.Any(e => e.Slot == "LoadBearingArmor"), f.Equipment.Any(e => e.Slot == "Camouflage"), weapon?.Contains("MK3") == true ? 3 : weapon?.Contains("MK2") == true ? 2 : 1, f.Hp > 0, f.Hp / (float)f.MaxHp);
+                }
+            }
             Text(club.Fighters.Length == 0 ? "Choose one of three free recruits to found your club." : "All ready fighters join automatically. Select a fighter only to manage their equipment.");
             Text($"Roster {club.Fighters.Length}/16  •  Ready {club.Fighters.Count(f => f.Ready)}  •  Shared BB tier {club.ActiveBbTier}: {club.BbStock[club.ActiveBbTier]}/{club.Capacity}");
             Text("Accuracy / Endurance / Agility. Battle XP unlocks training caps; Money buys training. Offensive wounds persist; defense begins at full HP.");
@@ -248,12 +262,13 @@ namespace AirsoftClub.Unity
         void Roster()
         {
             if (club.Fighters.Length == 0) Text("No fighters yet. Open Recruitment.");
-            foreach (var f in club.Fighters)
+            GUILayout.Label(page == "Roster" ? "FIGHTERS & EQUIPMENT" : page.ToUpperInvariant(), title);
+            foreach (var f in club.Fighters.Where(f => page != "Equipment" || f.Id == selectedFighter))
             {
-                GUILayout.BeginVertical(GUI.skin.box); Text($"{f.Name} • Level {f.Level} • HP {f.Hp / 10000f:0.0}/{f.MaxHp / 10000f:0.0} • {(f.Ready ? "READY" : "RECOVERING")} • XP {f.Xp}");
+                GUILayout.BeginVertical(GUI.skin.box); var portrait = GUILayoutUtility.GetRect(110, 105); VisualPrototype.Fighter(new Rect(portrait.x, portrait.y, 110, 100), f.Id, true, f.Equipment.FirstOrDefault(e => e.Slot == "Weapon")?.Definition, f.Equipment.Any(e => e.Slot == "HeadProtection"), f.Equipment.Any(e => e.Slot == "LoadBearingArmor"), f.Equipment.Any(e => e.Slot == "Camouflage"), f.Equipment.Any(e => e.Definition.Contains("MK3")) ? 3 : f.Equipment.Any(e => e.Definition.Contains("MK2")) ? 2 : 1, f.Hp > 0, f.Hp / (float)f.MaxHp); Text($"{f.Name} • Level {f.Level} • HP {f.Hp / 10000f:0.0}/{f.MaxHp / 10000f:0.0} • {(f.Ready ? "READY" : "RECOVERING")} • XP {f.Xp}");
                 Text($"Accuracy {f.Accuracy} / Endurance {f.Endurance} / Agility {f.Agility} • Training cap {f.TrainingCap}");
                 GUILayout.BeginHorizontal(); foreach (string stat in new[] { "Accuracy", "Endurance", "Agility" }) if (Btn(stat + " +1 / " + club.TrainingMoney + " Money")) StartCoroutine(Send(Intent("Train", f.Id, stat)));
-                if (Btn("Heal / " + f.HealMoney + " Money")) StartCoroutine(Send(Intent("Heal", f.Id))); if (Btn("Manage gear")) selectedFighter = f.Id; GUILayout.EndHorizontal();
+                if (Btn("Heal / " + f.HealMoney + " Money")) StartCoroutine(Send(Intent("Heal", f.Id))); if (Btn("Manage gear")) { selectedFighter = f.Id; page = "Equipment"; scroll = Vector2.zero; } GUILayout.EndHorizontal();
                 Text("Full recovery in " + Math.Ceiling(f.RecoveryRemainingMs / 60000d) + " min • Refresh for current server HP");
                 if (f.HealMoney > 0 && Btn("Heal up to 10 HP / up to 10 Money")) StartCoroutine(Send(Intent("Heal", f.Id, number: 10)));
                 Text(!f.Equipment.Any(e => e.Slot == "Weapon") ? "Weaponless — participates as a target, cannot shoot." : string.Join(" • ", f.Equipment.Select(e => e.Definition)));
@@ -280,6 +295,9 @@ namespace AirsoftClub.Unity
         }
         void Supply()
         {
+            GUILayout.Label(page == "BB" ? "AMMUNITION" : "CLUB SHOP", title);
+            if (page != "Shop")
+            {
             Text("Shared ammunition • one active tier for the whole club");
             Text("Auto Basic unlocks at Club Level3: opt-in, below100 BB, leaves at least100 Money, never spends Credits.");
             if (club.Level >= 3 && Btn(club.AutoBuyBasic ? "Disable auto Basic" : "Enable auto Basic")) StartCoroutine(Send(Intent("AutoBuyBasic", flag: !club.AutoBuyBasic)));
@@ -289,12 +307,17 @@ namespace AirsoftClub.Unity
                 if (Btn(club.ActiveBbTier == n ? "ACTIVE" : "Select", GUILayout.Width(160))) StartCoroutine(Send(Intent("BbTier", number: n)));
                 if (Btn(club.BbCatalog[n].Credits > 0 ? "+" + Math.Min(club.BbCatalog[n].Amount, club.Capacity - club.BbStock[n]) + " / " + club.BbCatalog[n].Credits + " Credit" : "+" + Math.Min(club.BbCatalog[n].Amount, club.Capacity - club.BbStock[n]) + " / " + club.BbCatalog[n].Money + " Money", GUILayout.Width(250))) StartCoroutine(Send(Intent("Refill", number: n))); GUILayout.EndHorizontal();
             }
+            }
+            if (page == "BB") return;
+            if (club.Level == 1) { Text("Start with Money equipment and Basic BB. Early access opens at Club Level 2."); showPremium = GUILayout.Toggle(showPremium, "Explore premium gear", button); }
             Text("Equipment catalog — Base = MK1. Buy here, equip in Roster. Prototype prices.");
-            foreach (var i in club.Catalog)
+            foreach (var i in club.Catalog.Where(i => club.Level > 1 || showPremium || i.Credits == 0))
             {
                 GUILayout.BeginHorizontal(GUI.skin.box); Text(i.Id + " • " + i.Slot + " • Level " + i.Level + (i.Access ? " • Available" : " • Locked"));
-                if (!i.Access && i.Level > club.Level && i.Level <= club.Level + 3 && i.Credits == 0 && Btn("Access / 1 Credit", GUILayout.Width(190))) StartCoroutine(Send(Intent("EarlyUnlock", i.Id)));
-                if (Btn(i.Credits > 0 ? "Buy / " + i.Credits + " Credits" : "Buy / " + i.Money + " Money", GUILayout.Width(250))) StartCoroutine(Send(Intent("Buy", i.Id))); GUILayout.EndHorizontal();
+                if (i.EarlyAllowed && Btn("Early access / " + i.EarlyPrice + " Credits", GUILayout.Width(220))) StartCoroutine(Send(Intent("EarlyUnlock", i.Id)));
+                GUI.enabled = !busy && i.Access;
+                if (Btn(i.Credits > 0 ? "Buy / " + i.Credits + " Credits" : "Buy / " + i.Money + " Money", GUILayout.Width(250))) StartCoroutine(Send(Intent("Buy", i.Id))); GUI.enabled = !busy; GUILayout.EndHorizontal();
+                if (i.EarlyCapped && (i.Access || i.EarlyAllowed)) Text("Temporary early-access contribution limit: up to 125% of current-band normal gear. Full native stats at Club Level " + i.Level + "; no rebuy.");
             }
         }
         void Opponents()
@@ -371,10 +394,10 @@ namespace AirsoftClub.Unity
         void Battle()
         {
             if (replayResult == null) return;
-            Text($"{Math.Min(replayTime, replayResult.SimulatedDurationMs) / 1000:0.0}s  •  BB used {replayResult.Attacker.BbConsumed} / {replayResult.Defender.BbConsumed}");
+            Text($"{Math.Min(replayTime, replayResult.SimulatedDurationMs) / 1000:0.0}s  •  BB used {replayResult.Events.Count(e => e.ActorSide == Side.Attacker && e.TimeMs <= replayTime)} / {replayResult.Events.Count(e => e.ActorSide == Side.Defender && e.TimeMs <= replayTime)}");
             if (Btn("Skip to saved result")) replayTime = replayResult.SimulatedDurationMs + 1;
-            GUILayout.BeginHorizontal(); Team(replayInput.Attacker, "A", "ATTACK"); Team(replayInput.Defender, "D", "DEFENSE"); GUILayout.EndHorizontal();
-            if (replayTime >= replayResult.SimulatedDurationMs) { GUILayout.Label(replayResult.Outcome.ToString(), title); Text("Settlement saved • " + replayResult.Reason); Text(rewardSummary); }
+            var arena = GUILayoutUtility.GetRect(1180, 350); VisualPrototype.Arena(arena, replayInput, replayResult, replayTime, hp, small, appearance);
+            if (replayTime >= replayResult.SimulatedDurationMs) { GUILayout.Label(replayResult.Outcome == MatchOutcome.AttackerWin ? "ATTACK VICTORY" : replayResult.Outcome == MatchOutcome.DefenderWin ? "DEFENSE VICTORY" : "DRAW", title); Text("Settlement saved • " + replayResult.Reason); Text(rewardSummary); }
         }
         void Team(TeamSnapshot team, string side, string heading)
         {
@@ -399,6 +422,38 @@ namespace AirsoftClub.Unity
         IEnumerator CapturePage(string screen, string name)
         {
             page = screen; scroll = Vector2.zero; yield return null; yield return new WaitForEndOfFrame(); Capture(EvidencePath("club-" + name + ".png"));
+        }
+        IEnumerator VisualWalkthrough()
+        {
+            foreach (int size in new[] { 1, 4, 8, 16 })
+            {
+                account = "dev-visual-d-" + Guid.NewGuid().ToString("N").Substring(0, 10); token = ""; club = null;
+                yield return Login(); if (failed) { Application.Quit(1); yield break; }
+                yield return Send(Intent("Squad", number: size), true);
+                string defender = club.Id;
+                account = "dev-visual-a-" + Guid.NewGuid().ToString("N").Substring(0, 10); token = ""; club = null;
+                yield return Login(); if (failed) { Application.Quit(1); yield break; }
+                yield return Send(Intent("Squad", number: size), true);
+                if (size == 1)
+                {
+                    yield return CapturePage("Club", "visual-club");
+                    yield return CapturePage("Recruitment", "visual-recruitment");
+                    yield return CapturePage("Roster", "visual-roster");
+                    yield return CapturePage("Shop", "visual-shop");
+                    yield return CapturePage("Equipment", "visual-equipment");
+                    mode = "Ranked"; yield return CapturePage("Opponents", "visual-ranked");
+                }
+                yield return Send(Intent("Attack", defender, "Practice"));
+                if (failed || replayInput.Attacker.Fighters.Count != size || replayInput.Defender.Fighters.Count != size) { Debug.LogError("VISUAL_MATRIX_FAILED"); Application.Quit(1); yield break; }
+                replayTime = replayResult.Events.Count > 0 ? replayResult.Events[0].TimeMs + 25 : 0;
+                yield return null; yield return new WaitForEndOfFrame(); Capture(EvidencePath("club-battle-" + size + "v" + size + ".png"));
+                replayTime = replayResult.SimulatedDurationMs + 1;
+                yield return null; yield return CapturePage("Battle", "visual-result-" + size);
+                yield return CapturePage("Recovery", "visual-recovery-" + size);
+                Debug.Log("VISUAL_MATRIX size=" + size + " status=" + replayResult.Status + " digest=" + BattleWire.Digest(replayResult));
+            }
+            Debug.Log(smokeFailure ? "VISUAL_MATRIX_FAILED" : "VISUAL_MATRIX_PASSED");
+            Application.Quit(smokeFailure ? 1 : 0);
         }
         IEnumerator ReconnectWalkthrough()
         {

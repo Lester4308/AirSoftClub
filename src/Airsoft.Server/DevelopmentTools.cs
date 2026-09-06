@@ -31,6 +31,23 @@ public static class DevelopmentTools
             Clubs.Available(s);
             switch (c.Type)
             {
+                case "Squad":
+                    if (c.Number is not (1 or 4 or 8 or 16) || s.Fighters.Count(f => f.Active) > c.Number) throw new InvalidOperationException("Fixture size unavailable");
+                    s.Wallet.Apply(c.Key, "DEV visual squad fixture", 100000, 0);
+                    while (s.Fighters.Count(f => f.Active) < c.Number)
+                    {
+                        if (s.Offers.Count == 0) Clubs.Refresh(s, now, 14, true, c.Key + ":refresh:" + s.OfferVersion);
+                        var recruit = Clubs.Hire(s, s.Offers[0].Id, s.OfferVersion, !s.FreeRecruitClaimed && Clubs.IsStarterOffer(s.Offers[0].Id), now, c.Key + ":hire:" + s.Fighters.Count);
+                        Clubs.Equip(s, recruit.Id, Clubs.Buy(s, "Pistol-MK1", c.Key + ":weapon:" + recruit.Id));
+                    }
+                    foreach (var fighter in s.Fighters.Where(f => f.Active))
+                    {
+                        fighter.Hp = fighter.MaxHp; fighter.RecoveryAt = now; fighter.RecoveryRemainder = 0;
+                        foreach (var slot in new[] { Slot.Camouflage, Slot.HeadProtection, Slot.LoadBearingArmor })
+                            if (!fighter.Equipment.ContainsKey(slot)) Clubs.Equip(s, fighter.Id, Clubs.Buy(s, slot + "-1", c.Key + ":gear:" + fighter.Id + slot));
+                    }
+                    s.BbStock[0] = s.Capacity; s.ActiveBbTier = 0;
+                    break;
                 case "Grant": s.Wallet.Apply(c.Key, "DEV fixture grant", 10000, 20); break;
                 case "Recovery":
                     foreach (var f in s.Fighters.Where(f => f.Active)) { f.Recover(now + AlphaConfig.FullRecoveryMs); f.RecoveryAt = now; }

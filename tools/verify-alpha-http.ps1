@@ -25,10 +25,10 @@ Dev 'Refresh'
 Command 'Refresh' '' '' 0 $true | Out-Null
 $s=State
 ExpectRejected @{Key='too-early';Version=$s.Version;Type='Refresh';CatalogVersion=$s.CatalogVersion}
-Command 'EarlyUnlock' 'HeadProtection-3' | Out-Null
-Command 'Buy' 'HeadProtection-3' | Out-Null
+ExpectRejected @{Key='level1-early';Version=$s.Version;Type='EarlyUnlock';Target='HeadProtection-3';CatalogVersion=$s.CatalogVersion}
+Command 'Buy' 'HeadProtection-1' | Out-Null
 $s=State
-$armor=$s.Items|Where-Object Definition -eq 'HeadProtection-3'|Select-Object -First 1
+$armor=$s.Items|Where-Object Definition -eq 'HeadProtection-1'|Select-Object -First 1
 Command 'Equip' $s.Fighters[0].Id $armor.Id | Out-Null
 Command 'Refill' '' '' 4 | Out-Null
 Command 'BbTier' '' '' 4 | Out-Null

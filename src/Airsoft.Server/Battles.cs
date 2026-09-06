@@ -6,7 +6,11 @@ using System.Diagnostics.Metrics;
 namespace Airsoft.Server;
 
 public sealed record StartIntent(string Target, string Mode = "Practice", string Ticket = "");
-public sealed record CapturedEconomy(EconomyConfig Config, int OpponentLevel, long AttackerPower, long DefenderPower);
+public sealed record FighterAppearance(string Id, string Side, bool Head, bool Rig, bool Camo);
+public sealed record CapturedEconomy(EconomyConfig Config, int OpponentLevel, long AttackerPower, long DefenderPower)
+{
+    public FighterAppearance[] Appearance { get; init; } = [];
+}
 public sealed record SettlementReceipt(int Schema, long At, int AttackerRatingDelta, int DefenderRatingDelta, Reward Rewards);
 public sealed class Battles(Store store)
 {
@@ -45,10 +49,12 @@ public sealed class Battles(Store store)
                 LeaseUntil = checked(now + AlphaConfig.BattleLeaseMs),
                 Fence = 1,
                 Policy = Json.Write(capture),
-                Economy = Json.Write(new CapturedEconomy(new(), defender.Level, Rewards.Power(offense), Rewards.Power(defense)))
+                Economy = Json.Write(new CapturedEconomy(new(), defender.Level, Rewards.Power(offense), Rewards.Power(defense)) { Appearance = Appearance(s, offense, "A").Concat(Appearance(defender, defense, "D")).ToArray() })
             });
             return new { MatchId = id };
         }, now);
+    static IEnumerable<FighterAppearance> Appearance(ClubState s, TeamSnapshot team, string side) =>
+        team.Fighters.Select(f => { var gear = s.Fighters.Single(x => x.Id == f.Id).Equipment; return new FighterAppearance(f.Id, side, gear.ContainsKey(Slot.HeadProtection), gear.ContainsKey(Slot.LoadBearingArmor), gear.ContainsKey(Slot.Camouflage)); });
     public async Task Resolve(string id, long now)
     {
         MatchRow captured;
