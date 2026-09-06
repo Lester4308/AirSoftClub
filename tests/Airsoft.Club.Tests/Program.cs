@@ -15,7 +15,7 @@ internal static partial class Program
     {
         if (args.Length == 1 && args[0] == "--economy") return EconomyEvidence();
         if (args.Length == 1 && args[0] == "--balance") return BalanceEvidence();
-        EconomyTests(); LifecycleTests(); PvpTests(); RetentionTests();
+        EconomyTests(); LifecycleTests(); PvpTests(); RetentionTests(); AlphaTests();
         Console.WriteLine($"CLUB SUMMARY passed={passed} failed={failed}");
         return failed == 0 ? 0 : 1;
     }

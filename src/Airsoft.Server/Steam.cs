@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 namespace Airsoft.Server;
 
 public sealed record SteamIdentity(string SteamId, string OwnerId);
-public sealed class SteamGateway(HttpClient http, string key, uint appId)
+public sealed class SteamGateway(HttpClient http, string key, uint appId) : IPlatformIdentity
 {
     public bool Configured => key.Length > 0 && appId > 0;
     async Task<JsonDocument> Get(string method, string query, CancellationToken ct)
@@ -42,7 +42,7 @@ public sealed class SessionRow
     public string Owner { get; set; } = "";
     public long Until { get; set; }
 }
-public sealed class SteamSessions(Store store, SteamGateway gateway)
+public sealed class SteamSessions(Store store, IPlatformIdentity gateway) : IIdentitySessions
 {
     public async Task<string> Login(string ticket, long now)
     {

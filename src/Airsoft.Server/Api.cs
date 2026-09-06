@@ -8,10 +8,11 @@ namespace Airsoft.Server;
 
 public sealed record CommandIntent(string Key, long Version, string Type, string Target = "", string Value = "", int Number = 0, bool Flag = false, int OfferVersion = 0, string CatalogVersion = Catalog.Version, string Ticket = "");
 public sealed record LoginIntent(string Account);
-public sealed class DevelopmentSessions
+public sealed class DevelopmentSessions : IIdentitySessions
 {
     readonly ConcurrentDictionary<string, (string Owner, long Until)> sessions = new();
     public string Issue(string owner, long now) { var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(32)); sessions[token] = (owner, now + 3600000); return token; }
+    Task<string?> IIdentitySessions.Resolve(string token, long now) => Task.FromResult(Resolve(token, now));
     public string? Resolve(string token, long now) => sessions.TryGetValue(token, out var s) && now < s.Until ? s.Owner : null;
 }
 public static class Api
@@ -24,7 +25,7 @@ public static class Api
         // Read projection materializes recovery without persisting/versioning a read.
         if (s.PendingMatch == null) foreach (var f in s.Fighters.Where(f => f.Active)) f.Recover(Math.Max(now, f.RecoveryAt));
         var history = await db.Matches.Where(m => m.Attacker == owner || m.Defender == owner).OrderByDescending(m => m.AcceptedAt).Take(20)
-            .Select(m => new { m.Id, m.Status, m.Mode, m.Attacker, m.Defender }).ToListAsync();
+            .ToListAsync();
         var policyRow = await db.Policies.FindAsync(1);
         var policy = policyRow == null ? new PvpState() : Json.Read<PvpState>(policyRow.State);
         return new
@@ -47,6 +48,22 @@ public static class Api
             s.CompletedSinceRefresh,
             s.PendingMatch,
             s.ShieldUntil,
+            s.AutoBuyBasic,
+            s.Emblem,
+            s.Retention.Streak,
+            s.Retention.LastDay,
+            s.Unlocks,
+            ContractVersion = 2,
+            ConfigVersion = AlphaConfig.Version,
+            TrainingMoney = AlphaConfig.TrainingMoney,
+            ConvertRate = new EconomyConfig().CreditsToMoney,
+            RefreshMoney = AlphaConfig.RecruitRefreshMoney,
+            RefreshAvailableAt = s.OffersAt + AlphaConfig.RecruitRefreshMs,
+            EmergencyAvailableAt = s.EmergencyAt + AlphaConfig.EmergencyCooldownMs,
+            DefensePublished = row.Defense != null,
+            DefenseVersion = row.Version,
+            BbCatalog = Enumerable.Range(0, 5).Select(t => new { Tier = t, Name = AlphaConfig.BbNames[t], Money = AlphaConfig.BbMoney(t), Credits = AlphaConfig.BbCredits(t), Amount = AlphaConfig.BbRefill }),
+            Shields = new[] { 8, 24, 72, 168 }.Select(h => new { Hours = h, Credits = AlphaConfig.ShieldCredits(h) }),
             Fighters = s.Fighters.Where(f => f.Active).Select(f => new
             {
                 f.Id,
@@ -60,12 +77,30 @@ public static class Api
                 f.Xp,
                 f.Level,
                 f.TrainingCap,
+                f.RecoveryAt,
+                f.RecoveryRemainder,
+                HealMoney = (f.MaxHp - f.Hp + Fixed.Scale - 1) / Fixed.Scale,
+                RecoveryRemainingMs = (f.MaxHp - f.Hp) * AlphaConfig.FullRecoveryMs / f.MaxHp,
                 Equipment = f.Equipment.Select(e => new { Slot = e.Key.ToString(), Item = e.Value, Definition = s.Items[e.Value] })
             }),
             Items = s.Items.Select(i => new { Id = i.Key, Definition = i.Value, Slot = Catalog.Get(i.Value).Slot.ToString(), Equipped = s.Fighters.Any(f => f.Equipment.Values.Contains(i.Key)) }),
-            Catalog = Catalog.Items.Select(i => new { i.Id, Slot = i.Slot.ToString(), i.Mk, i.Money, i.Credits, i.Level }),
+            Catalog = Catalog.Items.Select(i => new { i.Id, Slot = i.Slot.ToString(), i.Mk, i.Money, i.Credits, i.Level, Access = i.Level <= s.Level || s.Unlocks.Contains(i.Id), i.Damage, i.Interval, i.Projectiles, i.Protection, i.AgilityPenalty }),
             RevengeTickets = policy.Tickets.Where(t => t.Owner == owner && !t.Consumed && t.Attempts < 3 && t.Expires > now),
-            History = history,
+            History = history.Select(m => new
+            {
+                m.Id,
+                m.Status,
+                m.Mode,
+                m.Attacker,
+                m.Defender,
+                m.AcceptedAt,
+                m.AttackerVersion,
+                m.DefenderVersion,
+                Outcome = m.Result == null ? "" : BattleWire.ReadResult(m.Result).Outcome.ToString(),
+                RatingKnown = m.Settlement.Length > 0,
+                RatingDelta = m.Settlement.Length == 0 ? 0 : owner == m.Attacker ? Json.Read<SettlementReceipt>(m.Settlement).AttackerRatingDelta : Json.Read<SettlementReceipt>(m.Settlement).DefenderRatingDelta,
+                Money = m.Settlement.Length == 0 || owner != m.Attacker ? 0 : Json.Read<SettlementReceipt>(m.Settlement).Rewards.Money
+            }),
             ServerNow = now,
             CatalogVersion = Catalog.Version
         };
@@ -84,7 +119,8 @@ public static class Api
             string owner = Owner(http); await using var db = store.Open();
             var self = (await db.Clubs.FindAsync(owner))!; string prefix = owner.StartsWith("steam-") ? "steam-" : "dev-";
             var rows = await db.Clubs.Where(c => c.Id != owner && c.Defense != null && c.Id.StartsWith(prefix)).OrderBy(c => Math.Abs(c.Rating - self.Rating)).ThenBy(c => c.Id).Take(5).ToListAsync();
-            return Results.Json(new { Opponents = rows.Select(r => { var s = Json.Read<ClubState>(r.State); return new { s.Id, s.Name, s.Level, s.Rating, Fighters = s.Fighters.Count(f => f.Active), Category = "Development rival", Protected = s.ShieldUntil > Now }; }) });
+            long ownPower = self.Defense == null ? 1 : Rewards.Power(BattleWire.ReadTeam(self.Defense));
+            return Results.Json(new { Opponents = rows.Select(r => { var s = Json.Read<ClubState>(r.State); return new { s.Id, s.Name, s.Level, s.Rating, Fighters = s.Fighters.Count(f => f.Active), Category = Rewards.Category(ownPower, Rewards.Power(BattleWire.ReadTeam(r.Defense!))), Protected = s.ShieldUntil > Now }; }) });
         });
         app.MapGet("/api/leaderboard", async (HttpContext http, Store store) =>
         {
@@ -97,7 +133,7 @@ public static class Api
             string owner = Owner(http); long now = Now;
             if (c.Type == "Attack" && c.Value == "Friend" && owner.StartsWith("steam-"))
             {
-                var friends = await app.Services.GetRequiredService<SteamGateway>().Friends(owner[6..]);
+                var friends = await app.Services.GetRequiredService<IPlatformIdentity>().Friends(owner[6..]);
                 if (!c.Target.StartsWith("steam-") || !friends.Contains(c.Target[6..])) throw new InvalidOperationException("Verified Steam friendship required");
             }
             if (c.Type == "Attack") return Results.Content(await battles.Start(owner, c.Key, c.Version, new StartIntent(c.Target, c.Value, c.Ticket), now), "application/json");
@@ -110,14 +146,14 @@ public static class Api
                     case "Hire": Clubs.Hire(s, c.Target, c.OfferVersion, c.Flag, now, c.Key); break;
                     case "Refresh": Clubs.Refresh(s, now, BitConverter.ToUInt64(RandomNumberGenerator.GetBytes(8)), c.Flag, c.Key); break;
                     case "Train": Clubs.Train(s, c.Target, c.Value, now, c.Key); break;
-                    case "Heal": Clubs.Heal(s, c.Target, now, c.Key); break;
+                    case "Heal": Clubs.HealAmount(s, c.Target, c.Number, now, c.Key); break;
                     case "Dismiss": Clubs.Dismiss(s, c.Target, c.Key); break;
                     case "Buy": if (c.CatalogVersion != Catalog.Version) throw new InvalidOperationException("Stale catalog quote"); Clubs.Buy(s, c.Target, c.Key); break;
                     case "Equip": Clubs.Equip(s, c.Target, c.Value); break;
                     case "Unequip": if (!Enum.TryParse<Slot>(c.Value, out var slot)) throw new InvalidOperationException("Unknown slot"); Clubs.Owned(s, c.Target).Equipment.Remove(slot); break;
                     case "Refill": Clubs.Refill(s, c.Number, c.Key); break;
                     case "BbTier": _ = Catalog.Bb(c.Number); s.ActiveBbTier = c.Number; break;
-                    case "AutoBuyBasic": if (c.Flag && s.Level < 3) throw new InvalidOperationException("Auto-buy unlocks at Club Level3"); s.AutoBuyBasic = c.Flag; break;
+                    case "AutoBuyBasic": if (c.Flag && s.Level < AlphaConfig.AutoBuyLevel) throw new InvalidOperationException("Auto-buy unlocks at Club Level3"); s.AutoBuyBasic = c.Flag; break;
                     case "Emergency": Clubs.Emergency(s, now); break;
                     case "Convert": s.Wallet.Convert(c.Key, c.Number, new()); break;
                     case "Daily": Retention.Daily(s, now); break;
@@ -148,6 +184,12 @@ public static class Api
             }
             return Results.Json(new
             {
+                RatingDelta = m.Settlement.Length == 0 ? (int?)null : owner == m.Attacker ? Json.Read<SettlementReceipt>(m.Settlement).AttackerRatingDelta : Json.Read<SettlementReceipt>(m.Settlement).DefenderRatingDelta,
+                m.AcceptedAt,
+                m.AttackerVersion,
+                m.DefenderVersion,
+                m.CatalogVersion,
+                RevengeOrigin = Json.Read<PvpCapture>(m.Policy).Ticket,
                 RewardMoney = reward.Money,
                 RewardClubXp = reward.ClubXp,
                 RewardFighterXp = reward.FighterXp,

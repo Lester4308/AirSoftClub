@@ -8,7 +8,7 @@ public sealed record ItemDefinition(string Id, Slot Slot, int Mk, long Money, lo
     int Protection = 0, int AgilityPenalty = 0);
 public static class Catalog
 {
-    public const string Version = "catalog-004-v1";
+    public const string Version = "catalog-013-v1";
     public static readonly ItemDefinition[] Items = Build();
     static ItemDefinition[] Build()
     {
@@ -25,8 +25,8 @@ public static class Catalog
                     WeaponFamily.SniperRifle => (50, 2100, 1),
                     _ => (20, 1000, 1)
                 };
-                list.Add(new($"{family}-MK{mk}", Slot.Weapon, mk, mk == 3 ? 0 : mk == 2 ? 600 : 100, mk == 3 ? 6 : 0,
-                    1, family, damage, interval, projectiles));
+                list.Add(new($"{family}-MK{mk}", Slot.Weapon, mk, mk == 3 ? 0 : mk == 2 ? AlphaConfig.Mk2Money : AlphaConfig.Mk1Money, mk == 3 ? AlphaConfig.Mk3Credits : 0,
+                    (int)family + 1, family, damage, interval, projectiles));
             }
         foreach (var slot in new[] { Slot.Camouflage, Slot.HeadProtection, Slot.LoadBearingArmor })
             for (int weight = 1; weight <= 3; weight++)
@@ -36,8 +36,8 @@ public static class Catalog
     public static ItemDefinition Get(string id) => Items.SingleOrDefault(x => x.Id == id) ?? throw new InvalidOperationException("Unknown item");
     public static BbTierDefinition Bb(int tier)
     {
-        int[] multipliers = { 100, 103, 105, 110, 115 };
-        if (tier < 0 || tier >= multipliers.Length) throw new InvalidOperationException("Unknown BB tier");
+        var multipliers = AlphaConfig.BbPercent;
+        if (tier < 0 || tier >= multipliers.Count) throw new InvalidOperationException("Unknown BB tier");
         return new BbTierDefinition("bb-" + tier, Fixed.Ratio(multipliers[tier], 100), Fixed.Zero);
     }
 }
@@ -56,20 +56,20 @@ public sealed class Fighter
     public bool Active { get; set; } = true;
     public Dictionary<Slot, string> Equipment { get; set; } = new();
     public long MaxHp => Formulas.MaxHp(Fixed.FromInt(Endurance), new BattleRules()).Raw;
-    public int Level => 1 + (int)(Xp / 100);
-    public int TrainingCap => 15 + Level * 5;
+    public int Level => 1 + (int)(Xp / AlphaConfig.FighterXpPerLevel);
+    public int TrainingCap => AlphaConfig.TrainingBaseCap + Level * AlphaConfig.TrainingCapPerLevel;
     public bool Ready => Active && Readiness.IsReady(Fixed.FromRaw(Hp), Fixed.FromRaw(MaxHp));
     public void Recover(long now)
     {
         if (now < RecoveryAt) throw new InvalidOperationException("Server clock moved backwards");
         long elapsed = now - RecoveryAt;
         // 1% per minute in raw HP. Saturate before multiplying arbitrarily long offline time.
-        if (Hp >= MaxHp || elapsed >= 6000000) { Hp = MaxHp; RecoveryRemainder = 0; }
+        if (Hp >= MaxHp || elapsed >= AlphaConfig.FullRecoveryMs) { Hp = MaxHp; RecoveryRemainder = 0; }
         else
         {
             long numerator = checked(MaxHp * elapsed + RecoveryRemainder);
-            Hp = Math.Min(MaxHp, checked(Hp + numerator / 6000000));
-            RecoveryRemainder = Hp == MaxHp ? 0 : numerator % 6000000;
+            Hp = Math.Min(MaxHp, checked(Hp + numerator / AlphaConfig.FullRecoveryMs));
+            RecoveryRemainder = Hp == MaxHp ? 0 : numerator % AlphaConfig.FullRecoveryMs;
         }
         RecoveryAt = now;
     }
@@ -89,7 +89,7 @@ public sealed class ClubState
     public int[] BbStock { get; set; } = new int[5];
     public bool AutoBuyBasic { get; set; }
     public int ActiveBbTier { get; set; }
-    public long EmergencyAt { get; set; } = -10800000;
+    public long EmergencyAt { get; set; } = -AlphaConfig.EmergencyCooldownMs;
     public long OffersAt { get; set; }
     public int CompletedSinceRefresh { get; set; }
     public int OfferVersion { get; set; }
@@ -101,12 +101,12 @@ public sealed class ClubState
     public int Emblem { get; set; }
     public string? PendingMatch { get; set; }
     public long ShieldUntil { get; set; }
-    public int Level => 1 + (int)(Xp / 1000);
-    public int Capacity => Math.Min(1000000, 1000 + (Level - 1) * 500);
+    public int Level => 1 + (int)(Xp / AlphaConfig.ClubXpPerLevel);
+    public int Capacity => Math.Min(AlphaConfig.CapacityMaximum, AlphaConfig.CapacityBase + (Level - 1) * AlphaConfig.CapacityPerLevel);
 }
 public static class Clubs
 {
-    public const int StarterBb = 60;
+    public const int StarterBb = AlphaConfig.StarterBb;
     public static bool IsStarterOffer(string id) => id.EndsWith("-0", StringComparison.Ordinal) || id.EndsWith("-1", StringComparison.Ordinal) || id.EndsWith("-2", StringComparison.Ordinal);
     public static ClubState Create(string id, long now)
     {
@@ -122,21 +122,21 @@ public static class Clubs
         Available(s);
         if (s.OfferVersion > 0)
         {
-            if (paid) s.Wallet.Apply(operation, "refresh", -50, 0);
-            else if (now - s.OffersAt < 3600000 && s.CompletedSinceRefresh < 10) throw new InvalidOperationException("Refresh not ready");
+            if (paid) s.Wallet.Apply(operation, "refresh", -AlphaConfig.RecruitRefreshMoney, 0);
+            else if (now - s.OffersAt < AlphaConfig.RecruitRefreshMs && s.CompletedSinceRefresh < AlphaConfig.RecruitMatches) throw new InvalidOperationException("Refresh not ready");
         }
         var rng = new SeededRandom(seed); int version = s.OfferVersion + 1;
-        s.Offers = Enumerable.Range(0, 7).Select(i =>
+        s.Offers = Enumerable.Range(0, AlphaConfig.RecruitCount).Select(i =>
         {
-            int a = 5 + s.Level + rng.NextInt(10), e = 5 + s.Level + rng.NextInt(10), g = 5 + s.Level + rng.NextInt(10);
-            return new RecruitOffer($"{version}-{i}", a, e, g, (a + e + g) * 5, "Recruit " + (i + 1));
+            int a = AlphaConfig.RecruitStatBase + s.Level + rng.NextInt(AlphaConfig.RecruitVariance), e = AlphaConfig.RecruitStatBase + s.Level + rng.NextInt(AlphaConfig.RecruitVariance), g = AlphaConfig.RecruitStatBase + s.Level + rng.NextInt(AlphaConfig.RecruitVariance);
+            return new RecruitOffer($"{version}-{i}", a, e, g, (a + e + g) * AlphaConfig.RecruitPricePerStat, "Recruit " + (i + 1));
         }).ToList();
         s.OfferVersion = version; s.OffersAt = now; s.CompletedSinceRefresh = 0;
     }
     public static Fighter Hire(ClubState s, string offerId, int version, bool free, long now, string operation)
     {
         Available(s);
-        if (s.Fighters.Count(x => x.Active) >= 16) throw new InvalidOperationException("Roster full");
+        if (s.Fighters.Count(x => x.Active) >= AlphaConfig.MaxRoster) throw new InvalidOperationException("Roster full");
         if (version != s.OfferVersion) throw new InvalidOperationException("Stale recruitment quote");
         var offer = s.Offers.SingleOrDefault(x => x.Id == offerId) ?? throw new InvalidOperationException("Offer unavailable");
         if (free && (s.FreeRecruitClaimed || !IsStarterOffer(offer.Id))) throw new InvalidOperationException("Starter recruit unavailable");
@@ -160,7 +160,7 @@ public static class Clubs
     {
         Available(s); var f = Owned(s, id);
         if (s.Fighters.Count(x => x.Active) <= 1) throw new InvalidOperationException("Keep one defense fighter");
-        s.Wallet.Apply(operation, "dismiss:" + id, f.InitialPrice * 30 / 100, 0);
+        s.Wallet.Apply(operation, "dismiss:" + id, f.InitialPrice * AlphaConfig.ResalePercent / 100, 0);
         f.Equipment.Clear(); f.Active = false;
     }
     public static void Train(ClubState s, string id, string stat, long now, string operation)
@@ -168,14 +168,19 @@ public static class Clubs
         Available(s); var f = Owned(s, id);
         int value = stat switch { "Accuracy" => f.Accuracy, "Endurance" => f.Endurance, "Agility" => f.Agility, _ => throw new InvalidOperationException("Unknown stat") };
         if (value >= f.TrainingCap) throw new InvalidOperationException("XP training cap");
-        f.Recover(now); s.Wallet.Apply(operation, "train:" + id + ":" + stat, -25, 0);
+        f.Recover(now); s.Wallet.Apply(operation, "train:" + id + ":" + stat, -AlphaConfig.TrainingMoney, 0);
         if (stat == "Accuracy") f.Accuracy++; else if (stat == "Endurance") f.Endurance++; else f.Agility++;
     }
     public static void Heal(ClubState s, string id, long now, string operation)
+        => HealAmount(s, id, 0, now, operation);
+    public static void HealAmount(ClubState s, string id, int wholeHp, long now, string operation)
     {
+        if (wholeHp < 0 || wholeHp > 1000000) throw new InvalidOperationException("Invalid heal amount");
         Available(s); var f = Owned(s, id); f.Recover(now);
-        long price = (f.MaxHp - f.Hp + 9999) / 10000;
-        s.Wallet.Apply(operation, "heal:" + id, -price, 0); f.Hp = f.MaxHp; f.RecoveryRemainder = 0;
+        long amount = wholeHp == 0 ? f.MaxHp - f.Hp : Math.Min(f.MaxHp - f.Hp, (long)wholeHp * Fixed.Scale);
+        long price = (amount + Fixed.Scale - 1) / Fixed.Scale;
+        s.Wallet.Apply(operation, "heal:" + id + ":" + wholeHp, -price, 0); f.Hp += amount;
+        if (f.Hp == f.MaxHp) f.RecoveryRemainder = 0;
     }
     public static string Buy(ClubState s, string definition, string operation)
     {
@@ -196,20 +201,20 @@ public static class Clubs
         Available(s); _ = Catalog.Bb(tier);
         // Capacity is per-tier, finite; explicit refill SKU is up to500 at flat price. No silent tier changes.
         if (s.BbStock[tier] >= s.Capacity) throw new InvalidOperationException("BB stock full");
-        s.Wallet.Apply(operation, "bb:" + tier, tier == 4 ? 0 : -(50 + tier * 20), tier == 4 ? -1 : 0);
-        s.BbStock[tier] = Math.Min(s.Capacity, s.BbStock[tier] + 500);
+        s.Wallet.Apply(operation, "bb:" + tier, -AlphaConfig.BbMoney(tier), -AlphaConfig.BbCredits(tier));
+        s.BbStock[tier] = Math.Min(s.Capacity, s.BbStock[tier] + AlphaConfig.BbRefill);
     }
     public static bool AutoRefill(ClubState s, string operation)
     {
-        if (!s.AutoBuyBasic || s.Level < 3 || s.ActiveBbTier != 0 || s.BbStock[0] >= 100 || s.Wallet.Money < 150) return false;
+        if (!s.AutoBuyBasic || s.Level < AlphaConfig.AutoBuyLevel || s.ActiveBbTier != 0 || s.BbStock[0] >= AlphaConfig.AutoBuyThreshold || s.Wallet.Money < AlphaConfig.AutoBuyMinimumMoney) return false;
         Refill(s, 0, operation); return true;
     }
     public static void Emergency(ClubState s, long now)
     {
         Available(s);
-        if (s.BbStock[0] * 100 >= s.Capacity * 15 || s.Wallet.Money >= 50 || now - s.EmergencyAt < 10800000)
+        if (s.BbStock[0] * 100 >= s.Capacity * AlphaConfig.EmergencyPercent || s.Wallet.Money >= AlphaConfig.BbMoney(0) || now - s.EmergencyAt < AlphaConfig.EmergencyCooldownMs)
             throw new InvalidOperationException("Emergency Basic not eligible");
-        s.BbStock[0] = Math.Min(s.Capacity, s.BbStock[0] + 500); s.EmergencyAt = now;
+        s.BbStock[0] = Math.Min(s.Capacity, s.BbStock[0] + AlphaConfig.BbRefill); s.EmergencyAt = now;
     }
     public static void Completed(ClubState s, string match)
     { if (s.CompletedMatches.Add(match)) s.CompletedSinceRefresh++; }
@@ -225,7 +230,7 @@ public static class Clubs
             {
                 var item = Catalog.Get(s.Items[instance]);
                 if (item.Slot == Slot.Weapon)
-                    weapon = new WeaponSnapshot(item.Id, item.Family, Fixed.FromInt(item.Damage) * Fixed.Ratio(item.Mk == 3 ? 1035 : item.Mk == 2 ? 1020 : 1000, 1000),
+                    weapon = new WeaponSnapshot(item.Id, item.Family, Fixed.FromInt(item.Damage) * Fixed.Ratio(item.Mk == 3 ? AlphaConfig.Mk3Permille : item.Mk == 2 ? AlphaConfig.Mk2Permille : 1000, 1000),
                         Fixed.Zero, Fixed.Zero, item.Interval, item.Projectiles);
                 else { protection += item.Protection; penalty += item.AgilityPenalty; }
             }

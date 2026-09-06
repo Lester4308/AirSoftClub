@@ -25,6 +25,7 @@ public sealed class OperationRow
 }
 public sealed class LedgerRow
 {
+    public long At { get; set; }
     public string Owner { get; set; } = "";
     public string Operation { get; set; } = "";
     public string Reason { get; set; } = "";
@@ -33,6 +34,10 @@ public sealed class LedgerRow
 }
 public sealed class MatchRow
 {
+    public long AttackerVersion { get; set; }
+    public long DefenderVersion { get; set; }
+    public string CatalogVersion { get; set; } = "";
+    public string Settlement { get; set; } = "";
     public string Id { get; set; } = "";
     public string Attacker { get; set; } = "";
     public string Defender { get; set; } = "";
@@ -126,7 +131,7 @@ public sealed class Store(string connection)
             throw new InvalidOperationException("Wallet ledger conservation violated");
         var existing = persistedLedger.Select(x => x.Operation).ToList();
         foreach (var e in state.Wallet.Entries.Where(e => !existing.Contains(e.Operation)))
-            db.Ledger.Add(new LedgerRow { Owner = state.Id, Operation = e.Operation, Reason = e.Reason, Money = e.MoneyDelta, Credits = e.CreditsDelta });
+            db.Ledger.Add(new LedgerRow { Owner = state.Id, Operation = e.Operation, Reason = e.Reason, Money = e.MoneyDelta, Credits = e.CreditsDelta, At = now });
     }
     public Task<ClubState> Create(string owner, long now) => Transaction(async db =>
     {

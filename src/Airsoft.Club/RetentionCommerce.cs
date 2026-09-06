@@ -14,20 +14,20 @@ public static class Retention
         long day = now / 86400000;
         if (now < 0 || day <= s.Retention.LastDay) throw new InvalidOperationException("Daily already claimed or clock invalid");
         int streak = day == s.Retention.LastDay + 1 ? s.Retention.Streak % 7 + 1 : 1;
-        s.Wallet.Apply("daily:" + day, "daily-v1:" + streak, 100 + (streak - 1) * 10, 0);
+        s.Wallet.Apply("daily:" + day, "daily-013-v1:" + streak, AlphaConfig.DailyMoney + (streak - 1) * AlphaConfig.DailyStep, streak == 7 ? AlphaConfig.SeventhDayCredits : 0);
         s.Retention.LastDay = day; s.Retention.Streak = streak;
     }
     public static void Progression(ClubState s)
     {
-        if (s.CompletedMatches.Count > 0 && s.Retention.Grants.Add("first-battle")) s.Wallet.Apply("achievement:first-battle", "achievement-v1", 0, 2);
-        for (int level = 2; level <= Math.Min(10, s.Level); level++)
-            if (s.Retention.Grants.Add("level:" + level)) s.Wallet.Apply("level:" + level, "level-v1", 0, 1);
+        if (s.CompletedMatches.Count > 0 && s.Retention.Grants.Add("first-battle")) s.Wallet.Apply("achievement:first-battle", "achievement-v1", 0, AlphaConfig.FirstBattleCredits);
+        for (int level = 2; level <= Math.Min(AlphaConfig.CreditLevelLimit, s.Level); level++)
+            if (s.Retention.Grants.Add("level:" + level)) s.Wallet.Apply("level:" + level, "level-v1", 0, AlphaConfig.LevelCredits);
     }
     public static void EarlyUnlock(ClubState s, string item, string operation)
     {
         var definition = Catalog.Get(item);
-        if (definition.Credits > 0 || definition.Level <= s.Level || definition.Level > s.Level + 3 || s.Unlocks.Contains(item)) throw new InvalidOperationException("Early unlock unavailable");
-        s.Wallet.Apply(operation, "access:" + item, 0, -1); s.Unlocks.Add(item);
+        if (definition.Credits > 0 || definition.Level <= s.Level || definition.Level > s.Level + AlphaConfig.EarlyLevels || s.Unlocks.Contains(item)) throw new InvalidOperationException("Early unlock unavailable");
+        s.Wallet.Apply(operation, "access:" + item, 0, -AlphaConfig.EarlyCredits); s.Unlocks.Add(item);
     }
 }
 public sealed class PurchaseOrder

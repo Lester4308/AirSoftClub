@@ -7,6 +7,7 @@ namespace Airsoft.Server;
 
 public sealed record StartIntent(string Target, string Mode = "Practice", string Ticket = "");
 public sealed record CapturedEconomy(EconomyConfig Config, int OpponentLevel, long AttackerPower, long DefenderPower);
+public sealed record SettlementReceipt(int Schema, long At, int AttackerRatingDelta, int DefenderRatingDelta, Reward Rewards);
 public sealed class Battles(Store store)
 {
     public static readonly Meter Meter = new("Airsoft.Club.Server", "006");
@@ -32,12 +33,15 @@ public sealed class Battles(Store store)
             db.Matches.Add(new MatchRow
             {
                 Id = id,
+                AttackerVersion = s.Version,
+                DefenderVersion = target.Version,
+                CatalogVersion = Catalog.Version,
                 Attacker = owner,
                 Defender = intent.Target,
                 Mode = intent.Mode,
                 Input = BattleWire.WriteConfig(config),
                 AcceptedAt = now,
-                LeaseUntil = checked(now + 120000),
+                LeaseUntil = checked(now + AlphaConfig.BattleLeaseMs),
                 Fence = 1,
                 Policy = Json.Write(capture),
                 Economy = Json.Write(new CapturedEconomy(new(), defender.Level, Rewards.Power(offense), Rewards.Power(defense)))
@@ -71,7 +75,7 @@ public sealed class Battles(Store store)
         var input = BattleWire.ReadConfig(row.Input); var economy = Json.Read<CapturedEconomy>(row.Economy);
         var reward = Rewards.Calculate(result.Outcome!.Value, economy.OpponentLevel, economy.AttackerPower, economy.DefenderPower, capture.FriendWins, capture.FriendBudget, economy.Config);
         var defenderRow = (await db.Clubs.FindAsync(row.Defender))!;
-        var defender = Json.Read<ClubState>(defenderRow.State); int oldRating = defender.Rating;
+        var defender = Json.Read<ClubState>(defenderRow.State); int oldRating = defender.Rating; int oldAttackerRating = s.Rating;
         Pvp.Finish(policy, s, defender, id, capture, result.Outcome, now); policyRow.State = Json.Write(policy);
         if (defender.Rating != oldRating) { defender.Version++; await Store.Save(db, defenderRow, defender, now); }
         s.Wallet.Apply("match:" + id, "battle:" + economy.Config.Version, reward.Money, 0); s.Xp += reward.ClubXp;
@@ -84,6 +88,7 @@ public sealed class Battles(Store store)
         s.BbStock[s.ActiveBbTier] -= result.Attacker.BbConsumed;
         Clubs.Completed(s, id); s.PendingMatch = null; s.Version++;
         row.Result = BattleWire.WriteResult(result); row.Status = "Completed";
+        row.Settlement = Json.Write(new SettlementReceipt(1, now, s.Rating - oldAttackerRating, defender.Rating - oldRating, reward));
         await Store.Save(db, owner, s, now); return true;
     });
     public static async Task<PolicyRow> Policies(ClubDb db)

@@ -3,7 +3,7 @@ using Airsoft.Battle;
 namespace Airsoft.Club;
 
 // Server-side prototype config. Approved percentages are not catalog tuning knobs.
-public sealed record EconomyConfig(string Version = "economy-003-v1", long BaseReward = 100,
+public sealed record EconomyConfig(string Version = "economy-013-v1", long BaseReward = 100,
     long RewardPerOpponentLevel = 10, long StarterMoney = 1000, int CreditsToMoney = 100);
 public sealed record Reward(long Money, long ClubXp, long FighterXp);
 public static class Rewards
@@ -29,9 +29,26 @@ public static class Rewards
     }
     public static Dictionary<string, long> Participants(TeamResult result, long xp) =>
         result.Fighters.ToDictionary(f => f.Id, _ => xp, StringComparer.Ordinal);
-    public static long Power(TeamSnapshot team) => Math.Max(1, team.Fighters.Sum(f =>
-        checked(100 + (f.Accuracy.Raw + f.Endurance.Raw + f.Agility.Raw + f.StartingHp.Raw +
-        f.Loadout.Protection.Raw + (f.Weapon?.Damage.Raw ?? 0)) / Fixed.Scale)) * team.BbTier.DamageMultiplier.Raw / Fixed.Scale);
+    public static long Power(TeamSnapshot team)
+    {
+        // Coarse sustained threat plus survivability; never exposed as an exact player-facing number.
+        var rules = new BattleRules();
+        long budget = Math.Min(team.BbBudget, 1000);
+        return Math.Max(1, team.Fighters.Sum(f =>
+        {
+            long survival = f.StartingHp.Raw / Fixed.Scale + f.Loadout.Protection.Raw / Fixed.Scale + Formulas.Evasion(f, rules).Raw / 100;
+            if (f.Weapon == null || budget == 0) return Math.Max(1, survival / 4);
+            long damage = Formulas.Damage(f.Weapon, team.BbTier, new ArmorLoadout(Fixed.Zero, Fixed.Zero, Fixed.Zero), rules).Raw / 100;
+            long threat = damage * f.Weapon.Projectiles * 1000 / Formulas.IntervalMs(f, rules);
+            threat = threat * (50 + f.Accuracy.Raw / Fixed.Scale) / 100;
+            return Math.Max(1, survival + threat * Math.Min(100, budget) / 100);
+        }));
+    }
+    public static string Category(long own, long rival)
+    {
+        long ratio = checked(rival * 100) / Math.Max(1, own);
+        return ratio < 60 ? "Very Weak" : ratio < 85 ? "Weak" : ratio <= 120 ? "Balanced" : ratio <= 165 ? "Strong" : "Very Strong";
+    }
 }
 public sealed record LedgerEntry(string Operation, string Reason, long MoneyDelta, long CreditsDelta);
 public sealed class Wallet
@@ -51,7 +68,7 @@ public sealed class Wallet
             return false;
         }
         long nextMoney = checked(Money + money), nextCredits = checked(Credits + credits);
-        if (nextMoney < 0 || nextCredits < 0) throw new InvalidOperationException("Insufficient balance");
+        if (nextMoney < 0 || nextCredits < 0) throw new InvalidOperationException(nextMoney < 0 ? "Insufficient Money" : "Insufficient Credits");
         Entries.Add(entry); Money = nextMoney; Credits = nextCredits;
         return true;
     }

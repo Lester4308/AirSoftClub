@@ -45,7 +45,7 @@ public static class Pvp
         if (mode is not ("Ranked" or "Friend" or "Practice" or "Revenge")) throw new InvalidOperationException("Unknown mode");
         var pair = p.Friends.SingleOrDefault(x => x.Attacker == a.Id && x.Defender == d.Id && now < x.Anchor + EightHours);
         bool rated = mode is "Ranked" or "Revenge" || mode == "Friend" && (pair == null || pair.Wins == 0);
-        if (rated && p.Exposures.Count(x => x.Defender == d.Id && (x.Committed ? x.At > now - Day : x.LeaseUntil > now)) >= 4)
+        if (rated && p.Exposures.Count(x => x.Defender == d.Id && (x.Committed ? x.At > now - Day : x.LeaseUntil > now)) >= AlphaConfig.IncomingCap)
         {
             if (mode == "Revenge") rated = false;
             else throw new InvalidOperationException("Incoming rating exposure cap; choose explicit Practice");
@@ -60,7 +60,7 @@ public static class Pvp
             if (r == null || r.Consumed || r.Attempts >= 3 || now >= r.Expires) throw new InvalidOperationException("Revenge ticket unavailable");
             r.Attempts++;
         }
-        if (rated) p.Exposures.Add(new Exposure { Match = match, Defender = d.Id, At = now, LeaseUntil = now + 120000 });
+        if (rated) p.Exposures.Add(new Exposure { Match = match, Defender = d.Id, At = now, LeaseUntil = now + AlphaConfig.BattleLeaseMs });
         if (mode == "Ranked" || mode == "Revenge" && rated) a.ShieldUntil = 0;
         // Existing exhausted pair applies across modes; switching mode cannot reopen reward budget.
         return new PvpCapture(mode, rated, pair?.Wins ?? 0, pair != null, pair?.LossUsed ?? false, a.Rating, d.Rating, ticket, pair?.Anchor ?? -1);
@@ -72,7 +72,7 @@ public static class Pvp
         if (outcome == null) { if (exposure != null) p.Exposures.Remove(exposure); return; }
         var pair = p.Friends.SingleOrDefault(x => x.Attacker == a.Id && x.Defender == d.Id && x.Anchor == c.FriendAnchor);
         int defenderRatingBefore = d.Rating;
-        int gain = Math.Clamp(10 + (c.DefenderRating - c.AttackerRating) / 100, 5, 20);
+        int gain = Math.Clamp(AlphaConfig.RatingBase + (c.DefenderRating - c.AttackerRating) / AlphaConfig.RatingDivisor, AlphaConfig.RatingMin, AlphaConfig.RatingMax);
         int delta = !c.Rated || outcome == MatchOutcome.Draw ? 0 : outcome == MatchOutcome.AttackerWin ? gain : -gain;
         if (c.Mode == "Friend" && (c.FriendWins > 0 || outcome == MatchOutcome.DefenderWin && c.FriendLossUsed)) delta = 0;
         if (c.Mode == "Revenge")
@@ -105,7 +105,7 @@ public static class Pvp
     {
         if (hours is not (8 or 24 or 72 or 168)) throw new InvalidOperationException("Unknown shield");
         if (s.ShieldUntil > now) throw new InvalidOperationException("Active shield cannot stack");
-        s.Wallet.Apply(operation, "shield:" + hours, 0, -(hours == 8 ? 1 : hours == 24 ? 2 : hours == 72 ? 4 : 7));
+        s.Wallet.Apply(operation, "shield:" + hours, 0, -AlphaConfig.ShieldCredits(hours));
         s.ShieldUntil = now + hours * 3600000L;
     }
 }

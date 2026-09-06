@@ -11,6 +11,12 @@ public sealed class OrderRow
 }
 public sealed class Purchases(Store store)
 {
+    public async Task<bool> RefreshFromProvider(string orderId, ICommerceProvider provider, long now)
+    {
+        string status = await provider.Status(orderId);
+        await ObserveTrustedProvider(orderId, status);
+        return await Reconcile(orderId, now);
+    }
     public Task<string> Create(string orderId, string owner, string sku) => store.Transaction(async db =>
     {
         var existing = await db.Set<OrderRow>().FindAsync(orderId);
