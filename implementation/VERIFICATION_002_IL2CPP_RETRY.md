@@ -1,5 +1,8 @@
 # VERIFICATION 002 — Windows native IL2CPP retry
 
+Current status (2026-09-06): **Windows x64 native IL2CPP gate PASSED; blocker CLOSED.** See [final native verification](VERIFICATION_002_IL2CPP_FINAL.md). Earlier blocker statements below describe the historical run.
+
+
 Date: 2026-09-06. Repository: C:/Users/Ihor/Documents/ChatGPT/Airsoft_Club_Game/.
 Branch: codex/implementation-002-unity-host.
 Verified pre-retry HEAD: 7c50261a88ac752e70471032420cb4527f64a3aa.

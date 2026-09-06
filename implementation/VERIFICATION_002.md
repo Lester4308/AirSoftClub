@@ -1,5 +1,8 @@
 # VERIFICATION 002 — Unity integration gate
 
+Current status (2026-09-06): **Windows x64 native IL2CPP gate PASSED; blocker CLOSED.** See [final native verification](VERIFICATION_002_IL2CPP_FINAL.md). Earlier blocker statements below describe the historical run.
+
+
 Date: 2026-09-06. Branch: codex/implementation-002-unity-host. Verified parent: 943d987147b82e63e8f26fe46f2f1cf002c19d09.
 
 **Managed integration / deterministic serialization gate: PASSED.**

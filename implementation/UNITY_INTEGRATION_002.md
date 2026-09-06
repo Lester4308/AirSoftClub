@@ -1,5 +1,8 @@
 # UNITY INTEGRATION 002 — Unity host & combat integration gate
 
+Current status (2026-09-06): **Windows x64 native IL2CPP gate PASSED; blocker CLOSED.** See [final native verification](VERIFICATION_002_IL2CPP_FINAL.md). Earlier blocker statements below describe the historical run.
+
+
 Scope: [exact authorization](USER_REQUEST_002.txt). Base: 943d987147b82e63e8f26fe46f2f1cf002c19d09; new branch codex/implementation-002-unity-host. Implementation 001 history remains intact. No battle formula or balance change.
 
 ## Confirmed version and environment
