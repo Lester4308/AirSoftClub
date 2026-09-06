@@ -39,15 +39,17 @@ public sealed record PvpCapture(string Mode, bool Rated, int FriendWins, bool Fr
 public static class Pvp
 {
     public const long EightHours = 28800000, Day = 86400000;
-    public static PvpCapture Accept(PvpState p, ClubState a, ClubState d, string mode, string match, long now, string ticket = "", bool developmentRevenge = false)
+    public static PvpCapture Accept(PvpState p, ClubState a, ClubState d, string mode, string match, long now, string ticket = "")
     {
         if (a.Id == d.Id || d.ShieldUntil > now) throw new InvalidOperationException("Target unavailable/protected");
         if (mode is not ("Ranked" or "Friend" or "Practice" or "Revenge")) throw new InvalidOperationException("Unknown mode");
         var pair = p.Friends.SingleOrDefault(x => x.Attacker == a.Id && x.Defender == d.Id && now < x.Anchor + EightHours);
         bool rated = mode is "Ranked" or "Revenge" || mode == "Friend" && (pair == null || pair.Wins == 0);
-        if (mode == "Revenge" && !developmentRevenge) throw new InvalidOperationException("Revenge live settlement awaits counterparty product policy");
         if (rated && p.Exposures.Count(x => x.Defender == d.Id && (x.Committed ? x.At > now - Day : x.LeaseUntil > now)) >= 4)
-            throw new InvalidOperationException("Incoming rating exposure cap; choose explicit Practice");
+        {
+            if (mode == "Revenge") rated = false;
+            else throw new InvalidOperationException("Incoming rating exposure cap; choose explicit Practice");
+        }
         if (mode == "Friend" && pair == null)
         {
             pair = new FriendWindow { Attacker = a.Id, Defender = d.Id, Anchor = now }; p.Friends.Add(pair);
@@ -76,9 +78,9 @@ public static class Pvp
         if (c.Mode == "Revenge")
         {
             var r = p.Tickets.Single(x => x.Origin == c.Ticket);
-            delta = outcome == MatchOutcome.AttackerWin ? r.ActualLoss * 120 / 100 : 0;
-            if (delta > 0) r.Consumed = true;
-            // Test-only recovery policy: no counterparty debit. Live path remains disabled pending approval.
+            delta = c.Rated && outcome == MatchOutcome.AttackerWin ? checked((int)((long)r.ActualLoss * 120 / 100)) : 0;
+            if (outcome == MatchOutcome.AttackerWin) r.Consumed = true;
+            // Approved recovery only: target rating unchanged; shared exposure still consumed.
             a.Rating += delta;
         }
         else

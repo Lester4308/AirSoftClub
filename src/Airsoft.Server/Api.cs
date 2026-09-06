@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 namespace Airsoft.Server;
 
-public sealed record CommandIntent(string Key, long Version, string Type, string Target = "", string Value = "", int Number = 0, bool Flag = false, int OfferVersion = 0, string CatalogVersion = Catalog.Version);
+public sealed record CommandIntent(string Key, long Version, string Type, string Target = "", string Value = "", int Number = 0, bool Flag = false, int OfferVersion = 0, string CatalogVersion = Catalog.Version, string Ticket = "");
 public sealed record LoginIntent(string Account);
 public sealed class DevelopmentSessions
 {
@@ -25,6 +25,8 @@ public static class Api
         if (s.PendingMatch == null) foreach (var f in s.Fighters.Where(f => f.Active)) f.Recover(Math.Max(now, f.RecoveryAt));
         var history = await db.Matches.Where(m => m.Attacker == owner || m.Defender == owner).OrderByDescending(m => m.AcceptedAt).Take(20)
             .Select(m => new { m.Id, m.Status, m.Mode, m.Attacker, m.Defender }).ToListAsync();
+        var policyRow = await db.Policies.FindAsync(1);
+        var policy = policyRow == null ? new PvpState() : Json.Read<PvpState>(policyRow.State);
         return new
         {
             s.Id,
@@ -62,6 +64,7 @@ public static class Api
             }),
             Items = s.Items.Select(i => new { Id = i.Key, Definition = i.Value, Slot = Catalog.Get(i.Value).Slot.ToString(), Equipped = s.Fighters.Any(f => f.Equipment.Values.Contains(i.Key)) }),
             Catalog = Catalog.Items.Select(i => new { i.Id, Slot = i.Slot.ToString(), i.Mk, i.Money, i.Credits, i.Level }),
+            RevengeTickets = policy.Tickets.Where(t => t.Owner == owner && !t.Consumed && t.Attempts < 3 && t.Expires > now),
             History = history,
             ServerNow = now,
             CatalogVersion = Catalog.Version
@@ -97,7 +100,7 @@ public static class Api
                 var friends = await app.Services.GetRequiredService<SteamGateway>().Friends(owner[6..]);
                 if (!c.Target.StartsWith("steam-") || !friends.Contains(c.Target[6..])) throw new InvalidOperationException("Verified Steam friendship required");
             }
-            if (c.Type == "Attack") return Results.Content(await battles.Start(owner, c.Key, c.Version, new StartIntent(c.Target, c.Value, ""), now), "application/json");
+            if (c.Type == "Attack") return Results.Content(await battles.Start(owner, c.Key, c.Version, new StartIntent(c.Target, c.Value, c.Ticket), now), "application/json");
             string json = await store.Command(owner, c.Key, Json.Write(c), c.Version, async (db, s) =>
             {
                 Clubs.Available(s);
@@ -137,8 +140,17 @@ public static class Api
         {
             string owner = Owner(http); await using var db = store.Open(); var m = await db.Matches.FindAsync(id);
             if (m == null || m.Attacker != owner && m.Defender != owner) return Results.NotFound();
+            var reward = new Reward(0, 0, 0);
+            if (m.Result != null && owner == m.Attacker)
+            {
+                var capture = Json.Read<PvpCapture>(m.Policy); var economy = Json.Read<CapturedEconomy>(m.Economy);
+                reward = Rewards.Calculate(BattleWire.ReadResult(m.Result).Outcome!.Value, economy.OpponentLevel, economy.AttackerPower, economy.DefenderPower, capture.FriendWins, capture.FriendBudget, economy.Config);
+            }
             return Results.Json(new
             {
+                RewardMoney = reward.Money,
+                RewardClubXp = reward.ClubXp,
+                RewardFighterXp = reward.FighterXp,
                 m.Id,
                 m.Status,
                 Input = m.Result == null ? "" : Convert.ToBase64String(m.Input),

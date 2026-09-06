@@ -4,6 +4,29 @@ internal static partial class Program
 {
     static void PvpTests()
     {
+        Test("revenge cap fallback freezes non-rated eligibility and closes successful ticket", () =>
+        {
+            var p = new PvpState(); var a = Starter(); var d = Starter(); a.ShieldUntil = 100000;
+            p.Tickets.Add(new RevengeTicket { Origin = "origin", Owner = a.Id, Target = d.Id, ActualLoss = 17, Expires = 10 });
+            for (int n = 0; n < 4; n++) p.Exposures.Add(new Exposure { Match = "prior" + n, Defender = d.Id, At = 0, Committed = true });
+            var c = Pvp.Accept(p, a, d, "Revenge", "fallback", 1, "origin");
+            Check(!c.Rated && a.ShieldUntil == 100000 && p.Tickets[0].Attempts == 1 && p.Exposures.Count == 4);
+            p.Exposures.Clear(); // A later released slot must not upgrade accepted eligibility.
+            int before = a.Rating; int targetBefore = d.Rating;
+            Pvp.Finish(p, a, d, "fallback", c, MatchOutcome.AttackerWin, 11);
+            Check(a.Rating == before && d.Rating == targetBefore && p.Tickets[0].Consumed && p.Tickets.Count == 1);
+            Reject(() => Pvp.Accept(p, a, d, "Revenge", "retry-success", 12, "origin"));
+        });
+        Test("rated revenge recovery uses deterministic floor without normal gain", () =>
+        {
+            var p = new PvpState(); var a = Starter(); var d = Starter(); a.ShieldUntil = 100000;
+            p.Tickets.Add(new RevengeTicket { Origin = "origin", Owner = a.Id, Target = d.Id, ActualLoss = 17, Expires = 10 });
+            var c = Pvp.Accept(p, a, d, "Revenge", "rated", 1, "origin");
+            Check(c.Rated && a.ShieldUntil == 0);
+            int before = a.Rating;
+            Pvp.Finish(p, a, d, "rated", c, MatchOutcome.AttackerWin, 11);
+            Check(a.Rating == before + 20 && p.Tickets[0].Consumed && p.Exposures.Single().Committed);
+        });
         Test("zero floor impact releases exposure and creates no revenge", () =>
         {
             var p = new PvpState(); var a = Starter(); var d = Starter(); d.Rating = 0;
@@ -43,10 +66,9 @@ internal static partial class Program
             var p = new PvpState(); var a = Starter(); var d = Starter(); d.Rating = 3;
             var c = Pvp.Accept(p, a, d, "Ranked", "origin", 0); Pvp.Finish(p, a, d, "origin", c, MatchOutcome.AttackerWin, 1);
             Check(p.Tickets.Single().ActualLoss == 3);
-            Reject(() => Pvp.Accept(p, d, a, "Revenge", "live", 2, "origin"));
-            for (int n = 0; n < 3; n++) { var r = Pvp.Accept(p, d, a, "Revenge", "r" + n, 2 + n, "origin", true); Pvp.Finish(p, d, a, "r" + n, r, MatchOutcome.Draw, 3 + n); }
-            Reject(() => Pvp.Accept(p, d, a, "Revenge", "r4", 10, "origin", true)); Check(p.Tickets.Count == 1);
-            p.Tickets[0].Attempts = 0; var win = Pvp.Accept(p, d, a, "Revenge", "win", Pvp.Day, "origin", true);
+            for (int n = 0; n < 3; n++) { var r = Pvp.Accept(p, d, a, "Revenge", "r" + n, 2 + n, "origin"); Pvp.Finish(p, d, a, "r" + n, r, MatchOutcome.Draw, 3 + n); }
+            Reject(() => Pvp.Accept(p, d, a, "Revenge", "r4", 10, "origin")); Check(p.Tickets.Count == 1);
+            p.Tickets[0].Attempts = 0; var win = Pvp.Accept(p, d, a, "Revenge", "win", Pvp.Day, "origin");
             Pvp.Finish(p, d, a, "win", win, MatchOutcome.AttackerWin, Pvp.Day + 2); Check(d.Rating == 3 && p.Tickets[0].Consumed && p.Tickets.Count == 1);
         });
     }

@@ -23,6 +23,7 @@ Command 'Train' $s.Fighters[0].Id 'Accuracy' | Out-Null
 Command 'Heal' $s.Fighters[0].Id | Out-Null
 Command 'Refill' '' '' 0 | Out-Null
 $rivals=Invoke-RestMethod "$base/api/opponents" -Headers $headers
+$beforeBattle=State
 $match=Command 'Attack' $rivals.Opponents[0].Id 'Practice'
 for($n=0;$n -lt 40;$n++) {
  $result=Invoke-RestMethod "$base/api/match/$($match.MatchId)" -Headers $headers
@@ -31,6 +32,8 @@ for($n=0;$n -lt 40;$n++) {
 }
 if($result.Status -ne 'Completed' -or !$result.Digest){throw 'Battle did not complete'}
 $after=State
+if($null -eq $result.RewardMoney -or $null -eq $result.RewardClubXp -or $null -eq $result.RewardFighterXp){throw 'Result reward fields absent'}
+if(($after.Money-$beforeBattle.Money) -ne $result.RewardMoney -or ($after.Xp-$beforeBattle.Xp) -ne $result.RewardClubXp -or ($after.Fighters[0].Xp-$beforeBattle.Fighters[0].Xp) -ne $result.RewardFighterXp){throw 'Visible reward projection differs from committed state'}
 $login2=Invoke-RestMethod "$base/dev/login" -Method Post -ContentType 'application/json' -Body (@{Account=$account}|ConvertTo-Json)
 $restored=Invoke-RestMethod "$base/api/club" -Headers @{Authorization="Bearer $($login2.Token)"}
 if($restored.Version -ne $after.Version -or $restored.Credits -ne 10 -or $restored.History.Count -ne 1){throw 'Reconnect state invalid'}

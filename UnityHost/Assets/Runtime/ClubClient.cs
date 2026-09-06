@@ -22,12 +22,14 @@ namespace AirsoftClub.Unity
         public ItemView[] Items;
         public CatalogView[] Catalog;
         public HistoryView[] History;
+        public RevengeView[] RevengeTickets;
     }
     [Serializable] public class FighterView { public string Id, Name; public int Accuracy, Endurance, Agility, Level, TrainingCap; public long Hp, MaxHp, Xp; public bool Ready; public EquipmentView[] Equipment; }
     [Serializable] public class EquipmentView { public string Slot, Item, Definition; }
     [Serializable] public class OfferView { public string Id, Name; public int Accuracy, Endurance, Agility; public long Price; }
     [Serializable] public class ItemView { public string Id, Definition, Slot; public bool Equipped; }
     [Serializable] public class CatalogView { public string Id, Slot; public long Money, Credits; public int Mk, Level; }
+    [Serializable] public class RevengeView { public string Origin, Target; public int ActualLoss, Attempts; public long Expires; }
     [Serializable] public class HistoryView { public string Id, Status, Mode, Attacker, Defender; }
     [Serializable] public class RivalView { public string Id, Name, Category; public int Level, Rating, Fighters; public bool Protected; }
     [Serializable] public class RivalsView { public RivalView[] Opponents; }
@@ -36,7 +38,7 @@ namespace AirsoftClub.Unity
     [Serializable] public class LoginRequest { public string Account; }
     [Serializable] public class CommandRequest
     {
-        public string Key, Type, Target = "", Value = "", CatalogVersion = "catalog-004-v1";
+        public string Key, Type, Target = "", Value = "", Ticket = "", CatalogVersion = "catalog-004-v1";
         public long Version;
         public int Number, OfferVersion;
         public bool Flag;
@@ -294,7 +296,16 @@ namespace AirsoftClub.Unity
                 Text($"Ready to challenge: {mode}. Your {club.Fighters.Count(f => f.Ready)} ready fighters automatically participate. Server checks health, ammo and exposure at acceptance.");
                 if (Btn("Confirm & start battle")) StartCoroutine(Send(Intent("Attack", selectedTarget, mode)));
             }
-            Text("Revenge tickets are recorded; live settlement is gated by the pending counterparty rating policy.");
+            Text("Revenge: rated win restores floor(120% of origin loss); target loses no rating. At the cap: non-rated, no recovery. A win closes the ticket. Rated start cancels your shield.");
+            foreach (var ticket in club.RevengeTickets ?? Array.Empty<RevengeView>())
+            {
+                Text($"Origin {ticket.Origin.Substring(0, Math.Min(8, ticket.Origin.Length))} • Loss {ticket.ActualLoss} • Attempts {ticket.Attempts}/3 • Expires in {Math.Max(0, (ticket.Expires - club.ServerNow) / 60000)} min");
+                if (Btn("Confirm Revenge vs " + ticket.Target))
+                {
+                    var command = Intent("Attack", ticket.Target, "Revenge"); command.Ticket = ticket.Origin;
+                    StartCoroutine(Send(command));
+                }
+            }
         }
         void History()
         {
