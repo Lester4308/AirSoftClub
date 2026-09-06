@@ -15,7 +15,7 @@ public sealed class Battles(Store store)
         store.Command(owner, key, Json.Write(intent), version, async (db, s) =>
         {
             Clubs.Available(s);
-            if (intent.Target == owner || intent.Mode != "Practice") throw new InvalidOperationException("Invalid battle mode/target");
+            if (intent.Target == owner) throw new InvalidOperationException("Invalid battle mode/target");
             var target = await db.Clubs.FindAsync(intent.Target) ?? throw new InvalidOperationException("Target unavailable");
             var defender = Json.Read<ClubState>(target.State);
             if (defender.ShieldUntil > now) throw new InvalidOperationException("Target protected");
@@ -25,6 +25,9 @@ public sealed class Battles(Store store)
             var defense = BattleWire.ReadTeam(target.Defense);
             var config = new MatchConfig(offense, defense, BitConverter.ToUInt64(RandomNumberGenerator.GetBytes(8)), new BattleRules());
             string id = Guid.NewGuid().ToString("N"); s.PendingMatch = id;
+            var policyRow = await Policies(db); var policy = Json.Read<PvpState>(policyRow.State);
+            var capture = Pvp.Accept(policy, s, defender, intent.Mode, id, now, intent.Ticket);
+            policyRow.State = Json.Write(policy);
             db.Matches.Add(new MatchRow
             {
                 Id = id,
@@ -35,6 +38,7 @@ public sealed class Battles(Store store)
                 AcceptedAt = now,
                 LeaseUntil = checked(now + 120000),
                 Fence = 1,
+                Policy = Json.Write(capture),
                 Economy = Json.Write(new CapturedEconomy(new(), defender.Level, Rewards.Power(offense), Rewards.Power(defense)))
             });
             return new { MatchId = id };
@@ -54,14 +58,21 @@ public sealed class Battles(Store store)
         if (row.Status != "Pending" || row.Fence != fence) return false;
         var owner = await db.Clubs.FindAsync(row.Attacker) ?? throw new InvalidOperationException("Owner absent");
         var s = Json.Read<ClubState>(owner.State);
+        var policyRow = await Policies(db); var policy = Json.Read<PvpState>(policyRow.State);
+        var capture = Json.Read<PvpCapture>(row.Policy);
         if (s.PendingMatch != id) throw new InvalidOperationException("Offense fence mismatch");
         if (now >= row.LeaseUntil || result.Status != ResultStatus.Completed)
         {
+            policy.Exposures.RemoveAll(e => e.Match == id && !e.Committed); policyRow.State = Json.Write(policy);
             row.Status = "Failed"; row.Fence++; s.PendingMatch = null; s.Version++;
             await Store.Save(db, owner, s, now); return false;
         }
         var input = BattleWire.ReadConfig(row.Input); var economy = Json.Read<CapturedEconomy>(row.Economy);
-        var reward = Rewards.Calculate(result.Outcome!.Value, economy.OpponentLevel, economy.AttackerPower, economy.DefenderPower, 0, false, economy.Config);
+        var reward = Rewards.Calculate(result.Outcome!.Value, economy.OpponentLevel, economy.AttackerPower, economy.DefenderPower, capture.FriendWins, capture.FriendBudget, economy.Config);
+        var defenderRow = (await db.Clubs.FindAsync(row.Defender))!;
+        var defender = Json.Read<ClubState>(defenderRow.State); int oldRating = defender.Rating;
+        Pvp.Finish(policy, s, defender, id, capture, result.Outcome, now); policyRow.State = Json.Write(policy);
+        if (defender.Rating != oldRating) { defender.Version++; await Store.Save(db, defenderRow, defender, now); }
         s.Wallet.Apply("match:" + id, "battle:" + economy.Config.Version, reward.Money, 0); s.Xp += reward.ClubXp;
         foreach (var f in result.Attacker.Fighters)
         {
@@ -74,6 +85,12 @@ public sealed class Battles(Store store)
         row.Result = BattleWire.WriteResult(result); row.Status = "Completed";
         await Store.Save(db, owner, s, now); Settlements.Add(1); return true;
     });
+    public static async Task<PolicyRow> Policies(ClubDb db)
+    {
+        var row = await db.Policies.FindAsync(1);
+        if (row == null) { row = new PolicyRow { Id = 1, State = Json.Write(new PvpState()) }; db.Policies.Add(row); }
+        return row;
+    }
     public async Task Recover(long now)
     {
         await using var db = store.Open();

@@ -1,0 +1,7 @@
+# Implementation 007 — PvP policies and database integration
+
+Directed8h Friends: one rating loss before first win, one win then no rating, win rewards100/50/25/0; active pair budget also applies when switching mode. A rated Friend acceptance anchors the window. Ranked uses bounded5–20 prototype deltas and rating floor0; draw0. Exposure reserves at acceptance, shared rolling24h cap4, draw/failure releases; expired workers cannot settle. Own Ranked cancels shield, Friend/Practice preserve; shield prevents new incoming only. Shields8/24/72/168h, no stacking prototype.
+
+Eligible Ranked defense loss creates unique24h/3-attempt Revenge ticket from actual rating lost after floor. Pure policy tests verify draw attempts, start-time expiry eligibility, floor120% recovery and no chains. HTTP/server acceptance deliberately rejects Revenge: counterparty debit/cross-mode semantics require the product decision explicitly reserved by master§16. A clearly test-only no-counterparty-debit seam exercises recovery; it is not a live commercial rule. Friend identity authorization follows009; no client friend assertion will authorize production requests.
+
+Verification: domain18/18; actual PostgreSQL10/10 including five simultaneous Ranked starts against one target (exactly4 accepted), expired reservations cleared, append-only ledger enforced. Prior battle/persistence regressions green. Commands: dotnet run --project tests/Airsoft.Club.Tests -c Release; tools/verify-server.ps1. No combat/golden changes. These are development policies, not Steam sandbox verification.
