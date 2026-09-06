@@ -1,0 +1,4 @@
+PERF size=1 battles=100 elapsedMs=5.472 heapDeltaBytes=53248
+PERF size=8 battles=100 elapsedMs=21.477 heapDeltaBytes=155648
+PERF size=16 battles=100 elapsedMs=32.653 heapDeltaBytes=32768
+AIRSOFT_PLAYER_PASSED digest=22446b64986d5a77c42fe827552cd1c28ceb31aedd6583f03cea9081bd6e2f9f

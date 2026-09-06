@@ -1,0 +1,116 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Airsoft.Battle -> C:\Users\Ihor\Documents\ChatGPT\Airsoft_Club_Game\Artifacts\bin\Airsoft.Battle\Release\netstandard2.1\Airsoft.Battle.dll
+  Airsoft.Club -> C:\Users\Ihor\Documents\ChatGPT\Airsoft_Club_Game\Artifacts\bin\Airsoft.Club\Release\net10.0\Airsoft.Club.dll
+  Airsoft.Battle.Tests -> C:\Users\Ihor\Documents\ChatGPT\Airsoft_Club_Game\Artifacts\bin\Airsoft.Battle.Tests\Release\net10.0\Airsoft.Battle.Tests.dll
+  Airsoft.Server -> C:\Users\Ihor\Documents\ChatGPT\Airsoft_Club_Game\Artifacts\bin\Airsoft.Server\Release\net10.0\Airsoft.Server.dll
+  Airsoft.Club.Tests -> C:\Users\Ihor\Documents\ChatGPT\Airsoft_Club_Game\Artifacts\bin\Airsoft.Club.Tests\Release\net10.0\Airsoft.Club.Tests.dll
+  Airsoft.Server.Tests -> C:\Users\Ihor\Documents\ChatGPT\Airsoft_Club_Game\Artifacts\bin\Airsoft.Server.Tests\Release\net10.0\Airsoft.Server.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:05.82
+PASS fixed ratio and signed truncation
+PASS fixed overflow and divide by zero
+PASS RNG golden vectors seed zero
+PASS RNG sequence repeat and range
+PASS Accuracy raises hit chance
+PASS Agility raises evasion
+PASS Agility shortens action interval
+PASS Equipment penalty affects tempo and evasion
+PASS Endurance raises MaxHP
+PASS Hit min five percent
+PASS Hit max ninety-five percent
+PASS Formula coefficients configurable
+PASS Armor reduces damage
+PASS Penetration reduces mitigation
+PASS BB multiplier modifies damage
+PASS Mitigation bounded and quantum positive
+PASS Readiness exact boundaries without latch
+PASS MaxHP upgrade leaves CurrentHP unchanged
+PASS Empty and oversize teams rejected
+PASS Duplicate IDs and invalid health rejected
+PASS Invalid rules and weapon rejected
+PASS Snapshots copied sorted and read-only
+PASS Defense uses full captured capacity and leaves inputs unchanged
+PASS Both weaponless is no-progress draw
+PASS Weaponless target remains and cannot attack
+PASS Mixed weaponless roster
+PASS One side no ammo still receives attacks
+PASS Both no ammo is immediate draw
+PASS Partial burst consumes only remaining BB
+PASS Shotgun one BB per pellet
+PASS Same-time final elimination draws
+PASS Dead fighter never attacks at later time
+PASS Tempo schedules faster fighter multiple times
+PASS Time cap is exclusive, no action cap draw
+PASS Technical guard explicit failure, batch atomic
+PASS 100 identical full authoritative results
+PASS Different seeds vary event sequence safely
+PASS Collection permutation and culture do not change output
+PASS Required roster 1v1
+PASS Required roster 1v2
+PASS Required roster 2v1
+PASS Required roster 3v3
+PASS Required roster 8v8
+PASS Required roster 16v16
+PASS All 256 size pairs terminate safely
+GOLDEN 22446b64986d5a77c42fe827552cd1c28ceb31aedd6583f03cea9081bd6e2f9f
+PASS Integration 002 wire/golden roundtrips
+TEST SUMMARY passed=46 failed=0
+PASS approved outcome table
+PASS friend sequence and exhausted loss/draw
+PASS bounded power and single floor
+PASS starter exactly once, conversion retry and conflicting key
+PASS no reverse conversion and insufficient balance atomic
+PASS eliminated participant gets XP, no outsiders
+PASS auto Basic opt-in level threshold guard and no premium spend
+PASS permanent free choice, consumed offer, roster16
+PASS refresh 3599/3600 and nine/ten, duplicate completion
+PASS dismiss original price, gear returned, last defender retained
+PASS readiness exact and fractional recovery split invariant
+PASS Endurance materializes old recovery without free HP
+PASS automatic ready and weaponless/full defense isolation
+PASS shared BB, emergency boundaries, no premium automatic spend
+PASS pending offense blocks management and duplicate equip rejected
+PASS revenge cap fallback freezes non-rated eligibility and closes successful ticket
+PASS rated revenge recovery uses deterministic floor without normal gain
+PASS zero floor impact releases exposure and creates no revenge
+PASS directed friend first loss first win rating then zero
+PASS four incoming reservations, draw release, rolling boundary and stale worker
+PASS shield mode semantics and accepted incoming finish
+PASS revenge actual floor loss, three draws, expiry-at-start and no chains
+PASS UTC daily boundary, missed day and seven-day cycle
+PASS achievement/level grants once and access separate from item
+PASS trusted order ownership, duplicate payment and refund
+PASS spent-credit refund needs review without invented debt
+PASS moderation rejects unauthorized sanctions and audits authorized
+PASS alpha gradual weapon unlock and access-only progressive depth
+PASS partial heal exact charge and recovery remainder preserved
+PASS seventh UTC daily grants configured Credits once
+PASS relative power reflects weapon and ammunition without exposing exact UI score
+PASS recruit quality scales with club level and paid resale returns original cost
+PASS progressive early access boundaries, price depth and permanent entitlement
+PASS legacy early weapon is capped by throughput and releases naturally without repurchase
+PASS all current early weapon depths bound throughput at varied fighter tempo
+PASS early armor effective HP bound and natural release
+CLUB SUMMARY passed=36 failed=0
+PROTOTYPE TEST VALUES — NOT FINAL BALANCE
+battles=10000 completed=10000 invariantFailures=0
+attackerWins=4913 defenderWins=5001 draws=86
+terminationPercent=100.00 drawPercent=0.86
+durationMs min=1552 mean=6089.70 p50=6208 p95=10864 max=16506
+bbConsumed meanAttacker=81.05 meanDefender=81.30
+reason.Elimination=9914
+reason.SimultaneousElimination=86
+warning: in the working copy of 'UnityHost/Assets/Runtime/ClubClient.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'UnityHost/Assets/Scenes/TechnicalBootstrap.unity', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'UnityHost/ProjectSettings/ProjectSettings.asset', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/Airsoft.Server/Api.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/Airsoft.Server/Battles.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/Airsoft.Server/DevelopmentTools.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/Airsoft.Server.Tests/AlphaTests.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/verify-alpha-http.ps1', LF will be replaced by CRLF the next time Git touches it
+VERIFICATION PASSED

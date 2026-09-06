@@ -514,7 +514,7 @@ Tests мають охоплювати exact boundaries, invalid inputs, crash/re
 | Q08 | Own Ranked removes shield; rated Revenge removes; Friend/non-rated does not; accepted incoming finishes | Pending |
 | Q09 | Revenge24h/3; draw attempt; in-flight expiry valid; start eligibility; deterministic120%; unique origin/start; no chains; no Friend/non-ranked tickets | Implemented012; floor rounding, target rating unchanged; domain/PostgreSQL verified |
 | Q10 | Base=MK1; MK2 expensive soft; MK3 Credits | Catalog pending |
-| Q11 | Starter10 Credits; no soft→Credits; fixed configurable Credits→soft; no hard daily spend cap; intentional premium advantage; starter resources | Pending; exact prices/faucets/metric not final |
+| Q11 | Starter10 Credits; no soft→Credits; fixed configurable Credits→soft; no hard daily spend cap; intentional premium advantage; starter resources | Implemented014; exact prices/faucets and final balance remain hypotheses |
 | Q12 | Unity6000.3.21f1/C#/Standard2.1; ASP.NET Core current LTS; PostgreSQL/EF Core; wirev1; shared pure core; observability; Docker; secrets external | Unity/wire verified; backend version pin/hosting pending |
 | Q13 | Pool6–7 full regeneration;1h OR10 completed; reset both counters; one-time free; original-price resale; gear returns | Pending; refund fraction/distribution config |
 | Q14 | Server timestamp+remainder; no MaxHP scaling; concurrency control; post-commit snapshots; min defense1 independent live HP | Pending backend lifecycle |

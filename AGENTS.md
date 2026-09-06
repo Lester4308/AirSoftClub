@@ -1,3 +1,5 @@
+> **Verified Playable Visual Alpha014:** local Mono/native build/run and visual matrix PASS; see [Visual014](implementation/VISUAL_FOUNDATION_014.md). Earlier013/012 status notes below are historical.
+
 > **Current user direction014:** progression + monetization driven; intentional premium combat advantage. Blanket early+3 and strict total premium15–20% ceiling are superseded. See [Monetization014](implementation/MONETIZATION_BALANCE_014.md). Visual prototype authorized; final art and Steam sandbox remain open.
 
 > **Functional Alpha013 checkpoint:** local functional acceptance verified; see [Functional Alpha report](implementation/FUNCTIONAL_ALPHA_013.md). Steam sandbox/final art remain external/later. Early-access premium-stack audit exceeds target at levels1–2 and is explicitly NOT balance approval. Earlier implementation statuses are historical.

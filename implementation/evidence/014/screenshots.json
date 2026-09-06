@@ -1,0 +1,218 @@
+[
+  {
+    "File": "screens-1920/club-battle-16v16.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 147869
+  },
+  {
+    "File": "screens-1920/club-battle-1v1.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 129203
+  },
+  {
+    "File": "screens-1920/club-battle-4v4.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 131770
+  },
+  {
+    "File": "screens-1920/club-battle-8v8.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 142403
+  },
+  {
+    "File": "screens-1920/club-visual-club.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 242857
+  },
+  {
+    "File": "screens-1920/club-visual-equipment.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 198910
+  },
+  {
+    "File": "screens-1920/club-visual-ranked.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 231619
+  },
+  {
+    "File": "screens-1920/club-visual-recovery-1.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 218410
+  },
+  {
+    "File": "screens-1920/club-visual-recovery-16.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 220871
+  },
+  {
+    "File": "screens-1920/club-visual-recovery-4.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 219393
+  },
+  {
+    "File": "screens-1920/club-visual-recovery-8.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 220164
+  },
+  {
+    "File": "screens-1920/club-visual-recruitment.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 200743
+  },
+  {
+    "File": "screens-1920/club-visual-result-1.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 156725
+  },
+  {
+    "File": "screens-1920/club-visual-result-16.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 174934
+  },
+  {
+    "File": "screens-1920/club-visual-result-4.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 160504
+  },
+  {
+    "File": "screens-1920/club-visual-result-8.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 168078
+  },
+  {
+    "File": "screens-1920/club-visual-roster.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 203142
+  },
+  {
+    "File": "screens-1920/club-visual-shop.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Bytes": 255538
+  },
+  {
+    "File": "screens-1280/club-battle-16v16.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 99050
+  },
+  {
+    "File": "screens-1280/club-battle-1v1.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 81260
+  },
+  {
+    "File": "screens-1280/club-battle-4v4.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 82843
+  },
+  {
+    "File": "screens-1280/club-battle-8v8.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 90946
+  },
+  {
+    "File": "screens-1280/club-visual-club.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 156430
+  },
+  {
+    "File": "screens-1280/club-visual-equipment.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 128184
+  },
+  {
+    "File": "screens-1280/club-visual-ranked.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 148480
+  },
+  {
+    "File": "screens-1280/club-visual-recovery-1.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 140983
+  },
+  {
+    "File": "screens-1280/club-visual-recovery-16.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 142598
+  },
+  {
+    "File": "screens-1280/club-visual-recovery-4.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 142498
+  },
+  {
+    "File": "screens-1280/club-visual-recovery-8.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 141625
+  },
+  {
+    "File": "screens-1280/club-visual-recruitment.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 128996
+  },
+  {
+    "File": "screens-1280/club-visual-result-1.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 100301
+  },
+  {
+    "File": "screens-1280/club-visual-result-16.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 115570
+  },
+  {
+    "File": "screens-1280/club-visual-result-4.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 103878
+  },
+  {
+    "File": "screens-1280/club-visual-result-8.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 107798
+  },
+  {
+    "File": "screens-1280/club-visual-roster.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 131440
+  },
+  {
+    "File": "screens-1280/club-visual-shop.png",
+    "Width": 1280,
+    "Height": 800,
+    "Bytes": 164175
+  }
+]

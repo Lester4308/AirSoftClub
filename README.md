@@ -1,5 +1,7 @@
 # Airsoft_Club_Game
 
+> **Current: Playable Visual Alpha014, 2026-09-07 — local PASS.** [Consolidated visual/build report](implementation/VISUAL_FOUNDATION_014.md) · [Monetization and40-cell balance matrix](implementation/MONETIZATION_BALANCE_014.md) · [Launch guide](implementation/DEVELOPMENT_RUNBOOK.md). Mono/native IL2CPP verified. Intentional premium advantage; progressive early unlock replaces blanket+3. Final art and Steam sandbox remain OPEN. Earlier checkpoint text below is historical.
+
 > **Development pass 2026-09-06:** implementation003–010 now has local code and verification; current scope, remaining gates and native/package evidence are in [Verification011](implementation/VERIFICATION_011.md), with [launch instructions](implementation/DEVELOPMENT_RUNBOOK.md). Earlier documentation-only/future status text below records the pre-execution checkpoint. The user's explicit development-pass request authorizes this work; Project Airsoft remains untouched.
 
 

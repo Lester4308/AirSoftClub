@@ -1,0 +1,4 @@
+ Container airsoft-club-development-db-1 Running
+ Container airsoft-club-development-db-1 Waiting
+ Container airsoft-club-development-db-1 Healthy
+SECURITY PASS: Production rejects dev login even with flag=1; protected routes require auth; rate limit returns429

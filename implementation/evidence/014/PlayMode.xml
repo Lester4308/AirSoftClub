@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-06 21:15:40Z" end-time="2026-09-06 21:15:41Z" duration="0,085908">
+  <test-suite type="TestSuite" id="1005" name="AirsoftClubIntegration" fullname="AirsoftClubIntegration" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-06 21:15:40Z" end-time="2026-09-06 21:15:41Z" duration="0.085908" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1003" name="AirsoftClub.Tests.PlayMode.dll" fullname="C:/Users/Ihor/Documents/ChatGPT/Airsoft_Club_Game/UnityHost/Library/ScriptAssemblies/AirsoftClub.Tests.PlayMode.dll" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-06 21:15:40Z" end-time="2026-09-06 21:15:41Z" duration="0.073848" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="15064" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestFixture" id="1001" name="RuntimeSmokeTests" fullname="RuntimeSmokeTests" classname="RuntimeSmokeTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-06 21:15:40Z" end-time="2026-09-06 21:15:40Z" duration="0.072085" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1002" name="GoldenRuntimeSmoke" fullname="RuntimeSmokeTests.GoldenRuntimeSmoke" methodname="GoldenRuntimeSmoke" classname="RuntimeSmokeTests" runstate="Runnable" seed="128849686" result="Passed" start-time="2026-09-06 21:15:40Z" end-time="2026-09-06 21:15:40Z" duration="0.057160" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: C:\Users\Ihor\Documents\ChatGPT\Airsoft_Club_Game\Artifacts\PlayMode.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

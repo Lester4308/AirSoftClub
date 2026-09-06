@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="9" result="Passed" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-06 21:15:27Z" end-time="2026-09-06 21:15:27Z" duration="0,2750135">
+  <test-suite type="TestSuite" id="1000" name="AirsoftClubIntegration" fullname="AirsoftClubIntegration" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-09-06 21:15:27Z" end-time="2026-09-06 21:15:27Z" duration="0.275014" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1011" name="AirsoftClub.Tests.EditMode.dll" fullname="C:/Users/Ihor/Documents/ChatGPT/Airsoft_Club_Game/UnityHost/Library/ScriptAssemblies/AirsoftClub.Tests.EditMode.dll" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-09-06 21:15:27Z" end-time="2026-09-06 21:15:27Z" duration="0.262952" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="20308" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestFixture" id="1001" name="IntegrationTests" fullname="IntegrationTests" classname="IntegrationTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-09-06 21:15:27Z" end-time="2026-09-06 21:15:27Z" duration="0.260902" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1008" name="Batch300AndPerformance" fullname="IntegrationTests.Batch300AndPerformance" methodname="Batch300AndPerformance" classname="IntegrationTests" runstate="Runnable" seed="1032567913" result="Passed" start-time="2026-09-06 21:15:27Z" end-time="2026-09-06 21:15:27Z" duration="0.125084" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[PERF size=1 battles=100 elapsedMs=7.625 heapDeltaBytes=-204800
+PERF size=8 battles=100 elapsedMs=19.627 heapDeltaBytes=413696
+PERF size=16 battles=100 elapsedMs=36.068 heapDeltaBytes=-69632
+]]></output>
+        </test-case>
+        <test-case id="1007" name="DifferentSeedsValidAndVariable" fullname="IntegrationTests.DifferentSeedsValidAndVariable" methodname="DifferentSeedsValidAndVariable" classname="IntegrationTests" runstate="Runnable" seed="1080685956" result="Passed" start-time="2026-09-06 21:15:27Z" end-time="2026-09-06 21:15:27Z" duration="0.019956" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1004" name="FixedAndRngVectors" fullname="IntegrationTests.FixedAndRngVectors" methodname="FixedAndRngVectors" classname="IntegrationTests" runstate="Runnable" seed="1304153935" result="Passed" start-time="2026-09-06 21:15:27Z" end-time="2026-09-06 21:15:27Z" duration="0.000668" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1002" name="GoldenBytesAndDigest" fullname="IntegrationTests.GoldenBytesAndDigest" methodname="GoldenBytesAndDigest" classname="IntegrationTests" runstate="Runnable" seed="833593706" result="Passed" start-time="2026-09-06 21:15:27Z" end-time="2026-09-06 21:15:27Z" duration="0.012736" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1005" name="ReadinessBoundary" fullname="IntegrationTests.ReadinessBoundary" methodname="ReadinessBoundary" classname="IntegrationTests" runstate="Runnable" seed="161684741" result="Passed" start-time="2026-09-06 21:15:27Z" end-time="2026-09-06 21:15:27Z" duration="0.001011" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1006" name="Repeat100" fullname="IntegrationTests.Repeat100" methodname="Repeat100" classname="IntegrationTests" runstate="Runnable" seed="1486886631" result="Passed" start-time="2026-09-06 21:15:27Z" end-time="2026-09-06 21:15:27Z" duration="0.067254" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1003" name="SerializationRoundtrips" fullname="IntegrationTests.SerializationRoundtrips" methodname="SerializationRoundtrips" classname="IntegrationTests" runstate="Runnable" seed="1195517703" result="Passed" start-time="2026-09-06 21:15:27Z" end-time="2026-09-06 21:15:27Z" duration="0.004771" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1010" name="TechnicalFailureSurvivesWire" fullname="IntegrationTests.TechnicalFailureSurvivesWire" methodname="TechnicalFailureSurvivesWire" classname="IntegrationTests" runstate="Runnable" seed="2006832196" result="Passed" start-time="2026-09-06 21:15:27Z" end-time="2026-09-06 21:15:27Z" duration="0.008445" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1009" name="ValidationErrorsPropagate" fullname="IntegrationTests.ValidationErrorsPropagate" methodname="ValidationErrorsPropagate" classname="IntegrationTests" runstate="Runnable" seed="1020756452" result="Passed" start-time="2026-09-06 21:15:27Z" end-time="2026-09-06 21:15:27Z" duration="0.001448" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: C:\Users\Ihor\Documents\ChatGPT\Airsoft_Club_Game\Artifacts\EditMode.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
