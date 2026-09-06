@@ -55,7 +55,7 @@ internal static partial class Program
             {
                 s.Fighters[0].Accuracy++; var row = (await db.Clubs.FindAsync(a))!; await Store.Save(db, row, s, 0); await db.SaveChangesAsync(); throw new InvalidOperationException("before commit");
             }, 0));
-            await using var after = store.Open(); Check(before.SequenceEqual((await after.Clubs.FindAsync(a))!.Defense!));
+            await using var after = store.Open(); var persisted = (await after.Clubs.FindAsync(a))!.Defense!; Check(before.SequenceEqual(persisted));
         });
     }
 }
