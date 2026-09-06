@@ -7,6 +7,12 @@ internal static partial class Program
     { try { await action(); return true; } catch (InvalidOperationException) { return false; } }
     static async Task AlphaDatabaseTests()
     {
+        await Test("development attacks cannot cross into Steam identity scope", async () =>
+        {
+            string id = "dev-scope-" + Guid.NewGuid().ToString("N"); await store.Create(id, 0);
+            await Reject(() => new Battles(store).Start(id, "cross-provider", 0, new StartIntent("steam-12345678901234567"), 0));
+            await using var db = store.Open(); Check(!await db.Matches.AnyAsync(m => m.Attacker == id) && (await db.Clubs.FindAsync(id))!.Version == 0);
+        });
         await Test("refresh race and refresh versus hire cannot consume stale offers", async () =>
         {
             string id = await Armed();

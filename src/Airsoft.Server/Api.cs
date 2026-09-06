@@ -130,6 +130,7 @@ public static class Api
         });
         app.MapPost("/api/command", async (CommandIntent c, HttpContext http, Store store, Battles battles) =>
         {
+            if (string.IsNullOrWhiteSpace(c.Type) || c.Target == null || c.Value == null || c.Ticket == null || c.CatalogVersion == null) throw new ArgumentException("Invalid command fields");
             string owner = Owner(http); long now = Now;
             if (c.Type == "Attack" && c.Value == "Friend" && owner.StartsWith("steam-"))
             {
@@ -184,6 +185,7 @@ public static class Api
             }
             return Results.Json(new
             {
+                RatingKnown = m.Settlement.Length > 0,
                 RatingDelta = m.Settlement.Length == 0 ? (int?)null : owner == m.Attacker ? Json.Read<SettlementReceipt>(m.Settlement).AttackerRatingDelta : Json.Read<SettlementReceipt>(m.Settlement).DefenderRatingDelta,
                 m.AcceptedAt,
                 m.AttackerVersion,

@@ -11,7 +11,12 @@ namespace AirsoftClub.Unity
 {
     [Serializable] public class ClubView
     {
-        public string Id, Name, PendingMatch, CatalogVersion;
+        public string Id, Name, PendingMatch, CatalogVersion, ConfigVersion;
+        public int ContractVersion, TrainingMoney, ConvertRate, RefreshMoney;
+        public long RefreshAvailableAt, EmergencyAvailableAt, DefenseVersion;
+        public bool DefensePublished;
+        public BbView[] BbCatalog;
+        public ShieldView[] Shields;
         public long Version, Money, Credits, Xp, ShieldUntil, ServerNow, OffersAt;
         public int Level, Rating, Capacity, ActiveBbTier, OfferVersion, CompletedSinceRefresh, Streak, Emblem;
         public long LastDay;
@@ -24,13 +29,18 @@ namespace AirsoftClub.Unity
         public HistoryView[] History;
         public RevengeView[] RevengeTickets;
     }
-    [Serializable] public class FighterView { public string Id, Name; public int Accuracy, Endurance, Agility, Level, TrainingCap; public long Hp, MaxHp, Xp; public bool Ready; public EquipmentView[] Equipment; }
+    [Serializable] public class BbView { public int Tier, Money, Credits, Amount; public string Name; }
+    [Serializable] public class ShieldView { public int Hours, Credits; }
+    [Serializable] public class ErrorView { public string Error; }
+    [Serializable] public class LeaderView { public string Id, Name; public int Rating; }
+    [Serializable] public class LeadersView { public LeaderView[] Leaders; }
+    [Serializable] public class FighterView { public string Id, Name; public int Accuracy, Endurance, Agility, Level, TrainingCap; public long Hp, MaxHp, Xp, HealMoney, RecoveryRemainingMs; public bool Ready; public EquipmentView[] Equipment; }
     [Serializable] public class EquipmentView { public string Slot, Item, Definition; }
     [Serializable] public class OfferView { public string Id, Name; public int Accuracy, Endurance, Agility; public long Price; }
     [Serializable] public class ItemView { public string Id, Definition, Slot; public bool Equipped; }
-    [Serializable] public class CatalogView { public string Id, Slot; public long Money, Credits; public int Mk, Level; }
+    [Serializable] public class CatalogView { public string Id, Slot; public long Money, Credits; public int Mk, Level, Damage, Interval, Projectiles, Protection, AgilityPenalty; public bool Access; }
     [Serializable] public class RevengeView { public string Origin, Target; public int ActualLoss, Attempts; public long Expires; }
-    [Serializable] public class HistoryView { public string Id, Status, Mode, Attacker, Defender; }
+    [Serializable] public class HistoryView { public string Id, Status, Mode, Attacker, Defender, Outcome; public long AcceptedAt, Money; public int RatingDelta; public bool RatingKnown; }
     [Serializable] public class RivalView { public string Id, Name, Category; public int Level, Rating, Fighters; public bool Protected; }
     [Serializable] public class RivalsView { public RivalView[] Opponents; }
     [Serializable] public class LoginView { public string Token; }
@@ -38,17 +48,19 @@ namespace AirsoftClub.Unity
     [Serializable] public class LoginRequest { public string Account; }
     [Serializable] public class CommandRequest
     {
-        public string Key, Type, Target = "", Value = "", Ticket = "", CatalogVersion = "catalog-004-v1";
+        public string Key, Type, Target = "", Value = "", Ticket = "", CatalogVersion = "";
         public long Version;
         public int Number, OfferVersion;
         public bool Flag;
     }
-    [Serializable] public class MatchView { public string Id, MatchId, Status, Input, Result, Digest; public long RewardMoney, RewardClubXp, RewardFighterXp; }
+    [Serializable] public class MatchView { public string Id, MatchId, Status, Input, Result, Digest; public long RewardMoney, RewardClubXp, RewardFighterXp; public int RatingDelta; public bool RatingKnown; }
     public sealed class ClubClient : MonoBehaviour
     {
         const string Endpoint = "http://127.0.0.1:5080";
         string account, token = "", page = "Club", status = "Connect to your local development server.", selectedFighter = "", lastPayload, selectedTarget = "";
-        string mode = "Practice", rewardSummary = "";
+        string mode = "Practice", rewardSummary = "", profileName = "", lastEndpoint = "/api/command";
+        bool steamSession;
+        LeaderView[] leaders = Array.Empty<LeaderView>();
         ClubView club;
         RivalView[] rivals = Array.Empty<RivalView>();
         bool busy, smoke, failed, smokeFailure;
@@ -73,6 +85,7 @@ namespace AirsoftClub.Unity
             Application.targetFrameRate = 60; Application.runInBackground = true;
             smoke = Environment.GetCommandLineArgs().Contains("--club-ui-smoke");
             account = PlayerPrefs.GetString("club-development-account", "dev-" + Guid.NewGuid().ToString("N").Substring(0, 12));
+            if (Environment.GetCommandLineArgs().Contains("--club-reconnect-smoke")) { smoke = true; StartCoroutine(ReconnectWalkthrough()); return; }
             if (smoke) { account = "dev-smoke-" + Guid.NewGuid().ToString("N").Substring(0, 12); StartCoroutine(Walkthrough()); }
         }
         IEnumerator Request(string path, string payload, Action<string> success)
@@ -86,7 +99,7 @@ namespace AirsoftClub.Unity
                 if (request.result != UnityWebRequest.Result.Success)
                 {
                     failed = true; if (smoke) smokeFailure = true;
-                    status = request.responseCode == 401 ? "Session expired. Reconnect to continue." : request.downloadHandler.text.Length > 0 ? request.downloadHandler.text : "Server unavailable. Start tools/run-development.ps1, then retry.";
+                    status = request.responseCode == 401 ? "Session expired. Reconnect to continue." : request.responseCode == 429 ? "Too many requests. Wait a minute, then retry the same operation." : request.downloadHandler.text.StartsWith("{") ? JsonUtility.FromJson<ErrorView>(request.downloadHandler.text).Error : "Server unavailable. Start the local backend, then retry.";
                     Debug.Log("CLUB_REQUEST_FAILED code=" + request.responseCode);
                     if (request.responseCode == 409 || request.responseCode == 400) lastPayload = null;
                 }
@@ -95,14 +108,14 @@ namespace AirsoftClub.Unity
         }
         IEnumerator Login()
         {
-            busy = true;
+            busy = true; steamSession = false;
             yield return Request("/dev/login", JsonUtility.ToJson(new LoginRequest { Account = account }), text => token = JsonUtility.FromJson<LoginView>(text).Token);
-            if (!failed) { PlayerPrefs.SetString("club-development-account", account); PlayerPrefs.Save(); yield return Refresh(); }
+            if (!failed) { PlayerPrefs.SetString("club-development-account", account); PlayerPrefs.Save(); yield return Refresh(); if (!failed) status = "Connected. Server state restored."; }
             busy = false;
         }
         IEnumerator SteamLogin()
         {
-            busy = true; string ticket = null; bool finished = false;
+            busy = true; steamSession = true; string ticket = null; bool finished = false;
             var adapter = GetComponent<SteamIdentityAdapter>() ?? gameObject.AddComponent<SteamIdentityAdapter>();
             adapter.Begin(value => { ticket = value; finished = true; }, error => { status = error; finished = true; });
             float deadline = Time.realtimeSinceStartup + 15;
@@ -117,16 +130,16 @@ namespace AirsoftClub.Unity
         }
         IEnumerator Refresh()
         {
-            yield return Request("/api/club", null, text => { club = JsonUtility.FromJson<ClubView>(text); if (selectedFighter == "" && club.Fighters.Length > 0) selectedFighter = club.Fighters[0].Id; });
+            yield return Request("/api/club", null, text => { club = JsonUtility.FromJson<ClubView>(text); if (profileName.Length == 0) profileName = club.Name; if (!club.Fighters.Any(f => f.Id == selectedFighter) && club.Fighters.Length > 0) selectedFighter = club.Fighters[0].Id; });
             if (!failed) yield return Request("/api/opponents", null, text => rivals = JsonUtility.FromJson<RivalsView>(text).Opponents);
         }
         CommandRequest Intent(string type, string target = "", string value = "", int number = 0, bool flag = false) => new CommandRequest
         { Key = Guid.NewGuid().ToString("N"), Version = club.Version, Type = type, Target = target, Value = value, Number = number, Flag = flag, OfferVersion = club.OfferVersion, CatalogVersion = club.CatalogVersion };
-        IEnumerator Send(CommandRequest command)
+        IEnumerator Send(CommandRequest command, bool development = false)
         {
-            busy = true; lastPayload = JsonUtility.ToJson(command);
+            busy = true; lastPayload = JsonUtility.ToJson(command); lastEndpoint = development ? "/api/dev/command" : "/api/command";
             string match = "";
-            yield return Request("/api/command", lastPayload, text => { if (command.Type == "Attack") match = JsonUtility.FromJson<MatchView>(text).MatchId; status = "Saved by server."; lastPayload = null; });
+            yield return Request(lastEndpoint, lastPayload, text => { if (command.Type == "Attack") match = JsonUtility.FromJson<MatchView>(text).MatchId; status = "Saved by server."; lastPayload = null; });
             if (!failed) yield return Refresh();
             if (match.Length > 0) yield return LoadMatch(match);
             busy = false;
@@ -134,7 +147,7 @@ namespace AirsoftClub.Unity
         IEnumerator Retry()
         {
             busy = true;
-            if (lastPayload != null) yield return Request("/api/command", lastPayload, text => { lastPayload = null; status = "Recovered server receipt."; });
+            if (lastPayload != null) yield return Request(lastEndpoint, lastPayload, text => { lastPayload = null; status = "Recovered server receipt."; });
             yield return Refresh();
             if (!failed && club.PendingMatch != null && club.PendingMatch.Length > 0) yield return LoadMatch(club.PendingMatch);
             busy = false;
@@ -150,7 +163,7 @@ namespace AirsoftClub.Unity
             }
             if (view != null && view.Status == "Completed")
             {
-                rewardSummary = $"Money +{view.RewardMoney} • Club XP +{view.RewardClubXp} • Each participating fighter XP +{view.RewardFighterXp}";
+                rewardSummary = $"Money +{view.RewardMoney} • Club XP +{view.RewardClubXp} • Each participating fighter XP +{view.RewardFighterXp} • Rating {(view.RatingKnown ? view.RatingDelta.ToString("+0;-0;0") : "historical unknown")}";
                 replayInput = BattleWire.ReadConfig(Convert.FromBase64String(view.Input)); replayResult = BattleWire.ReadResult(Convert.FromBase64String(view.Result));
                 hp.Clear(); foreach (var f in replayInput.Attacker.Fighters) hp["A" + f.Id] = f.StartingHp.Raw;
                 foreach (var f in replayInput.Defender.Fighters) hp["D" + f.Id] = f.StartingHp.Raw;
@@ -203,11 +216,11 @@ namespace AirsoftClub.Unity
             else
             {
                 Text($"{club.Name}  •  Level {club.Level}  /  XP {club.Xp}  •  Rating {club.Rating}     Money {club.Money}     Credits {club.Credits}");
-                GUILayout.BeginHorizontal(); foreach (string tab in new[] { "Club", "Roster", "Recruitment", "Supply", "Opponents", "History" }) if (Btn(tab)) { page = tab; scroll = Vector2.zero; }
-                if (Btn("Refresh")) StartCoroutine(Retry()); if (Btn("Reconnect")) StartCoroutine(Login()); GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal(); foreach (string tab in new[] { "Club", "Roster", "Recruitment", "Supply", "Opponents", "History", "Status" }) if (Btn(tab)) { page = tab; scroll = Vector2.zero; }
+                if (Btn("Refresh")) StartCoroutine(Retry()); if (Btn("Reconnect")) StartCoroutine(steamSession ? SteamLogin() : Login()); GUILayout.EndHorizontal();
                 GUILayout.Space(10); scroll = GUILayout.BeginScrollView(scroll, GUILayout.Height(555));
                 if (page == "Club") Hub(); else if (page == "Roster") Roster(); else if (page == "Recruitment") Recruitment();
-                else if (page == "Supply") Supply(); else if (page == "Opponents") Opponents(); else if (page == "History") History(); else if (page == "Battle") Battle();
+                else if (page == "Supply") Supply(); else if (page == "Opponents") Opponents(); else if (page == "History") History(); else if (page == "Battle") Battle(); else if (page == "Status") StatusPage();
                 GUILayout.EndScrollView();
             }
             GUI.enabled = true; GUILayout.Space(8); GUILayout.Label((busy ? "Working... " : "") + status, small);
@@ -225,12 +238,12 @@ namespace AirsoftClub.Unity
             if (Btn("Manage fighters")) page = "Roster"; if (Btn("Find an opponent")) page = "Opponents";
             GUILayout.Space(14); Text("Free recovery: approximately 1% Max HP per minute. Emergency Basic BB is available when stock and Money are low.");
             Text("UTC daily • Current streak " + club.Streak + "/7. Missing a full day resets the streak.");
-            if (Btn("Claim daily Money")) StartCoroutine(Send(Intent("Daily")));
+            if (Btn("Claim daily / Day 7 includes 1 Credit")) StartCoroutine(Send(Intent("Daily")));
             if (Btn("Claim earned progression Credits")) StartCoroutine(Send(Intent("Progression")));
             if (Btn("Claim emergency Basic")) StartCoroutine(Send(Intent("Emergency")));
-            if (Btn("Convert 1 Credit → 100 Money")) StartCoroutine(Send(Intent("Convert", number: 1)));
+            if (Btn("Convert 1 Credit → " + club.ConvertRate + " Money")) StartCoroutine(Send(Intent("Convert", number: 1)));
             Text("Protection blocks new incoming attacks. Own Ranked cancels it; Friend/Practice keeps it.");
-            GUILayout.BeginHorizontal(); foreach (int hours in new[] { 8, 24, 72, 168 }) if (Btn("Shield " + hours + "h")) StartCoroutine(Send(Intent("Shield", number: hours))); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); foreach (var shield in club.Shields) if (Btn("Shield " + shield.Hours + "h / " + shield.Credits + " Credits")) StartCoroutine(Send(Intent("Shield", number: shield.Hours))); GUILayout.EndHorizontal();
         }
         void Roster()
         {
@@ -239,9 +252,11 @@ namespace AirsoftClub.Unity
             {
                 GUILayout.BeginVertical(GUI.skin.box); Text($"{f.Name} • Level {f.Level} • HP {f.Hp / 10000f:0.0}/{f.MaxHp / 10000f:0.0} • {(f.Ready ? "READY" : "RECOVERING")} • XP {f.Xp}");
                 Text($"Accuracy {f.Accuracy} / Endurance {f.Endurance} / Agility {f.Agility} • Training cap {f.TrainingCap}");
-                GUILayout.BeginHorizontal(); foreach (string stat in new[] { "Accuracy", "Endurance", "Agility" }) if (Btn(stat + " +1 / 25 Money")) StartCoroutine(Send(Intent("Train", f.Id, stat)));
-                if (Btn("Heal / Money")) StartCoroutine(Send(Intent("Heal", f.Id))); if (Btn("Manage gear")) selectedFighter = f.Id; GUILayout.EndHorizontal();
-                Text(f.Equipment.Length == 0 ? "Weaponless — participates as a target, cannot shoot." : string.Join(" • ", f.Equipment.Select(e => e.Definition)));
+                GUILayout.BeginHorizontal(); foreach (string stat in new[] { "Accuracy", "Endurance", "Agility" }) if (Btn(stat + " +1 / " + club.TrainingMoney + " Money")) StartCoroutine(Send(Intent("Train", f.Id, stat)));
+                if (Btn("Heal / " + f.HealMoney + " Money")) StartCoroutine(Send(Intent("Heal", f.Id))); if (Btn("Manage gear")) selectedFighter = f.Id; GUILayout.EndHorizontal();
+                Text("Full recovery in " + Math.Ceiling(f.RecoveryRemainingMs / 60000d) + " min • Refresh for current server HP");
+                if (f.HealMoney > 0 && Btn("Heal up to 10 HP / up to 10 Money")) StartCoroutine(Send(Intent("Heal", f.Id, number: 10)));
+                Text(!f.Equipment.Any(e => e.Slot == "Weapon") ? "Weaponless — participates as a target, cannot shoot." : string.Join(" • ", f.Equipment.Select(e => e.Definition)));
                 if (selectedFighter == f.Id)
                 {
                     foreach (var e in f.Equipment) if (Btn("Unequip " + e.Definition)) StartCoroutine(Send(Intent("Unequip", f.Id, e.Slot)));
@@ -254,7 +269,8 @@ namespace AirsoftClub.Unity
         void Recruitment()
         {
             Text($"Pool #{club.OfferVersion} • {club.CompletedSinceRefresh}/10 completed battles • Free refresh after 1h OR 10 battles");
-            GUILayout.BeginHorizontal(); if (Btn("Free refresh")) StartCoroutine(Send(Intent("Refresh"))); if (Btn("Refresh / 50 Money")) StartCoroutine(Send(Intent("Refresh", flag: true))); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); if (Btn("Free refresh")) StartCoroutine(Send(Intent("Refresh"))); if (Btn("Refresh / " + club.RefreshMoney + " Money")) StartCoroutine(Send(Intent("Refresh", flag: true))); GUILayout.EndHorizontal();
+            Text("Timer: " + Math.Max(0, (club.RefreshAvailableAt - club.ServerNow) / 60000) + " min remaining");
             for (int n = 0; n < club.Offers.Length; n++)
             {
                 var o = club.Offers[n]; bool free = !club.FreeRecruitClaimed && (o.Id.EndsWith("-0") || o.Id.EndsWith("-1") || o.Id.EndsWith("-2"));
@@ -269,15 +285,15 @@ namespace AirsoftClub.Unity
             if (club.Level >= 3 && Btn(club.AutoBuyBasic ? "Disable auto Basic" : "Enable auto Basic")) StartCoroutine(Send(Intent("AutoBuyBasic", flag: !club.AutoBuyBasic)));
             for (int n = 0; n < 5; n++)
             {
-                GUILayout.BeginHorizontal(); Text($"Tier {n}  {club.BbStock[n]}/{club.Capacity}");
+                GUILayout.BeginHorizontal(); Text($"{club.BbCatalog[n].Name}  {club.BbStock[n]}/{club.Capacity}");
                 if (Btn(club.ActiveBbTier == n ? "ACTIVE" : "Select", GUILayout.Width(160))) StartCoroutine(Send(Intent("BbTier", number: n)));
-                if (Btn(n == 4 ? "+500 / 1 Credit" : "+500 / " + (50 + n * 20) + " Money", GUILayout.Width(250))) StartCoroutine(Send(Intent("Refill", number: n))); GUILayout.EndHorizontal();
+                if (Btn(club.BbCatalog[n].Credits > 0 ? "+" + Math.Min(club.BbCatalog[n].Amount, club.Capacity - club.BbStock[n]) + " / " + club.BbCatalog[n].Credits + " Credit" : "+" + Math.Min(club.BbCatalog[n].Amount, club.Capacity - club.BbStock[n]) + " / " + club.BbCatalog[n].Money + " Money", GUILayout.Width(250))) StartCoroutine(Send(Intent("Refill", number: n))); GUILayout.EndHorizontal();
             }
             Text("Equipment catalog — Base = MK1. Buy here, equip in Roster. Prototype prices.");
             foreach (var i in club.Catalog)
             {
-                GUILayout.BeginHorizontal(GUI.skin.box); Text(i.Id + " • " + i.Slot + " • Level " + i.Level);
-                if (i.Level > club.Level && i.Level <= club.Level + 3 && i.Credits == 0 && Btn("Access / 1 Credit", GUILayout.Width(190))) StartCoroutine(Send(Intent("EarlyUnlock", i.Id)));
+                GUILayout.BeginHorizontal(GUI.skin.box); Text(i.Id + " • " + i.Slot + " • Level " + i.Level + (i.Access ? " • Available" : " • Locked"));
+                if (!i.Access && i.Level > club.Level && i.Level <= club.Level + 3 && i.Credits == 0 && Btn("Access / 1 Credit", GUILayout.Width(190))) StartCoroutine(Send(Intent("EarlyUnlock", i.Id)));
                 if (Btn(i.Credits > 0 ? "Buy / " + i.Credits + " Credits" : "Buy / " + i.Money + " Money", GUILayout.Width(250))) StartCoroutine(Send(Intent("Buy", i.Id))); GUILayout.EndHorizontal();
             }
         }
@@ -288,7 +304,7 @@ namespace AirsoftClub.Unity
             if (mode == "Ranked" && club.ShieldUntil > club.ServerNow) Text("CONFIRMATION: starting Ranked will cancel your active shield.");
             foreach (var r in rivals)
             {
-                GUILayout.BeginHorizontal(GUI.skin.box); Text($"{r.Name}  •  Level {r.Level}  •  {r.Fighters} fighters  •  Rating {r.Rating} {(r.Protected ? "PROTECTED" : "")}");
+                GUILayout.BeginHorizontal(GUI.skin.box); Text($"{r.Name}  •  Level {r.Level}  •  {r.Fighters} fighters  •  Rating {r.Rating} • {r.Category} {(r.Protected ? "PROTECTED" : "")}");
                 if (Btn("Preview", GUILayout.Width(180))) selectedTarget = r.Id; GUILayout.EndHorizontal();
             }
             if (selectedTarget.Length > 0)
@@ -309,14 +325,55 @@ namespace AirsoftClub.Unity
         }
         void History()
         {
-            foreach (var h in club.History) { GUILayout.BeginHorizontal(GUI.skin.box); Text(h.Mode + " • " + h.Status + " • " + h.Id.Substring(0, 8)); if (Btn("Open", GUILayout.Width(160))) StartCoroutine(LoadMatch(h.Id)); GUILayout.EndHorizontal(); }
+            if (club.History.Length == 0) Text("No battles yet.");
+            foreach (var h in club.History)
+            {
+                GUILayout.BeginVertical(GUI.skin.box);
+                Text((h.Attacker == club.Id ? "ATTACK" : "DEFENSE") + " • " + h.Mode + " • " + h.Status + " • " + h.Outcome);
+                Text(DateTimeOffset.FromUnixTimeMilliseconds(h.AcceptedAt).UtcDateTime.ToString("yyyy-MM-dd HH:mm") + " UTC • Money +" + h.Money + " • Rating " + (h.RatingKnown ? h.RatingDelta.ToString("+0;-0;0") : "historical unknown"));
+                if (Btn("Open battle " + h.Id.Substring(0, 8))) StartCoroutine(LoadMatch(h.Id));
+                GUILayout.EndVertical();
+            }
+        }
+        IEnumerator LoadLeaders()
+        {
+            busy = true;
+            yield return Request("/api/leaderboard", null, text => leaders = JsonUtility.FromJson<LeadersView>(text).Leaders);
+            busy = false;
+        }
+        void StatusPage()
+        {
+            Text("Server saved version " + club.Version + " • " + club.ConfigVersion);
+            Text(club.DefensePublished ? "Defense published at version " + club.DefenseVersion + " • full HP / virtual BB" : "Recruit a fighter to publish defense.");
+            Text(club.ShieldUntil > club.ServerNow ? "Shield active: " + Math.Ceiling((club.ShieldUntil - club.ServerNow) / 60000d) + " minutes left" : "No active shield");
+            Text("Club name"); profileName = GUILayout.TextField(profileName, 24, GUILayout.Height(30));
+            if (Btn("Save club name")) StartCoroutine(Send(Intent("Name", value: profileName)));
+            GUILayout.BeginHorizontal(); for (int n = 0; n < 8; n++) if (Btn("Emblem " + n)) StartCoroutine(Send(Intent("Emblem", number: n))); GUILayout.EndHorizontal();
+            Text("Current emblem: " + club.Emblem + " • neutral numbered placeholders.");
+            if (Btn("Load leaderboard")) StartCoroutine(LoadLeaders());
+            foreach (var leader in leaders) Text(leader.Name + " • Rating " + leader.Rating);
+            if (!steamSession && club.Id.StartsWith("dev-"))
+            {
+                Text("DEVELOPMENT FIXTURES — not real currency or Steam. Reset means a NEW profile; existing profile and entitlements are preserved.");
+                GUILayout.BeginHorizontal();
+                if (Btn("Test Money / Credits")) StartCoroutine(Send(Intent("Grant"), true));
+                if (Btn("Simulate full recovery")) StartCoroutine(Send(Intent("Recovery"), true));
+                if (Btn("Seed fresh recruits")) StartCoroutine(Send(Intent("Refresh"), true));
+                GUILayout.EndHorizontal();
+                if (rivals.Length > 0 && Btn("Create test Revenge ticket")) StartCoroutine(Send(Intent("Revenge", rivals[0].Id), true));
+                if (Btn("Start a NEW development profile"))
+                {
+                    account = "dev-" + Guid.NewGuid().ToString("N").Substring(0, 12); club = null; token = ""; lastPayload = null; selectedTarget = ""; page = "Club"; leaders = Array.Empty<LeaderView>();
+                }
+                Text("Ledger inspection is available through the authenticated local development tool.");
+            }
         }
         void Battle()
         {
             if (replayResult == null) return;
             Text($"{Math.Min(replayTime, replayResult.SimulatedDurationMs) / 1000:0.0}s  •  BB used {replayResult.Attacker.BbConsumed} / {replayResult.Defender.BbConsumed}");
             if (Btn("Skip to saved result")) replayTime = replayResult.SimulatedDurationMs + 1;
-            GUILayout.BeginHorizontal(); Team(replayInput.Attacker, "A", "YOUR CLUB"); Team(replayInput.Defender, "D", "DEFENSE"); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); Team(replayInput.Attacker, "A", "ATTACK"); Team(replayInput.Defender, "D", "DEFENSE"); GUILayout.EndHorizontal();
             if (replayTime >= replayResult.SimulatedDurationMs) { GUILayout.Label(replayResult.Outcome.ToString(), title); Text("Settlement saved • " + replayResult.Reason); Text(rewardSummary); }
         }
         void Team(TeamSnapshot team, string side, string heading)
@@ -338,10 +395,27 @@ namespace AirsoftClub.Unity
             System.IO.File.WriteAllBytes(path, texture.EncodeToPNG()); Destroy(texture);
             Debug.Log("CLUB_CAPTURE " + path);
         }
+        string EvidencePath(string name) => System.IO.Path.Combine(System.IO.Directory.GetParent(Application.dataPath).Parent.FullName, name);
+        IEnumerator CapturePage(string screen, string name)
+        {
+            page = screen; scroll = Vector2.zero; yield return null; yield return new WaitForEndOfFrame(); Capture(EvidencePath("club-" + name + ".png"));
+        }
+        IEnumerator ReconnectWalkthrough()
+        {
+            var prior = JsonUtility.FromJson<ClubView>(System.IO.File.ReadAllText(EvidencePath("club-smoke-state.json")));
+            yield return Login();
+            if (failed || club.Id != prior.Id || club.Version != prior.Version || club.Money != prior.Money || club.Credits != prior.Credits || club.History.Length != prior.History.Length || club.ShieldUntil != prior.ShieldUntil || club.RevengeTickets.Length != prior.RevengeTickets.Length || !club.BbStock.SequenceEqual(prior.BbStock))
+            { Debug.LogError("CLUB_RECONNECT_FAILED"); Application.Quit(1); yield break; }
+            yield return CapturePage("Club", "relaunch");
+            Debug.Log("CLUB_RECONNECT_PASSED"); Application.Quit(0);
+        }
         IEnumerator Walkthrough()
         {
             yield return Login(); if (failed) { Application.Quit(1); yield break; }
+            yield return CapturePage("Club", "club");
+            yield return CapturePage("Recruitment", "recruitment");
             yield return Send(Intent("Hire", club.Offers[0].Id, flag: true));
+            yield return CapturePage("Supply", "supply");
             yield return Send(Intent("Buy", "Pistol-MK1"));
             yield return Send(Intent("Equip", club.Fighters[0].Id, club.Items[0].Id));
             yield return Send(Intent("Train", club.Fighters[0].Id, "Accuracy"));
@@ -352,6 +426,12 @@ namespace AirsoftClub.Unity
             yield return Send(Intent("Attack", rivals[0].Id, "Practice"));
             replayTime = 200000; yield return null; yield return new WaitForEndOfFrame();
             Capture(System.IO.Path.Combine(System.IO.Directory.GetParent(Application.dataPath).Parent.FullName, "club-result.png"));
+            yield return Send(Intent("Shield", number: 8));
+            yield return Send(Intent("Revenge", rivals[0].Id), true);
+            yield return CapturePage("Opponents", "revenge");
+            yield return CapturePage("History", "history");
+            yield return CapturePage("Status", "status");
+            System.IO.File.WriteAllText(EvidencePath("club-smoke-state.json"), JsonUtility.ToJson(club));
             yield return new WaitForSecondsRealtime(1);
             if (smokeFailure || replayResult == null || club.History.Length == 0 || !System.IO.File.Exists(System.IO.Path.Combine(System.IO.Directory.GetParent(Application.dataPath).Parent.FullName, "club-result.png"))) { Debug.LogError("CLUB_UI_SMOKE_FAILED"); Application.Quit(1); }
             else { Debug.Log("CLUB_UI_SMOKE_PASSED account=" + account + " matches=" + club.History.Length); Application.Quit(0); }

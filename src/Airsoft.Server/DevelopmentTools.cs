@@ -24,6 +24,7 @@ public static class DevelopmentTools
     }
     public static Task<string> Execute(Store store, string owner, CommandIntent c, long now)
     {
+        if (c.Target == null || string.IsNullOrWhiteSpace(c.Type)) throw new InvalidOperationException("Invalid development command");
         if (!owner.StartsWith("dev-", StringComparison.Ordinal)) throw new InvalidOperationException("Development identity required");
         return store.Command(owner, c.Key, Json.Write(c), c.Version, async (db, s) =>
         {

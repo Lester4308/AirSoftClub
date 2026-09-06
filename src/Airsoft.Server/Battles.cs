@@ -16,6 +16,7 @@ public sealed class Battles(Store store)
         store.Command(owner, key, Json.Write(intent), version, async (db, s) =>
         {
             Clubs.Available(s);
+            if (owner.StartsWith("dev-") && !intent.Target.StartsWith("dev-") || owner.StartsWith("steam-") && !intent.Target.StartsWith("steam-")) throw new InvalidOperationException("Opponent identity provider mismatch");
             if (intent.Target == owner) throw new InvalidOperationException("Invalid battle mode/target");
             var target = await db.Clubs.FindAsync(intent.Target) ?? throw new InvalidOperationException("Target unavailable");
             var defender = Json.Read<ClubState>(target.State);
