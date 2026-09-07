@@ -106,7 +106,7 @@ namespace AirsoftClub.Unity
             for(int n=0;n<4;n++)
             {
                 var r=new Rect(271+n*310,408,290,143);PanelBox(r);Label(new Rect(r.x+22,r.y+19,247,25),names[n],Small);
-                Label(new Rect(r.x+22,r.y+60+10*(1-Mathf.Clamp01((replayTime-replayResult.SimulatedDurationMs)/400f)),247,57),values[n].ToString("+0;-0;0"),Large,n==3?Blue:Gold);
+                Label(new Rect(r.x+22,r.y+60+10*(1-Mathf.Clamp01((replayTime-replayResult.SimulatedDurationMs)/400f)),247,57),(n==3&&savedMatch?.RatingKnown!=true?"UNKNOWN":values[n].ToString("+0;-0;0")),Large,n==3?Blue:Gold);
             }
             Label(new Rect(274,597,1190,36),(replayResult.SimulatedDurationMs/1000f).ToString("0.0")+" seconds  •  BB fired "+replayResult.Attacker.BbConsumed+" / "+replayResult.Defender.BbConsumed+"  •  "+replayInput.Attacker.Fighters.Count+" vs "+replayInput.Defender.Fighters.Count+" fighters",Body);
             if(Click(new Rect(273,690,292,56),"NEW BATTLE",true))page="Opponents";
