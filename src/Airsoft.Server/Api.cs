@@ -120,7 +120,7 @@ public static class Api
             var self = (await db.Clubs.FindAsync(owner))!; string prefix = owner.StartsWith("steam-") ? "steam-" : "dev-";
             var rows = await db.Clubs.Where(c => c.Id != owner && c.Defense != null && c.Id.StartsWith(prefix)).OrderBy(c => Math.Abs(c.Rating - self.Rating)).ThenBy(c => c.Id).Take(5).ToListAsync();
             long ownPower = self.Defense == null ? 1 : Rewards.Power(BattleWire.ReadTeam(self.Defense));
-            return Results.Json(new { Opponents = rows.Select(r => { var s = Json.Read<ClubState>(r.State); return new { s.Id, s.Name, s.Level, s.Rating, Fighters = s.Fighters.Count(f => f.Active), Category = Rewards.Category(ownPower, Rewards.Power(BattleWire.ReadTeam(r.Defense!))), Protected = s.ShieldUntil > Now }; }) });
+            return Results.Json(new { Opponents = rows.Select(r => { var s = Json.Read<ClubState>(r.State); var preview = Rewards.Calculate(MatchOutcome.AttackerWin, s.Level, ownPower, Rewards.Power(BattleWire.ReadTeam(r.Defense!)), 0, false, new()); return new { s.Id, s.Name, s.Level, s.Rating, PreviewWinMoney = preview.Money, PreviewWinClubXp = preview.ClubXp, Fighters = s.Fighters.Count(f => f.Active), Category = Rewards.Category(ownPower, Rewards.Power(BattleWire.ReadTeam(r.Defense!))), Protected = s.ShieldUntil > Now }; }) });
         });
         app.MapGet("/api/leaderboard", async (HttpContext http, Store store) =>
         {

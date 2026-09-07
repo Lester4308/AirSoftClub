@@ -113,21 +113,32 @@ namespace AirsoftClub.Unity
                 c.Poly(metal,118,43,259,43,272,53,257,65,141,64,112,58);
                 c.Box(metal,267,44,end-305,22); c.Box("273333",end-38,49,52,9);
                 c.Poly("202B2B",165,64,198,64,186,109,158,100);
-                c.Poly("667062",203,65,236,66,247,100,230,112,212,104);
+                if(smg)c.Poly("667062",209,65,229,65,233,109,213,109);
+                else if(sniper||dmr)c.Poly("667062",205,65,230,65,234,88,211,89);
+                else if(!shotgun)c.Poly("667062",203,65,236,66,247,100,230,112,212,104);
+                if(sniper) { c.Poly("747865",27,42,100,49,109,63,74,67,36,87,24,80); c.Box("323D3B",235,64,23,7); }
+                if(shotgun)c.Box("323D3B",275,64,end-294,7);
                 c.Poly("222C2D",32,43,86,48,99,60,43,79,36,72,69,59,33,57);
                 for(int n=0;n<5;n++) c.Box("202C2D",278+n*13,48,7,9);
                 c.Box(trim,127,45,128,4);
+                if(sniper||dmr){c.Box("24302F",195,22,88,13);c.Box("708781",193,21,15,15);c.Box("516560",272,19,19,18);}
                 if(shotgun) { c.Box("7B7563",287,43,65,28); c.Box("313C38",307,45,4,25); }
                 if(mk>=2 || sniper || dmr) { c.Box("263233",204,23,61,17); c.Box("8DA29A",209,25,11,12); c.Box("242E2E",221,37,14,9); }
                 if(mk==3)
                 {
-                    c.Box(trim,132,53,31,6); c.Box(trim,241,47,14,12);
+                    c.Box(trim,132,53,31,6); c.Box("9F987C",144,50,58,11); c.Box(trim,44,50,19,6); c.Box(trim,241,47,14,12);
                     c.Box("273333",end+6,44,44,19); c.Box(trim,end+14,44,8,19);
                     c.Box("273333",293,68,15,29); c.Box("909078",291,68,20,7);
                     c.Box("6C786C",305,31,38,11);
                 }
             }
         },512,128);
+        public static Vector2 Muzzle(Rect body, bool right, string id)
+        {
+            bool premium=id?.Contains("MK3")==true;
+            int end=id?.Contains("Pistol")==true?(premium?388:331):(id?.Contains("Smg")==true?354:id?.Contains("Sniper")==true||id?.Contains("Dmr")==true?453:418)+(premium?50:14);
+            return new Vector2(body.x+body.width*(right?.32f+.86f*end/512f:-.15f+.86f*(1-end/512f)),body.y+body.height*(.365f+.22f*52/128));
+        }
         public static void DrawWeapon(Rect r, string id)
         { if(!string.IsNullOrEmpty(id)) GUI.DrawTexture(r,Weapon(id,id.Contains("MK3")?3:id.Contains("MK2")?2:1),ScaleMode.ScaleToFit); }
         static void DrawLayer(Rect r,Texture2D texture,bool right)
