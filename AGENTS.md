@@ -1,3 +1,5 @@
+> **Current UI / Visual Beta015, 2026-09-07:** cohesive tactical screens, modular 2D fighters, warehouse battles and five captured BB colors. Local Mono/native verification and screenshots: [Visual Beta015](implementation/VISUAL_BETA_015.md). Gameplay and014 monetization rules unchanged; earlier visual checkpoints below are historical. Final art and Steam sandbox remain open.
+
 > **Verified Playable Visual Alpha014:** local Mono/native build/run and visual matrix PASS; see [Visual014](implementation/VISUAL_FOUNDATION_014.md). Earlier013/012 status notes below are historical.
 
 > **Current user direction014:** progression + monetization driven; intentional premium combat advantage. Blanket early+3 and strict total premium15–20% ceiling are superseded. See [Monetization014](implementation/MONETIZATION_BALANCE_014.md). Visual prototype authorized; final art and Steam sandbox remain open.

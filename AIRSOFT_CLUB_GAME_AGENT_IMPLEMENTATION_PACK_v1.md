@@ -1,3 +1,5 @@
+> **Current UI / Visual Beta015, 2026-09-07:** cohesive tactical screens, modular 2D fighters, warehouse battles and five captured BB colors. Local Mono/native verification and screenshots: [Visual Beta015](implementation/VISUAL_BETA_015.md). Gameplay and014 monetization rules unchanged; earlier visual checkpoints below are historical. Final art and Steam sandbox remain open.
+
 > **Direction014 overrides historical premium constraints:** use [Monetization014](implementation/MONETIZATION_BALANCE_014.md). Premium advantage is intentional; individual early-item cap replaces the former strict total-stack ceiling.
 
 > **Functional Alpha013 checkpoint:** local functional acceptance verified; see [Functional Alpha report](implementation/FUNCTIONAL_ALPHA_013.md). Steam sandbox/final art remain external/later. Early-access premium-stack audit exceeds target at levels1–2 and is explicitly NOT balance approval. Earlier implementation statuses are historical.

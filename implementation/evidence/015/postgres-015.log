@@ -1,0 +1,31 @@
+ Container airsoft-club-development-db-1 Starting
+ Container airsoft-club-development-db-1 Started
+ Container airsoft-club-development-db-1 Waiting
+ Container airsoft-club-development-db-1 Healthy
+PASS actual migrations and persistent create/restart
+PASS last-resource concurrency and stale version
+PASS lost response retry and payload collision
+PASS rollback after mutation and before commit
+PASS database nonnegative constraint and ownership FK
+PASS accepted snapshot, repeated start and once-only settlement
+PASS concurrent offense and expired worker no rewards
+PASS snapshot publication after commit and rollback
+PASS live revenge duplicate start and restarted settlement preserve one attempt and target rating
+PASS wallet projection cannot diverge from immutable ledger
+PASS actual PostgreSQL fifth incoming start race rejected
+PASS database ledger cannot be edited
+PASS Steam adapter rejects invalid expired wrong-owner nonownership
+PASS Steam exchange persists replay guard and expires session
+PASS development session lifetime
+PASS payment observed then DB fails, reconcile grants once
+PASS UTC duplicate claim under actual database race
+PASS catalog refresh republishes legacy capped defense once without charging
+PASS development attacks cannot cross into Steam identity scope
+PASS refresh race and refresh versus hire cannot consume stale offers
+PASS two actual item purchases at one version commit once
+PASS pending battle blocks equip and heal; final history immutable and receipt once
+PASS shield racing incoming acceptance blocks or preserves accepted battle
+PASS offline recovery read projection does not mutate version and shield persists
+PASS dev tools reject Steam ownership and preserve idempotent fixture grants
+PASS commerce fixture port unknown then paid reconciles once
+SERVER SUMMARY passed=26 failed=0

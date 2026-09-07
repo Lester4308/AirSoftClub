@@ -1,3 +1,5 @@
+> **Current Visual Beta015:** [visual report and screenshots](VISUAL_BETA_015.md). Dark tactical UI, modular fighters, warehouse arena and tier-colored BB feedback; launch backend then client. The bundle contains015 evidence and the unchanged014 monetization report. DEV walkthrough squads are test fixtures; use a new profile in Settings for normal starter resources.
+
 > **Playable Visual Alpha014:** Windows Mono/native IL2CPP builds, progressive early access, scalable1–16 arena and screenshots: [Visual014](VISUAL_FOUNDATION_014.md), [Monetization014](MONETIZATION_BALANCE_014.md). Launch order remains backend then client. Screenshots use explicitly granted DEV squads; start a new profile in Settings for ordinary starter resources.
 
 > **Functional Alpha013:** current scope, tests and important early-access balance risk: [Functional Alpha report](FUNCTIONAL_ALPHA_013.md). The manual capture error and absent Steam sandbox do not block the local alpha.

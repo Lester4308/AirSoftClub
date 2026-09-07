@@ -8,10 +8,12 @@ New-Item -ItemType Directory -Force (Join-Path $bundle 'Client') | Out-Null
 Copy-Item -Path (Join-Path $root 'Artifacts/IL2CPP/*') -Destination (Join-Path $bundle 'Client') -Recurse -Force
 Copy-Item -LiteralPath (Join-Path $root 'compose.yaml') -Destination $bundle -Force
 Copy-Item -LiteralPath (Join-Path $root 'implementation/DEVELOPMENT_RUNBOOK.md') -Destination $bundle -Force
-foreach($report in @('MONETIZATION_BALANCE_014.md','VISUAL_FOUNDATION_014.md')) { Copy-Item -LiteralPath (Join-Path $root ('implementation/'+$report)) -Destination $bundle -Force }
+foreach($report in @('MONETIZATION_BALANCE_014.md','VISUAL_FOUNDATION_014.md','VISUAL_BETA_015.md')) { Copy-Item -LiteralPath (Join-Path $root ('implementation/'+$report)) -Destination $bundle -Force }
 @{Commit=(git rev-parse HEAD);Client='Windows x64 IL2CPP Development';Unity='6000.3.21f1';ExecutableSha256=(Get-FileHash (Join-Path $bundle 'Client/AirsoftClubIntegration.exe')).Hash;GameAssemblySha256=(Get-FileHash (Join-Path $bundle 'Client/GameAssembly.dll')).Hash}|ConvertTo-Json|Set-Content (Join-Path $bundle 'BUILD-MANIFEST.json')
 New-Item -ItemType Directory -Force (Join-Path $bundle 'evidence/014') | Out-Null
 Copy-Item -Path (Join-Path $root 'implementation/evidence/014/*') -Destination (Join-Path $bundle 'evidence/014') -Recurse -Force
+New-Item -ItemType Directory -Force (Join-Path $bundle 'evidence/015') | Out-Null
+Copy-Item -Path (Join-Path $root 'implementation/evidence/015/*') -Destination (Join-Path $bundle 'evidence/015') -Recurse -Force
 $launcher=@'
 $ErrorActionPreference='Stop'
 Set-Location $PSScriptRoot
@@ -34,6 +36,6 @@ $compose=[IO.File]::ReadAllText((Join-Path $bundle 'compose.yaml')).Replace('554
 [IO.File]::WriteAllText((Join-Path $bundle 'compose.yaml'),$compose)
 $notice='Requires Windows x64, .NET10 runtime and Docker Desktop. Run Start-Backend.ps1, then open Client/AirsoftClubIntegration.exe. Stop another development backend using port5080 first. Database/password are local to this bundle. Placeholder art; no live Steam/payments. See DEVELOPMENT_RUNBOOK.md.'
 [IO.File]::WriteAllText((Join-Path $bundle 'START-HERE.txt'),$notice)
-$archivePaths=@('Client','Server','compose.yaml','DEVELOPMENT_RUNBOOK.md','MONETIZATION_BALANCE_014.md','VISUAL_FOUNDATION_014.md','BUILD-MANIFEST.json','evidence','Start-Backend.ps1','START-HERE.txt') | ForEach-Object { Join-Path $bundle $_ }
+$archivePaths=@('Client','Server','compose.yaml','DEVELOPMENT_RUNBOOK.md','MONETIZATION_BALANCE_014.md','VISUAL_FOUNDATION_014.md','VISUAL_BETA_015.md','BUILD-MANIFEST.json','evidence','Start-Backend.ps1','START-HERE.txt') | ForEach-Object { Join-Path $bundle $_ }
 Compress-Archive -Path $archivePaths -DestinationPath (Join-Path $root 'Artifacts/AirsoftClub-Development-Windows-x64.zip') -Force
 Get-FileHash (Join-Path $root 'Artifacts/AirsoftClub-Development-Windows-x64.zip') -Algorithm SHA256

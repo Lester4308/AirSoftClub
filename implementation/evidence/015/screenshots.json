@@ -1,0 +1,314 @@
+[
+  {
+    "File": "bb-mono/club-bb-tier-0.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "37833AF14AEAA31AE881B6A6DB1DC2C6D85A052D380B26E185486E28FCD56056"
+  },
+  {
+    "File": "bb-mono/club-bb-tier-1.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "F0D6ABE3C4DC76C7F187340E0AB9E2A33D632D5FB38DF175A60E2E165B3BC6F7"
+  },
+  {
+    "File": "bb-mono/club-bb-tier-2.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "78F697570504B037BBF3A22D0AA84AB0EF788EABEDB220D96CF13461EEDA846C"
+  },
+  {
+    "File": "bb-mono/club-bb-tier-3.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "C3C52FD50766DE821E5E085492927563C2F86879BC5B0F878A3A2357913F4591"
+  },
+  {
+    "File": "bb-mono/club-bb-tier-4.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "12D5CA62588CA30EA2D246814A92CF0B8F3067F8A6E7C539C59DF8E5C290E7F0"
+  },
+  {
+    "File": "bb-native/club-bb-tier-0.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "A1F187C4A44278C5F4C582901A82749C6705732FE345961E25333A4C2FD92F25"
+  },
+  {
+    "File": "bb-native/club-bb-tier-1.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "7B81B39BF726C239E083C3DCA890098EDA8FA1E552F17F0FF5898EE2DE38699E"
+  },
+  {
+    "File": "bb-native/club-bb-tier-2.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "9BBE6B23F1EAE6BACAA054AB0341683310961ED95907151C528AC2DEC95D28C7"
+  },
+  {
+    "File": "bb-native/club-bb-tier-3.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "5B23C10897B11ED04053EE3BB30E6E305093B526D4817C92358AB5D3DA0E521D"
+  },
+  {
+    "File": "bb-native/club-bb-tier-4.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "28E0E5228F22ED30ACBF3325AA2C887BD048F46870EBFAD59CFCCC6D09A13426"
+  },
+  {
+    "File": "screens-1280/club-battle-16v16.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "38A20E7A6BD7913900B126875BCD43A1B68B6B83CF4322FC3EE56FB7394C7F41"
+  },
+  {
+    "File": "screens-1280/club-battle-1v1.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "4FD472BF3FE616CC560DAE67FA3628C4FD842D1B1B5B924DCD7A3FB120D55E0D"
+  },
+  {
+    "File": "screens-1280/club-battle-4v4.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "E729CEC2F129DBF9B172AA5323F771003E3E0507196A9717780BD0B0706031C2"
+  },
+  {
+    "File": "screens-1280/club-battle-8v8.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "5B385A6118383E5341902EAC626BEE1584DF70558C47022EEA0729261B557486"
+  },
+  {
+    "File": "screens-1280/club-visual-ammunition.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "006880070B128094DE5D5D65F0D9A60D6BA062605EC871FCE5BCCFC733658801"
+  },
+  {
+    "File": "screens-1280/club-visual-art-sheet.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "5A626C79F51E84AD106CD6526B110CC9E2256416C5AEF999A112C0A1ADBFB3C2"
+  },
+  {
+    "File": "screens-1280/club-visual-club.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "46266754A9B5E3C3B0CD3FCEB57AFFF614C243A87EA78325B2BA4BF68FB5535E"
+  },
+  {
+    "File": "screens-1280/club-visual-equipment.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "B8763E75BE7F8A0F95665BB0F58876EC3ECC6170C6282003272403B48C86D8B8"
+  },
+  {
+    "File": "screens-1280/club-visual-ranked.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "10C9D24A23ED187FC42B9825F5F318DFCF1C7E2B06FAED2DFA71DCC3108EFB24"
+  },
+  {
+    "File": "screens-1280/club-visual-recovery-1.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "2316F1210A41B6F6D62DDF67FA3199B47E1B094C12B329D50A15ECD1CCD6E27C"
+  },
+  {
+    "File": "screens-1280/club-visual-recovery-16.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "5B35525CB4C7E478F82B59BE289A0C05BAE10479936E7D71C9FD598888DD4B97"
+  },
+  {
+    "File": "screens-1280/club-visual-recovery-4.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "B2C14EDE83154F4009132E5ED9AEA52724D3E1C34D4A67EC7B81B564A35A46DC"
+  },
+  {
+    "File": "screens-1280/club-visual-recovery-8.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "528613EF23DE5C32EAA5D854EA5DB06FD29C2104D92FD65944FA24B959C48C70"
+  },
+  {
+    "File": "screens-1280/club-visual-recruitment.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "4586DB7BF921E59D9D7E480CDD1778D0BF8FFC2FE8022F3419C8B65D2EEF9335"
+  },
+  {
+    "File": "screens-1280/club-visual-result-1.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "94DA92BA125A9BFC0D0A492C32CFC888E829851FFAD9B6D889651AE986AF268A"
+  },
+  {
+    "File": "screens-1280/club-visual-result-16.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "121E43F6C33844D9549C6001F3799235D8688A9B8C70F10AB30866CB4CE002D0"
+  },
+  {
+    "File": "screens-1280/club-visual-result-4.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "6D4C7C730BC7863536AFCE5EC3C7A3C5C6E1A2DB33B2C5D678E608397E5905C5"
+  },
+  {
+    "File": "screens-1280/club-visual-result-8.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "EC3130BF25E164F5FBB2A84684A89CAC265E0251286D329B63FF175183B6B978"
+  },
+  {
+    "File": "screens-1280/club-visual-roster-squad.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "F8528E93769194502C6DFDBDABB0071833813657F15FDD23F12EA05235D79BAB"
+  },
+  {
+    "File": "screens-1280/club-visual-roster.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "202DBA109E46A0EA3F344063A045E9DAFD84D14499D537FB2F8C47E9A85B1A21"
+  },
+  {
+    "File": "screens-1280/club-visual-shop.png",
+    "Width": 1280,
+    "Height": 800,
+    "Sha256": "7AA4CFC2148055F63EC2231B08C84E946C6B3FC529636FBA917665E48206EF47"
+  },
+  {
+    "File": "screens-1920/club-battle-16v16.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "14AAB58B4E2329DBE81F04A826854BCB2E46EEB80FC5D1E555FA94009E18E5D3"
+  },
+  {
+    "File": "screens-1920/club-battle-1v1.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "DC74454D528DE369A06DBA955A79DD146EFC283CEA7CCB6793C9343C8EBE3730"
+  },
+  {
+    "File": "screens-1920/club-battle-4v4.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "DFA2E04CA391F980780455B87E0B710313F3818306660B4D5A57B917349A9DA0"
+  },
+  {
+    "File": "screens-1920/club-battle-8v8.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "CB13FEDEA203AD21070A0AD53B1956318014D21926AE2A1246CE076D0CA58640"
+  },
+  {
+    "File": "screens-1920/club-visual-ammunition.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "B3ABD8DF9187C4E66379ED788F59AC88E4CDC70C79E7E7BA9F780A1563295A4A"
+  },
+  {
+    "File": "screens-1920/club-visual-art-sheet.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "70A1A0B86E85AAA074C9854278FE7DC8ADE3C4135F9A8F0EC4206C3A3D178D65"
+  },
+  {
+    "File": "screens-1920/club-visual-club.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "4B77CF21326F0437AE7BD28432DE0D806BA08BE85CCA0C6E5DE35DBE51C50E4C"
+  },
+  {
+    "File": "screens-1920/club-visual-equipment.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "0FE64B2CB28FDF6F0F4757DE193A4F5081AD0DCA147750F1B6E4BD56CEBA7D83"
+  },
+  {
+    "File": "screens-1920/club-visual-ranked.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "D24EBF7DCF3ED512F060579D27B9A28E18FC061D5EC2D3C332C6DD665779CDCB"
+  },
+  {
+    "File": "screens-1920/club-visual-recovery-1.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "201A586BA01DE51E7B89FB6F744A0D832949B3C86C50ECAB84BB110013B795BC"
+  },
+  {
+    "File": "screens-1920/club-visual-recovery-16.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "F32A8AFA65B144C114D1B1D6125DFFDB2F1D79DB14648BB1EA0C90D9B84308E8"
+  },
+  {
+    "File": "screens-1920/club-visual-recovery-4.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "B0D2C2B6F139AEC4AE71393D5AD09AA1912A714CAEC743B4B774EA79621C652B"
+  },
+  {
+    "File": "screens-1920/club-visual-recovery-8.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "5BE1FC68D86E275ABAFAE95BECA052155B578A07EA2A335689019B796C9287C4"
+  },
+  {
+    "File": "screens-1920/club-visual-recruitment.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "4B093F8E41E82ABBDF11E964BBA4E6F7F552E2AD705F64D251A54CEC1E0ACC5A"
+  },
+  {
+    "File": "screens-1920/club-visual-result-1.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "90EC0F3A86F9ACEC39FF9A548E8A1BE761E91146FAE7F77D77615F15CBF7F133"
+  },
+  {
+    "File": "screens-1920/club-visual-result-16.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "FFC5725C22BEBEC7D1DF9D97DE7AF53DF4E649458D2BE02B7401908E4542D93B"
+  },
+  {
+    "File": "screens-1920/club-visual-result-4.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "AA7D7DB5C61775F093AB75EF3A411B968BB021AA57C3678C9BAF2606D61B0EA4"
+  },
+  {
+    "File": "screens-1920/club-visual-result-8.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "635FC25CBC47B2CA0C141BF0CC65D65787311FF0B4F5903AE95D0D6EA5FB57D7"
+  },
+  {
+    "File": "screens-1920/club-visual-roster-squad.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "58760D3721EC1EEDECDE135E9B6B5351FD6C02233A8EE7899DD40839397F1F17"
+  },
+  {
+    "File": "screens-1920/club-visual-roster.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "FA298BCC46CB6D2D830921B29231289A6E3F6B4ADC4734D1FF57BE61D1A28FDB"
+  },
+  {
+    "File": "screens-1920/club-visual-shop.png",
+    "Width": 1920,
+    "Height": 1080,
+    "Sha256": "CD0E1534751443DB1FCDFE620DAD72E75B7E93DEE155EBA83A72A51D9BF7DB8E"
+  }
+]

@@ -1,0 +1,7 @@
+PERF size=1 battles=100 elapsedMs=6.114 heapDeltaBytes=45056
+AirsoftClub.Unity.BattleHost:BatchAndPerformance()
+PERF size=8 battles=100 elapsedMs=18.936 heapDeltaBytes=131072
+AirsoftClub.Unity.BattleHost:BatchAndPerformance()
+PERF size=16 battles=100 elapsedMs=31.854 heapDeltaBytes=425984
+AirsoftClub.Unity.BattleHost:BatchAndPerformance()
+AIRSOFT_PLAYER_PASSED digest=22446b64986d5a77c42fe827552cd1c28ceb31aedd6583f03cea9081bd6e2f9f

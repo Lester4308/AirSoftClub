@@ -1,3 +1,5 @@
+> **Current UI / Visual Beta015, 2026-09-07:** cohesive tactical screens, modular 2D fighters, warehouse battles and five captured BB colors. Local Mono/native verification and screenshots: [Visual Beta015](implementation/VISUAL_BETA_015.md). Gameplay and014 monetization rules unchanged; earlier visual checkpoints below are historical. Final art and Steam sandbox remain open.
+
 # Airsoft_Club_Game
 
 > **Current: Playable Visual Alpha014, 2026-09-07 — local PASS.** [Consolidated visual/build report](implementation/VISUAL_FOUNDATION_014.md) · [Monetization and40-cell balance matrix](implementation/MONETIZATION_BALANCE_014.md) · [Launch guide](implementation/DEVELOPMENT_RUNBOOK.md). Mono/native IL2CPP verified. Intentional premium advantage; progressive early unlock replaces blanket+3. Final art and Steam sandbox remain OPEN. Earlier checkpoint text below is historical.
