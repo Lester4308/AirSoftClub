@@ -7,8 +7,14 @@ internal static partial class Program
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(respond(request.RequestUri!)) });
     }
-    static SteamGateway Gateway(string id = "76561198000000001", bool owns = true, bool valid = true, string? owner = null) => new(new HttpClient(new SteamFixture(uri =>
-        uri.AbsolutePath.Contains("Authenticate") ? "{\"response\":{\"params\":{\"result\":\"" + (valid ? "OK" : "Fail") + "\",\"steamid\":\"" + id + "\",\"ownersteamid\":\"" + (owner ?? id) + "\"}}}" : "{\"appownership\":{\"ownsapp\":" + (owns ? "true" : "false") + "}}")), "fixture-not-a-key", 123);
+    static SteamGateway Gateway(string id = "76561198000000001", bool owns = true, bool valid = true, string? owner = null, string? friends = null, Action<Uri>? inspect = null) => new(new HttpClient(new SteamFixture(uri =>
+    {
+        inspect?.Invoke(uri);
+        if (uri.AbsolutePath.Contains("Authenticate")) return "{\"response\":{\"params\":{\"result\":\"" + (valid ? "OK" : "Fail") + "\",\"steamid\":\"" + id + "\",\"ownersteamid\":\"" + (owner ?? id) + "\"}}}";
+        if (uri.AbsolutePath.Contains("CheckAppOwnership")) return "{\"appownership\":{\"ownsapp\":" + (owns ? "true" : "false") + "}}";
+        if (uri.AbsolutePath.Contains("GetFriendList")) return friends ?? "{}";
+        throw new InvalidOperationException("Unexpected Steam fixture request");
+    })), "fixture-not-a-key", 123);
     static async Task SteamTests()
     {
         await Test("Steam adapter rejects invalid expired wrong-owner nonownership", async () =>
@@ -16,6 +22,17 @@ internal static partial class Program
             await Reject(() => Gateway().Verify("not-hex")); await Reject(() => Gateway(valid: false).Verify("abcd"));
             await Reject(() => Gateway(owns: false).Verify("abcd")); await Reject(() => Gateway(owner: "76561198000000002").Verify("abcd"));
             Check((await Gateway().Verify("abcd")).SteamId == "76561198000000001");
+        });
+        await Test("Steam Friends uses server relationship and filters identities", async () =>
+        {
+            var requests = new List<Uri>();
+            var friends = await Gateway(
+                friends: "{\"friendslist\":{\"friends\":[{\"steamid\":\"76561198000000002\"},{\"steamid\":\"invalid\"}]}}",
+                inspect: requests.Add).Friends("76561198000000001");
+            Check(friends.SequenceEqual(["76561198000000002"]));
+            Check(requests.Count == 1 && requests[0].AbsolutePath.Contains("GetFriendList") && requests[0].Query.Contains("relationship=friend") && requests[0].Query.Contains("steamid=76561198000000001"));
+            Check((await Gateway(friends: "{}").Friends("76561198000000001")).Length == 0);
+            await Reject(() => Gateway().Friends("dev-spoof"));
         });
         await Test("Steam exchange persists replay guard and expires session", async () =>
         {

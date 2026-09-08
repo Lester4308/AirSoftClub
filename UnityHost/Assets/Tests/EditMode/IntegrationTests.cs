@@ -14,6 +14,23 @@ public sealed class IntegrationTests
         Assert.IsFalse(Readiness.IsReady(Fixed.FromInt(9), Fixed.FromInt(100)));
         Assert.IsTrue(Readiness.IsReady(Fixed.FromInt(10), Fixed.FromInt(100)));
     }
+    [TestCase(null, 0u, "Steam AppID is not configured.")]
+    [TestCase("", 0u, "Steam AppID is not configured.")]
+    [TestCase("0", 0u, "Steam AppID is not configured.")]
+    [TestCase("480", 480u, "Steam sample AppID 480 is not accepted for this game.")]
+    [TestCase("123", 456u, "Steam AppID mismatch.")]
+    public void SteamAppIdValidationRejectsUnsafeConfiguration(string configured, uint running, string expected)
+    {
+        Assert.IsFalse(SteamIdentityAdapter.TryValidateAppId(configured, running, out string error));
+        Assert.AreEqual(expected, error);
+    }
+    [Test] public void SteamAppIdValidationAcceptsConfiguredAndMatchingRuntime()
+    {
+        Assert.IsTrue(SteamIdentityAdapter.TryValidateAppId("123", 0, out string beforeInitialization));
+        Assert.IsNull(beforeInitialization);
+        Assert.IsTrue(SteamIdentityAdapter.TryValidateAppId("123", 123, out string afterInitialization));
+        Assert.IsNull(afterInitialization);
+    }
     [Test] public void Repeat100()
     {
         for (int i = 0; i < 100; i++) BattleHost.VerifyGolden();

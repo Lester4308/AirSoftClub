@@ -129,7 +129,9 @@ namespace AirsoftClub.Unity
         }
         IEnumerator SteamLogin()
         {
-            busy = true; steamSession = true; string ticket = null; bool finished = false;
+            busy = true;
+            steamSession = false;
+            string ticket = null; bool finished = false;
             var adapter = GetComponent<SteamIdentityAdapter>() ?? gameObject.AddComponent<SteamIdentityAdapter>();
             adapter.Begin(value => { ticket = value; finished = true; }, error => { status = error; finished = true; });
             float deadline = Time.realtimeSinceStartup + 15;
@@ -137,7 +139,12 @@ namespace AirsoftClub.Unity
             if (ticket != null)
             {
                 yield return Request("/steam/login", JsonUtility.ToJson(new SteamLoginRequest { Ticket = ticket }), text => token = JsonUtility.FromJson<LoginView>(text).Token);
-                if (!failed) yield return Refresh();
+                if (!failed)
+                {
+                    steamSession = true;
+                    yield return Refresh();
+                    if (!failed) status = "Connected through Steam.";
+                }
             }
             else if (!finished) status = "Steam callback timed out; request a fresh ticket.";
             adapter.Cancel(); busy = false;
