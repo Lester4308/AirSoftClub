@@ -51,7 +51,8 @@ Current presentation is a coherent prototype, not final art. Open gates include:
 - Windows IL2CPP build and native run: **PASS**.
 - Native golden digest: `22446b64986d5a77c42fe827552cd1c28ceb31aedd6583f03cea9081bd6e2f9f`.
 - Final package: `Artifacts/AirsoftClub-Development-Windows-x64.zip`.
-- Package SHA-256 from Milestone 011: `0061C6184BAD03665BC185C860A491DE607198357C40D5BCE48DEF4E7BD5CBEF` (must be regenerated after this commit for a final delivery hash).
+- Package SHA-256: `407B90D2458B474B4CBBEBCA3D1D93EF5E9075EC37AA8A9FC64CE71DB7D654EF`.
+- Package inventory: 495 entries; `Start-Backend.ps1` and `Start-Game.ps1` present; bundle Compose port 55433; no `.env`, local database password or `steam_appid.txt`.
 
 ## Gates not closed locally
 
