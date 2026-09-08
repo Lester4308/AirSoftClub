@@ -63,11 +63,13 @@ namespace AirsoftClub.Unity
             MButton("SKIP TO RESULT", root, CX + 1070, CY + 650, 240, 44, () => { replayTime = replayResult.SimulatedDurationMs + 1; }, ModernStyle.Blue);
         }
 
-        // Canvas arena: draws lanes, team labels, fighter blocks + HP bars; BB trails approximate.
+        // Canvas arena: draws lanes, team labels, fighter silhouettes + HP bars.
+        // Projectile dots are presentation-only event indicators, not spatial simulation.
         void DrawModernArena(RectTransform parent, MatchConfig input, MatchResult result, float time, AppearanceView[] appearance)
         {
             int rows = Math.Max(1, (Math.Max(input.Attacker.Fighters.Count, input.Defender.Fighters.Count) + 3) / 4);
             float lane = parent.rect.height / rows;
+            bool dense = rows >= 3;
 
             var w = parent.rect.width; var h = parent.rect.height;
             // lane separators + ground
@@ -85,9 +87,9 @@ namespace AirsoftClub.Unity
                 {
                     var f = team.Fighters[i];
                     int row = i / 4, col = i % 4;
-                    float fw = 120f, fh = Mathf.Min(200f, lane - 50f);
+                    float fw = 120f, fh = Mathf.Min(200f, lane - (dense ? 28f : 50f));
                     float x = left ? 30 + col * 130 : w - 30 - fw - col * 130;
-                    float y = row * lane + 30;
+                    float y = row * lane + (dense ? 20f : 30f);
                     if (y + fh > h) continue;
                     var body = PanelRect("Fig" + (left ? "A" : "D") + i, parent, x, y, fw, fh);
                     var bodyImage = body.gameObject.AddComponent<Image>();
@@ -106,19 +108,25 @@ namespace AirsoftClub.Unity
                         f.Weapon != null, left, hpV > 0, recoil);
 
                     // name plate
-                    MLabel(f.Id.Substring(0, Math.Min(5, f.Id.Length)), body, 11, ModernStyle.Ink, TextAnchor.MiddleCenter);
+                    MLabel(f.Id.Substring(0, Math.Min(5, f.Id.Length)), body, dense ? 12 : 11, ModernStyle.Ink, TextAnchor.MiddleCenter);
                     var nameT = (RectTransform)body.GetChild(body.childCount - 1);
-                    nameT.sizeDelta = new Vector2(fw, 20); nameT.anchoredPosition = new Vector2(0, -12);
+                    nameT.sizeDelta = new Vector2(fw, dense ? 18 : 20); nameT.anchoredPosition = new Vector2(0, dense ? -2 : -12);
 
-                    // HP bar
+                    // HP remains anchored at the fighter's feet in every density.
                     float frac = (float)hpV / 10000f / ((float)Formulas.MaxHp(f.Endurance, input.Rules).Raw / 10000f);
                     frac = Mathf.Clamp01(frac);
-                    var hpBar = PanelRect("HP", body, 10, fh - 18, fw - 20, 8);
-                    hpBar.gameObject.AddComponent<Image>().color = new Color(0.1f, 0.1f, 0.1f, 0.5f);
+                    float hpHeight = dense ? 10f : 8f;
+                    var hpBar = PanelRect("HP", body, 8, fh - hpHeight - 4, fw - 16, hpHeight);
+                    hpBar.gameObject.AddComponent<Image>().color = new Color(0.03f, 0.05f, 0.06f, 0.88f);
                     hpBar.GetComponent<Image>().raycastTarget = false;
-                    var hpFill = PanelRect("Fill", hpBar, 0, 0, (fw - 20) * frac, 8);
+                    var hpFill = PanelRect("Fill", hpBar, 0, 0, (fw - 16) * frac, hpHeight);
                     hpFill.gameObject.AddComponent<Image>().color = left ? ModernStyle.Blue : ModernStyle.Orange;
                     hpFill.GetComponent<Image>().raycastTarget = false;
+
+                    // A solid side marker survives when character detail collapses at 16v16.
+                    var teamMark = PanelRect("TeamMark", body, left ? 0 : fw - 4, 0, 4, fh);
+                    teamMark.gameObject.AddComponent<Image>().color = teamColor;
+                    teamMark.GetComponent<Image>().raycastTarget = false;
                 }
             }
             DrawSide(input.Attacker, true);
@@ -155,8 +163,8 @@ namespace AirsoftClub.Unity
                     }
                 }
                 int targetRow = targetIndex / 4;
-                float targetHeight = Mathf.Min(200f, lane - 50f);
-                float trailY = targetRow * lane + 30f + targetHeight * 0.5f - 7f;
+                float targetHeight = Mathf.Min(200f, lane - (dense ? 28f : 50f));
+                float trailY = targetRow * lane + (dense ? 20f : 30f) + targetHeight * 0.5f - 7f;
                 var dot = PanelRect("Trail", parent, trailX, trailY, 14, 14);
                 dot.gameObject.AddComponent<Image>().color = new Color(col.r, col.g, col.b, 0.85f);
                 dot.GetComponent<Image>().raycastTarget = false;

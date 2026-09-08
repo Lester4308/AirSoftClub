@@ -145,6 +145,26 @@ public sealed class ModernUiSmokeTests
         Object.Destroy(host);
     }
 
+    [UnityTest] public IEnumerator ModernUiKeepsSelectionWithoutIdleRebuild()
+    {
+        var host = new GameObject("FocusHost");
+        var client = host.AddComponent<ClubClient>();
+        client.SetModernForTest(true);
+        yield return null;
+        var canvas = Object.FindFirstObjectByType<Canvas>();
+        var button = Object.FindFirstObjectByType<Button>();
+        Assert.IsNotNull(button);
+        yield return null; // allow EventSystem's automatic first selection to settle
+        EventSystem.current.SetSelectedGameObject(button.gameObject);
+        int childCount = canvas.transform.childCount;
+        string signature = client.ModernRenderSignature();
+        yield return null;
+        Assert.AreSame(button.gameObject, EventSystem.current.currentSelectedGameObject, "Idle UI update lost keyboard focus.");
+        Assert.AreEqual(signature, client.ModernRenderSignature(), "Visible state changed during the idle focus check.");
+        Assert.AreEqual(childCount, canvas.transform.childCount, "Idle UI update rebuilt the Canvas hierarchy.");
+        DestroyClient(host, client);
+    }
+
     static bool IsInside(RectTransform child, RectTransform parent)
     {
         var corners = new Vector3[4];

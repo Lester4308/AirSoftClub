@@ -17,6 +17,7 @@ internal static partial class Program
         if (args.Length == 1 && args[0] == "--monetization") return MonetizationEvidence();
         if (args.Length == 1 && args[0] == "--early-access") return EarlyAccessEvidence();
         if (args.Length == 1 && args[0] == "--balance") return BalanceEvidence();
+        if (args.Length == 1 && args[0] == "--final-balance") return FinalBalanceEvidence();
         EconomyTests(); LifecycleTests(); PvpTests(); RetentionTests(); AlphaTests(); MonetizationTests();
         Console.WriteLine($"CLUB SUMMARY passed={passed} failed={failed}");
         return failed == 0 ? 0 : 1;

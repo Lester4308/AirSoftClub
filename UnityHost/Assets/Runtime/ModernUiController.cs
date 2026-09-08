@@ -28,6 +28,7 @@ namespace AirsoftClub.Unity
         Canvas _canvas;
         RectTransform _root;
         int lastRenderFrame = -1;
+        string lastSignature;
 
         public RectTransform Root => _root;
 
@@ -67,8 +68,8 @@ namespace AirsoftClub.Unity
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             var scaler = go.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1600, 920);
-            scaler.matchWidthOrHeight = 0f; // width-locked: the 1600x920 layout maps exactly
+            scaler.referenceResolution = new Vector2(1600, 900);
+            scaler.matchWidthOrHeight = 0.5f; // balanced scaling for 16:9 and slightly taller desktop windows
             var r = (RectTransform)go.transform;
             r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one;
             r.offsetMin = Vector2.zero; r.offsetMax = Vector2.zero;
@@ -87,8 +88,19 @@ namespace AirsoftClub.Unity
         {
             if (C == null || lastRenderFrame == Time.frameCount) return;
             lastRenderFrame = Time.frameCount;
+            string signature = C.ModernRenderSignature();
+            if (signature == lastSignature) return;
+            lastSignature = signature;
             Clear();
             C.RenderModernUI(_root);
+            RestoreSelection();
+        }
+
+        void RestoreSelection()
+        {
+            if (EventSystem.current == null || EventSystem.current.currentSelectedGameObject != null) return;
+            var first = _root.GetComponentInChildren<Selectable>(true);
+            if (first != null && first.IsInteractable()) EventSystem.current.SetSelectedGameObject(first.gameObject);
         }
     }
 }

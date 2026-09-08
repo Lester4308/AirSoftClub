@@ -13,9 +13,19 @@ namespace AirsoftClub.Unity
         CommandRequest pendingCreditsCommand;
         int pendingCreditsCost;
         string pendingCreditsTitle = "", pendingCreditsDetail = "";
-        const float MX = 1600f, MY = 920f;
+        const float MX = 1600f, MY = 900f;
 
-        // Invoked every frame by ModernUiController.
+        // Rebuild only when visible state changes. This preserves keyboard focus and
+        // prevents recreating the complete Canvas hierarchy every frame.
+        public string ModernRenderSignature()
+        {
+            int replayFrame = page == "Battle" && replayResult != null ? Mathf.FloorToInt(replayTime / 33f) : 0;
+            return string.Join("|", page, club?.Version.ToString() ?? "login", selectedFighter, selectedOffer,
+                selectedItem, selectedTarget, shopCategory, mode, busy, failed, status, pendingCreditsCommand?.Key,
+                replayFrame, inventorySlot, revengeOverlay, account);
+        }
+
+        // Invoked by ModernUiController when visible state changes.
         public void RenderModernUI(RectTransform root)
         {
             MRoot = root;

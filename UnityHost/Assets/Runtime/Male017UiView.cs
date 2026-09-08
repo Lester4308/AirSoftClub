@@ -4,8 +4,8 @@ using UnityEngine.UI;
 
 namespace AirsoftClub.Unity
 {
-    // Presentation-only compositor for the approved male-017 prototype pack.
-    // It never computes gameplay stats and never changes equipment state.
+    // Presentation-only compositor for the male-017 prototype pack.
+    // The pack has provenance records but no final-art approval.
     internal sealed class Male017UiView
     {
         const float CanvasWidth = 512f, CanvasHeight = 768f;

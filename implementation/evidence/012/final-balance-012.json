@@ -1,0 +1,251 @@
+{
+  "PolicyVersion": "alpha-014-v1",
+  "Starter": {
+    "Simulations": 1000,
+    "MeanBb": 10.956,
+    "BattlesFromStarter60": 5.4764512595837897042716319825,
+    "BattlesPer500Refill": 45.637093829864914202263599854
+  },
+  "Recovery": {
+    "FullFromZeroMinutes": 100,
+    "ReadyFromZeroMinutes": 10,
+    "MeanPostBattleToFullMinutes": 89.141426,
+    "MeanPostBattleToReadyMinutes": 5.995192
+  },
+  "Refill": {
+    "Amount": 500,
+    "BasicMoney": 50,
+    "EmergencyCooldownMinutes": 180,
+    "AutoBuyLevel": 3,
+    "AutoBuyThreshold": 100,
+    "SpendGuard": 150
+  },
+  "AsymmetricRosterBattles": 2500,
+  "RosterRows": [
+    {
+      "AttackerSize": 1,
+      "DefenderSize": 1,
+      "AttackerWins": 48,
+      "Draws": 2,
+      "Battles": 100,
+      "MeanAttackerBb": 10.72,
+      "MeanDefenderBb": 10.72
+    },
+    {
+      "AttackerSize": 1,
+      "DefenderSize": 2,
+      "AttackerWins": 0,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 6.52,
+      "MeanDefenderBb": 13.04
+    },
+    {
+      "AttackerSize": 1,
+      "DefenderSize": 4,
+      "AttackerWins": 0,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 3.49,
+      "MeanDefenderBb": 13.96
+    },
+    {
+      "AttackerSize": 1,
+      "DefenderSize": 8,
+      "AttackerWins": 0,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 2.04,
+      "MeanDefenderBb": 16.32
+    },
+    {
+      "AttackerSize": 1,
+      "DefenderSize": 16,
+      "AttackerWins": 0,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 1.11,
+      "MeanDefenderBb": 17.76
+    },
+    {
+      "AttackerSize": 2,
+      "DefenderSize": 1,
+      "AttackerWins": 100,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 13.46,
+      "MeanDefenderBb": 6.73
+    },
+    {
+      "AttackerSize": 2,
+      "DefenderSize": 2,
+      "AttackerWins": 40,
+      "Draws": 3,
+      "Battles": 100,
+      "MeanAttackerBb": 22.43,
+      "MeanDefenderBb": 22.8
+    },
+    {
+      "AttackerSize": 2,
+      "DefenderSize": 4,
+      "AttackerWins": 0,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 12.27,
+      "MeanDefenderBb": 27.56
+    },
+    {
+      "AttackerSize": 2,
+      "DefenderSize": 8,
+      "AttackerWins": 0,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 6.74,
+      "MeanDefenderBb": 30.64
+    },
+    {
+      "AttackerSize": 2,
+      "DefenderSize": 16,
+      "AttackerWins": 0,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 4.07,
+      "MeanDefenderBb": 36.48
+    },
+    {
+      "AttackerSize": 4,
+      "DefenderSize": 1,
+      "AttackerWins": 100,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 14.16,
+      "MeanDefenderBb": 3.54
+    },
+    {
+      "AttackerSize": 4,
+      "DefenderSize": 2,
+      "AttackerWins": 100,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 27.79,
+      "MeanDefenderBb": 12.42
+    },
+    {
+      "AttackerSize": 4,
+      "DefenderSize": 4,
+      "AttackerWins": 39,
+      "Draws": 1,
+      "Battles": 100,
+      "MeanAttackerBb": 45.7,
+      "MeanDefenderBb": 46.83
+    },
+    {
+      "AttackerSize": 4,
+      "DefenderSize": 8,
+      "AttackerWins": 0,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 23.45,
+      "MeanDefenderBb": 56.72
+    },
+    {
+      "AttackerSize": 4,
+      "DefenderSize": 16,
+      "AttackerWins": 0,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 13.26,
+      "MeanDefenderBb": 65.28
+    },
+    {
+      "AttackerSize": 8,
+      "DefenderSize": 1,
+      "AttackerWins": 100,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 16.4,
+      "MeanDefenderBb": 2.05
+    },
+    {
+      "AttackerSize": 8,
+      "DefenderSize": 2,
+      "AttackerWins": 100,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 30.72,
+      "MeanDefenderBb": 6.71
+    },
+    {
+      "AttackerSize": 8,
+      "DefenderSize": 4,
+      "AttackerWins": 100,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 57.6,
+      "MeanDefenderBb": 24.01
+    },
+    {
+      "AttackerSize": 8,
+      "DefenderSize": 8,
+      "AttackerWins": 40,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 94.51,
+      "MeanDefenderBb": 96.79
+    },
+    {
+      "AttackerSize": 8,
+      "DefenderSize": 16,
+      "AttackerWins": 0,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 47.1,
+      "MeanDefenderBb": 119.71
+    },
+    {
+      "AttackerSize": 16,
+      "DefenderSize": 1,
+      "AttackerWins": 100,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 18.4,
+      "MeanDefenderBb": 1.15
+    },
+    {
+      "AttackerSize": 16,
+      "DefenderSize": 2,
+      "AttackerWins": 100,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 36.64,
+      "MeanDefenderBb": 4.11
+    },
+    {
+      "AttackerSize": 16,
+      "DefenderSize": 4,
+      "AttackerWins": 100,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 65.28,
+      "MeanDefenderBb": 13.21
+    },
+    {
+      "AttackerSize": 16,
+      "DefenderSize": 8,
+      "AttackerWins": 100,
+      "Draws": 0,
+      "Battles": 100,
+      "MeanAttackerBb": 119.81,
+      "MeanDefenderBb": 47.16
+    },
+    {
+      "AttackerSize": 16,
+      "DefenderSize": 16,
+      "AttackerWins": 51,
+      "Draws": 1,
+      "Battles": 100,
+      "MeanAttackerBb": 195.98,
+      "MeanDefenderBb": 196.74
+    }
+  ]
+}
