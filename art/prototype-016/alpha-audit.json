@@ -1,0 +1,74 @@
+[
+  {
+    "name": "approved-reference.png",
+    "width": 1536,
+    "height": 1024,
+    "cornerAlpha": 255,
+    "bounds": [
+      0,
+      0,
+      1532,
+      1020
+    ]
+  },
+  {
+    "name": "armor.png",
+    "width": 1024,
+    "height": 1536,
+    "cornerAlpha": 0,
+    "bounds": [
+      172,
+      268,
+      908,
+      1140
+    ]
+  },
+  {
+    "name": "face-protection.png",
+    "width": 1536,
+    "height": 1024,
+    "cornerAlpha": 0,
+    "bounds": [
+      280,
+      128,
+      1232,
+      900
+    ]
+  },
+  {
+    "name": "fire-pose.png",
+    "width": 1024,
+    "height": 1536,
+    "cornerAlpha": 0,
+    "bounds": [
+      112,
+      44,
+      972,
+      1456
+    ]
+  },
+  {
+    "name": "helmet.png",
+    "width": 1254,
+    "height": 1254,
+    "cornerAlpha": 0,
+    "bounds": [
+      120,
+      96,
+      1136,
+      1120
+    ]
+  },
+  {
+    "name": "male-base.png",
+    "width": 1024,
+    "height": 1536,
+    "cornerAlpha": 0,
+    "bounds": [
+      228,
+      28,
+      732,
+      1484
+    ]
+  }
+]

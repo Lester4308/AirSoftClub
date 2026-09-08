@@ -1,0 +1,58 @@
+[
+  {
+    "name": "helmet-shell-v2",
+    "width": 1536,
+    "height": 1024,
+    "transparentSampleFraction": 0.5249,
+    "opaqueSamples": 11413,
+    "sha256": "A7FF1A9EC2C3E0481DB2CCFFA4560FE29EF4CF451701B3A86A6E09B2F8FB7CCE"
+  },
+  {
+    "name": "camouflage-v2",
+    "width": 1024,
+    "height": 1536,
+    "transparentSampleFraction": 0.5492,
+    "opaqueSamples": 10684,
+    "sha256": "AC51B161B7B4A859FBC6A99F154CD1BB190070C22544D7D3643DA2997B90D652"
+  },
+  {
+    "name": "combat-body-v2",
+    "width": 1024,
+    "height": 1536,
+    "transparentSampleFraction": 0.7186,
+    "opaqueSamples": 6610,
+    "sha256": "D6BC304ABAC8936A24FE13F1DDB5A10350BDDAE587AD71E9D08AE83F71B49C49"
+  },
+  {
+    "name": "arm-front-v2",
+    "width": 1536,
+    "height": 1024,
+    "transparentSampleFraction": 0.5725,
+    "opaqueSamples": 10249,
+    "sha256": "A562E8AFE25AC7AA96F1C527E9E951567AB2A1568A69FEABA2F11CC9CC287522"
+  },
+  {
+    "name": "arm-rear-v2",
+    "width": 1536,
+    "height": 1024,
+    "transparentSampleFraction": 0.5999,
+    "opaqueSamples": 9605,
+    "sha256": "21AB24ADF321FF53EBDB5C5D3BBEF949A0F23B7B54B09BF61D2895974E82AE4D"
+  },
+  {
+    "name": "rifle-v2",
+    "width": 2048,
+    "height": 768,
+    "transparentSampleFraction": 0.7035,
+    "opaqueSamples": 6775,
+    "sha256": "8EA4450CE7B12A13C1FE362B4B522D05762DEE15C2FA9CC9157E7E3D1850D3C2"
+  },
+  {
+    "name": "smg-v2",
+    "width": 1536,
+    "height": 1024,
+    "transparentSampleFraction": 0.7438,
+    "opaqueSamples": 5921,
+    "sha256": "509939E5100B7B0A5558095F3865010C06237455ED9C51FB15F9D374B0D8DE4F"
+  }
+]

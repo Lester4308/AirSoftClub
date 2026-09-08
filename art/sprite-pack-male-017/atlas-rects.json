@@ -1,0 +1,102 @@
+[
+  {
+    "file": "sprites/body-olive.png",
+    "name": "body-olive",
+    "rect": [
+      97,
+      19,
+      266,
+      423
+    ]
+  },
+  {
+    "file": "sprites/body-camo.png",
+    "name": "body-camo",
+    "rect": [
+      465,
+      22,
+      275,
+      424
+    ]
+  },
+  {
+    "file": "sprites/head-bare.png",
+    "name": "head-bare",
+    "rect": [
+      763,
+      27,
+      367,
+      403
+    ]
+  },
+  {
+    "file": "sprites/head-equipped.png",
+    "name": "head-equipped",
+    "rect": [
+      1157,
+      47,
+      316,
+      383
+    ]
+  },
+  {
+    "file": "sprites/arm-front-olive.png",
+    "name": "arm-front-olive",
+    "rect": [
+      64,
+      470,
+      306,
+      216
+    ]
+  },
+  {
+    "file": "sprites/arm-front-camo.png",
+    "name": "arm-front-camo",
+    "rect": [
+      443,
+      477,
+      291,
+      238
+    ]
+  },
+  {
+    "file": "sprites/arm-rear-olive.png",
+    "name": "arm-rear-olive",
+    "rect": [
+      783,
+      455,
+      317,
+      257
+    ]
+  },
+  {
+    "file": "sprites/arm-rear-camo.png",
+    "name": "arm-rear-camo",
+    "rect": [
+      1151,
+      473,
+      351,
+      242
+    ]
+  },
+  {
+    "file": "sprites/vest.png",
+    "name": "vest",
+    "rect": [
+      67,
+      723,
+      285,
+      287
+    ]
+  },
+  {
+    "file": "sprites/rifle.png",
+    "name": "rifle",
+    "rect": [
+      382,
+      771,
+      374,
+      219
+    ]
+  }
+]

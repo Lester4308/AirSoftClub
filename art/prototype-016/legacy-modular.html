@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="uk"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Airsoft Club — Male art test 016</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#13191d;color:#e7e6dc;font:16px/1.5 system-ui,sans-serif}main{max-width:1240px;margin:auto;padding:28px}h1{font-size:28px;margin:0}h2{font-size:20px;margin:26px 0 12px}p{color:#b9c0bd;max-width:950px}small{color:#bec8c4}button,select{font:inherit;color:inherit;background:#263137;border:1px solid #52605f;border-radius:5px;padding:8px 14px}button{cursor:pointer}button[aria-pressed=true]{background:#6c694a}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #dfa15c;outline-offset:3px}.controls{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin:16px 0}.controls label{display:flex;align-items:center;gap:7px}canvas{display:block;width:100%;background:#252e32;border:1px solid #46514f;border-radius:6px}.status{color:#edbf7e}a{color:#d7bf83}.legend{display:flex;justify-content:space-around;color:#d5dbc9;margin:8px 0}.note{border-left:3px solid #b9965a;padding-left:14px}#error{color:#ffb0a5}details{margin-top:20px}img{max-width:100%}@media(max-width:650px){main{padding:15px}h1{font-size:23px}.controls{gap:10px}}
+</style>
+<main>
+<small>AIRSOFT CLUB GAME · ART TEST 016 · MALE</small>
+<h1>Один боєць — змінне спорядження</h1>
+<p>Затверджений напрям: м’який low-poly, поточні пропорції, без кобури на нозі. Нижче — тест посадки окремих PNG-шарів, не фінальний арт гри.</p>
+<div class="controls"><button id="idle" aria-pressed="false">Увімкнути idle</button><label><input id="armor" type="checkbox" checked>Броня</label><label><input id="face" type="checkbox" checked>Маска / окуляри</label><label><input id="helmet" type="checkbox" checked>Шолом</label><label>Фон <select id="background"><option value="#252e32">Графіт</option><option value="#a3a49a">Світлий</option><option value="#343c2c">Олива</option></select></label></div>
+<canvas id="assembly" width="1152" height="630" aria-label="Три комплектації одного male: база, захист обличчя, броня і шолом"></canvas>
+<div class="legend"><span>01 · База</span><span>02 · Захист</span><span>03 · Спорядження</span></div>
+<div class="controls"><label><input id="camo" type="checkbox" checked>Камуфляж на комплектах 02 / 03</label></div>
+<p class="note">Ревізія 3: базовий костюм приховується під камуфляжем, волосся — під шоломом; рукави перекривають бокові частини броні. Посадку перевіряємо візуально.</p>
+<h2>Руки та зброя — окремі шари</h2>
+<div class="controls"><label>Зброя <select id="weapon"><option value="rifle">Assault Rifle</option><option value="smg">SMG</option></select></label><label><input id="front" type="checkbox" checked>Передня рука</label><label><input id="rear" type="checkbox" checked>Задня рука</label><label><input id="gun" type="checkbox" checked>Показати зброю</label><label><input id="anchors" type="checkbox">Точки кріплення</label><button id="rigFire">Перевірити віддачу</button></div>
+<div class="controls"><label>Положення зброї <select id="aim"><option value="-8">Трохи вище</option><option value="0" selected>Прямо</option><option value="8">Трохи нижче</option></select></label><label>Кадр віддачі <input id="phase" type="range" min="0" max="180" step="10" value="0"><output id="phaseValue">0 мс</output></label></div>
+<canvas id="rig" width="1152" height="660" aria-label="Модульний боєць з окремими руками, змінною зброєю та точками хвату"></canvas>
+<p class="note">Ревізія 4: плечі й передпліччя повертаються навколо ліктів зі сталою довжиною. Тканина плавно згинається на суглобі. Бойові броня й захист голови поки залишаються частиною шару тіла.</p>
+<h2>Масштаб бою та чорновий рух</h2>
+<div class="controls"><label>Формат <select id="count"><option value="1">1v1</option><option value="4">4v4</option><option value="16" selected>16v16</option></select></label><label>BB <select id="bb"><option value="#eff4ea">Basic · білий</option><option value="#73d780">Improved · зелений</option><option value="#6eb3ff">Advanced · синій</option><option value="#ed756a">High-End · червоний</option><option value="#c98dfa">Premium · фіолетовий</option></select></label><button id="fire">Тест пострілу</button></div>
+<canvas id="battle" width="1152" height="620" aria-label="Тест читабельності від 1v1 до 16v16 з HP та коротким польотом BB"></canvas>
+<p class="note">Усі бійці складаються з окремих тіла, рук і зброї. Віддача та політ BB — лише перевірка відображення, без розрахунку бою. Фон — нейтральне поле перевірки.</p>
+<p id="status" class="status">Завантаження зображень…</p><p id="error" role="alert"></p>
+<details><summary>Затверджений візуальний еталон</summary><img src="assets/approved-reference.png" alt="Затверджені male і female у м’якому low-poly стилі без кобур"></details>
+<p><a href="README.md">Стан pipeline і наступні технічні кроки</a></p>
+</main><script src="rig.js"></script><script src="skin-renderer.js"></script><script src="preview.js"></script></html>
+

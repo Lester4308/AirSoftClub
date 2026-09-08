@@ -1,0 +1,72 @@
+[
+  {
+    "name": "arm-front-camo.png",
+    "width": 291,
+    "height": 238,
+    "cornerAlpha": 0,
+    "sha256": "4ED5DB12A8FC6DB9B479B6800DF330D885321813F5EDEA7567CE21398255846C"
+  },
+  {
+    "name": "arm-front-olive.png",
+    "width": 306,
+    "height": 216,
+    "cornerAlpha": 0,
+    "sha256": "3E4D216D837E9DAFFB05655AD3D1839F51E243437FD28D9E3A3D96990141CD2A"
+  },
+  {
+    "name": "arm-left-camo.png",
+    "width": 1283,
+    "height": 1226,
+    "cornerAlpha": 0,
+    "sha256": "C686A6B88FAA193202599F636E9D9DDEF95C308B9B32CAD0D6CA2B66B3176516"
+  },
+  {
+    "name": "arm-left-olive.png",
+    "width": 1392,
+    "height": 1130,
+    "cornerAlpha": 0,
+    "sha256": "2A1B2445A1AF241257B5EF99A40A2E3B5532EF7BA663DEFA92063E55A1932FE7"
+  },
+  {
+    "name": "body-camo.png",
+    "width": 275,
+    "height": 424,
+    "cornerAlpha": 0,
+    "sha256": "3D4B50F1FCFE32FBBCD1D2F29A2BF4CD683056D78AB0EBE115F6DF3B5084DBCB"
+  },
+  {
+    "name": "body-olive.png",
+    "width": 266,
+    "height": 423,
+    "cornerAlpha": 0,
+    "sha256": "3E0A860B5596B59822C3ED970B443CA60451A4F236AB308E31BF6A93F5F8BAE5"
+  },
+  {
+    "name": "head-bare.png",
+    "width": 367,
+    "height": 403,
+    "cornerAlpha": 0,
+    "sha256": "D9E815BD950769D37EF46F65ACD0C870880646B56B50B4F8266768AC7A7D7004"
+  },
+  {
+    "name": "head-equipped.png",
+    "width": 316,
+    "height": 383,
+    "cornerAlpha": 0,
+    "sha256": "18C71F308DB615C44727E9280C5B55D43F5C186D1E8D49B4AA08B4C69087A75E"
+  },
+  {
+    "name": "rifle.png",
+    "width": 374,
+    "height": 219,
+    "cornerAlpha": 0,
+    "sha256": "F072545BAE3590D9D512B232EF4BFA1932543821E982ABB6D8835C87D3AC51B2"
+  },
+  {
+    "name": "vest.png",
+    "width": 285,
+    "height": 287,
+    "cornerAlpha": 0,
+    "sha256": "F7DA3A8AD585629D410B3D642CF1CE912DEC716BCEDB8BC7C22CC1D3DA32F1DC"
+  }
+]

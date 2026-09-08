@@ -1,0 +1,154 @@
+{
+  "name": "male-lowpoly-017",
+  "canvas": [
+    512,
+    768
+  ],
+  "coordinates": "pixels, top-left origin, y down",
+  "pixelsPerUnit": 100,
+  "equipmentGroup": [
+    "body-camo",
+    "head-equipped",
+    "arm-front-camo",
+    "arm-left-camo"
+  ],
+  "layers": [
+    {
+      "name": "rear",
+      "order": 0,
+      "variants": [
+        "arm-left-olive",
+        "arm-left-camo"
+      ],
+      "shoulderSource": [
+        220,
+        180
+      ],
+      "gripSource": [
+        1100,
+        430
+      ],
+      "shoulderTarget": [
+        340,
+        280
+      ],
+      "gripTarget": [
+        422,
+        320
+      ],
+      "sourceAnchorsByVariant": {
+        "olive": {
+          "grip": [
+            1180,
+            380
+          ],
+          "shoulder": [
+            235,
+            130
+          ]
+        },
+        "camo": {
+          "grip": [
+            1100,
+            430
+          ],
+          "shoulder": [
+            220,
+            180
+          ]
+        }
+      }
+    },
+    {
+      "name": "body",
+      "order": 1,
+      "variants": [
+        "body-olive",
+        "body-camo"
+      ],
+      "position": [
+        128,
+        183
+      ],
+      "scale": 1.25
+    },
+    {
+      "name": "head",
+      "order": 2,
+      "variants": [
+        "head-bare",
+        "head-equipped"
+      ],
+      "positions": [
+        [
+          155,
+          69
+        ],
+        [
+          173,
+          69
+        ]
+      ],
+      "scales": [
+        0.49,
+        0.52
+      ]
+    },
+    {
+      "name": "vest",
+      "order": 3,
+      "file": "vest",
+      "position": [
+        169,
+        217
+      ],
+      "scale": 0.63
+    },
+    {
+      "name": "weapon",
+      "order": 4,
+      "file": "rifle",
+      "position": [
+        175,
+        250
+      ],
+      "scale": 0.8
+    },
+    {
+      "name": "front",
+      "order": 5,
+      "variants": [
+        "arm-front-olive",
+        "arm-front-camo"
+      ],
+      "shoulderSource": [
+        48,
+        35
+      ],
+      "gripSource": [
+        252,
+        164
+      ],
+      "shoulderTarget": [
+        154,
+        249
+      ],
+      "gripTarget": [
+        271,
+        354
+      ]
+    }
+  ],
+  "animation": {
+    "idlePeriodSeconds": 6.283185307,
+    "idleVerticalScaleAmplitude": 0.0018,
+    "feetPivot": [
+      256,
+      710
+    ],
+    "recoilDurationSeconds": 0.18,
+    "recoilPixels": 6,
+    "recoilCurve": "sin(pi * normalizedTime)",
+    "armMode": "two-anchor uniform scaling and rotation, no elbow mesh"
+  }
+}
