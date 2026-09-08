@@ -83,8 +83,6 @@ components:
     padding: 16px
 ---
 
-> **Status update:** retained for UI color, typography, and Industrial Clubhouse environment principles. The final character/weapon art direction is superseded by `REALISTIC_STYLIZED_3D_ART_DIRECTION_016.md`; visibly primitive low-poly people and weapons are not a production target.
-
 ## Overview
 
 Industrial Clubhouse is an **Operate / Explore** game surface. The club is a converted warehouse: lockers, workbench, map table, supply cages and trophy walls. Low-poly art uses clear geometric planes and controlled material colors rather than painterly brushwork or photorealistic texture noise.
