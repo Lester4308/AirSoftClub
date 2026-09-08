@@ -156,7 +156,8 @@ namespace AirsoftClub.Unity
             tgo.transform.SetParent(rt, false);
             var trt = (RectTransform)tgo.transform;
             trt.anchorMin = Vector2.zero; trt.anchorMax = Vector2.one;
-            trt.offsetMin = Vector2.zero; trt.offsetMax = Vector2.zero;
+            trt.pivot = new Vector2(0.5f, 0.5f);
+            trt.offsetMin = new Vector2(12, 4); trt.offsetMax = new Vector2(-12, -4);
             var t = tgo.AddComponent<Text>();
             t.font = ModernStyle.Font(); t.fontSize = 16; t.fontStyle = FontStyle.Bold;
             t.color = ModernStyle.Ink; t.alignment = TextAnchor.MiddleCenter;
@@ -196,7 +197,7 @@ namespace AirsoftClub.Unity
                     var inpText = (RectTransform)inp.textComponent.transform;
                     inpText.sizeDelta = new Vector2(400, 40); inpText.anchoredPosition = new Vector2(0, 0);
 
-                    MButton("ENTER CLUB", panel, 240, 30, 420, 50, () => StartCoroutine(Login()), ModernStyle.Gold);
+                    MButton("ENTER CLUB", panel, 30, 175, 420, 50, () => StartCoroutine(Login()), ModernStyle.Gold);
                     var s = MLabel(status, panel, 13, ModernStyle.Orange, TextAnchor.MiddleCenter);
                     var sR = (RectTransform)s.transform;
                     sR.anchorMin = new Vector2(0, 1); sR.anchorMax = new Vector2(0, 1); sR.pivot = new Vector2(0.5f, 0.5f);
