@@ -1,6 +1,6 @@
 # Airsoft Club — modular low-poly character and weapon production contract
 
-Status: proposed production contract for owner approval. This replaces neither gameplay rules nor current prototype art until explicitly adopted.
+Status: **superseded for production art** by `REALISTIC_STYLIZED_3D_ART_DIRECTION_016.md`. Retained as historical migration guidance for the current sprite prototype; gameplay rules and useful naming conventions remain reference-only.
 
 ## 1. Core decision
 
