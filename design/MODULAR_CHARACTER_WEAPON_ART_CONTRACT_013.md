@@ -1,10 +1,10 @@
-# Airsoft Club — modular low-poly character and weapon production contract
+# Airsoft Club — modular volumetric 2D character and weapon production contract
 
-Status: proposed production contract for owner approval. This replaces neither gameplay rules nor current prototype art until explicitly adopted.
+Status: active technical contract, refined by `VOLUMETRIC_2D_SPRITE_ART_DIRECTION_017.md`. Runtime remains 2D; authored 3D may be used only as an offline sprite-rendering aid and never as gameplay geometry.
 
 ## 1. Core decision
 
-Use a **2D skeletal modular character pipeline** rendered from authored low-poly source models or equivalent crisp 2D layers. Male and female characters share:
+Use a **2D skeletal modular character pipeline** built from cohesive, high-resolution volumetric sprite masters and corrective 2D layers. Offline 3D rendering may assist consistent perspective and light, but Unity runtime assets are transparent 2D sprites. Male and female characters share:
 
 - the same skeleton hierarchy;
 - animation clips and timing;
@@ -57,8 +57,8 @@ Gameplay still has exactly four mechanical slots: Weapon, Camouflage, Head Prote
 
 ### Male base
 
-- Broad shoulder/chest plane, straighter waist, heavier forearm/boot silhouette.
-- Head approximately 15–20% larger than realistic military simulation proportions for readability.
+- Natural shoulder/chest volume, straighter waist, and a convincingly weighted forearm/boot silhouette.
+- Head approximately 5–8% larger than strict simulation proportion for readability; never chibi or caricatured.
 - Two neutral faces and three hair/short-cap shapes at first production delivery.
 
 ### Female base
@@ -162,13 +162,13 @@ wpn_{family}_{model}_mk{1|2|3}_{lod}_{variant}.png
 chr_{body}_{part}_{style}_{palette}_{lod}.png
 ```
 
-## 7. Low-poly material and texture rules
+## 7. Volumetric sprite material and texture rules
 
-- Prefer authored geometry/color planes over painted detail.
-- Use 3–6 tonal planes per material: base, light, shadow, edge, optional accent/AO.
+- Model large and medium forms with coherent light, half-tone, shadow, rim, and localized contact AO; do not expose polygon mosaics.
+- Preserve soft anatomical transitions while keeping deliberate silhouette edges and readable equipment thickness.
 - No noisy photo textures. Fabric weave and scratches are visible only at Inspect LOD and must disappear cleanly at Combat LOD.
-- Separate materials visually: polymer = broad matte plane; metal = narrow cool highlight; fabric = softer value transition; glass = restrained cyan/grey reflection.
-- Bake consistent studio lighting: warm key, cool fill, neutral rim. All catalog assets use the same rig.
+- Separate materials through value and highlight behavior: polymer = broad matte highlight; metal = narrow cool highlight; fabric = soft folded transition; Cordura = coarser edge/stitch response; glass = restrained reflected lens volume.
+- Bake consistent studio lighting: warm key, cool fill, neutral rim. All compatible layers use the same rig.
 - Team identity uses patches/armbands and UI side markers, not full-body recoloring.
 
 ## 8. Unity implementation

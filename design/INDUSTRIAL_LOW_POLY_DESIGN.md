@@ -1,7 +1,7 @@
 ---
 version: alpha
-name: Airsoft Club Industrial Low-Poly
-description: Industrial clubhouse management UI with high-salience actions and modular low-poly fighters.
+name: Airsoft Club Industrial Volumetric 2D
+description: Industrial clubhouse management UI with high-salience actions and modular volumetric 2D fighters.
 colors:
   primary: "#151713"
   surface: "#242720"
@@ -85,7 +85,7 @@ components:
 
 ## Overview
 
-Industrial Clubhouse is an **Operate / Explore** game surface. The club is a converted warehouse: lockers, workbench, map table, supply cages and trophy walls. Low-poly art uses clear geometric planes and controlled material colors rather than painterly brushwork or photorealistic texture noise.
+Industrial Clubhouse is an **Operate / Explore** game surface. The club is a converted warehouse: lockers, workbench, map table, supply cages and trophy walls. Character and weapon art uses volumetric realistic-stylized 2D sprites: clean silhouettes, coherent modeled lighting, believable materials, and controlled texture detail rather than flat vector planes or photorealistic noise. The detailed sprite contract lives in `VOLUMETRIC_2D_SPRITE_ART_DIRECTION_017.md`.
 
 The information system must not blend into one brown-grey mass. Neutral materials establish the place; state colors establish meaning. Orange is reserved for the single primary action. Cyan is information and navigation. Green is readiness/success. Yellow is warning/progression. Red is damage, destructive action and danger. Purple is Credits. Gold is Money/reward.
 
@@ -127,14 +127,14 @@ Depth is created with value steps, thin borders and local warehouse lighting. Av
 - **Critical button:** red, used only for dismissal/destructive confirmation.
 - **Info panel:** raised neutral surface; important values highlighted with semantic colors.
 - **Resource chip:** icon + label + tabular value; distinct token color and no full-card tint.
-- **Fighter card:** low-poly portrait, callsign, readiness strip, level and three stats; selection uses light/edge, not a complete color flood.
+- **Fighter card:** volumetric 2D portrait, callsign, readiness strip, level and three stats; selection uses light/edge, not a complete color flood.
 - **Weapon card:** truthful silhouette, family, MK tier, damage/tempo role and ownership/access state.
 
 ## Do's and Don'ts
 
 ### Do
 
-- Keep low-poly geometry crisp: 3–6 value planes per material, deliberate silhouette edges, restrained ambient occlusion.
+- Keep sprite volume coherent: readable silhouette, large-to-small form hierarchy, consistent key/fill/rim lighting, and restrained ambient occlusion.
 - Preserve one shared skeleton/anchor contract for compatible character parts.
 - Author male and female bases against the same named equipment anchors.
 - Keep every weapon family recognizable at 64 px silhouette scale.
@@ -145,5 +145,5 @@ Depth is created with value steps, thin borders and local warehouse lighting. Av
 - Do not bake equipment into the body base.
 - Do not use one rifle image to represent all weapon families in final art.
 - Do not tint the entire UI or fighter by rarity/team.
-- Do not add painterly noise, fake scratches everywhere, gradients, bloom or camouflage behind text.
+- Do not accept flat vector anatomy, visible polygon mosaics, disconnected paper-doll seams, noisy photo textures, fake scratches everywhere, gradients, bloom or camouflage behind text.
 - Do not let premium MK presentation imply new gameplay attachments that do not exist.
