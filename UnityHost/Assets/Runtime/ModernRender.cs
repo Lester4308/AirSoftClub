@@ -75,13 +75,18 @@ namespace AirsoftClub.Unity
         }
 
         // ---- Shared helpers ----
+        // Canvas is width-locked at 1600x920 reference. We use a top-down layout:
+        // y coordinates are distances from the TOP of the parent. PanelRect places a
+        // rect anchored to the top-left of its parent at (xFromLeft, yFromTop).
         RectTransform PanelRect(string name, Transform parent, float x, float y, float w, float h)
         {
             var r = new GameObject(name, typeof(RectTransform));
             r.transform.SetParent(parent, false);
             var rt = (RectTransform)r.transform;
-            rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.zero;
-            rt.anchoredPosition = new Vector2(x, y);
+            rt.anchorMin = new Vector2(0, 1);
+            rt.anchorMax = new Vector2(0, 1);
+            rt.pivot = new Vector2(0, 1);         // top-left pivot
+            rt.anchoredPosition = new Vector2(x, -y); // x from left, y from top
             rt.sizeDelta = new Vector2(w, h);
             return rt;
         }
@@ -97,6 +102,28 @@ namespace AirsoftClub.Unity
         }
 
         Text MLabel(string text, Transform parent, int size = 20, Color? color = null, TextAnchor align = TextAnchor.MiddleLeft)
+        {
+            var go = new GameObject("T", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            var rt = (RectTransform)go.transform;
+            // Top-left anchored: position via anchoredPosition (x, -y) + sizeDelta.
+            rt.anchorMin = new Vector2(0, 1);
+            rt.anchorMax = new Vector2(0, 1);
+            rt.pivot = new Vector2(0, 1);
+            var t = go.AddComponent<Text>();
+            t.font = ModernStyle.Font();
+            t.fontSize = size;
+            t.color = color ?? ModernStyle.Ink;
+            t.alignment = align;
+            t.horizontalOverflow = HorizontalWrapMode.Wrap;
+            t.verticalOverflow = VerticalWrapMode.Overflow;
+            t.text = text;
+            t.raycastTarget = false;
+            return t;
+        }
+
+        // Fully-fills its parent top-left label (for simple titles/stretches).
+        Text MLabelFill(string text, Transform parent, int size = 20, Color? color = null, TextAnchor align = TextAnchor.MiddleLeft)
         {
             var go = new GameObject("T", typeof(RectTransform));
             go.transform.SetParent(parent, false);
@@ -139,92 +166,97 @@ namespace AirsoftClub.Unity
         }
 
         // ---- Login ----
-        void RenderLoginModern(RectTransform root)
-        {
-            var panel = PanelRect("Login", root, 560, 330, 480, 280);
-            var bgImg = panel.gameObject.AddComponent<Image>();
-            bgImg.sprite = ModernStyle.WhiteSprite(); bgImg.color = ModernStyle.Panel;
-            bgImg.raycastTarget = false;
-            var border = PanelRect("Border", panel, 0, -280, 480, 2);
-            border.gameObject.AddComponent<Image>().color = ModernStyle.Gold;
-            border.GetComponent<Image>().raycastTarget = false;
+                void RenderLoginModern(RectTransform root)
+                {
+                    var panel = PanelRect("Login", root, 560, 320, 480, 280);
+                    panel.anchorMin = new Vector2(0.5f, 1); panel.anchorMax = new Vector2(0.5f, 1); panel.pivot = new Vector2(0.5f, 0.5f);
+                    panel.anchoredPosition = new Vector2(0, -480);
+                    var bgImg = panel.gameObject.AddComponent<Image>();
+                    bgImg.sprite = ModernStyle.WhiteSprite(); bgImg.color = ModernStyle.Panel;
+                    bgImg.raycastTarget = false;
 
-            var title = MLabel("AIRSOFT CLUB", panel, 30, ModernStyle.Gold, TextAnchor.MiddleCenter);
-            ((RectTransform)title.transform).anchoredPosition = new Vector2(0, 0);
-            ((RectTransform)title.transform).sizeDelta = new Vector2(440, 60);
+                    var title = MLabel("AIRSOFT CLUB", panel, 30, ModernStyle.Gold, TextAnchor.MiddleCenter);
+                    var titleR = (RectTransform)title.transform;
+                    titleR.anchorMin = new Vector2(0, 1); titleR.anchorMax = new Vector2(0, 1); titleR.pivot = new Vector2(0.5f, 0.5f);
+                    titleR.sizeDelta = new Vector2(440, 60); titleR.anchoredPosition = new Vector2(240, -45);
 
-            var sub = MLabel("Build your tactical club.", panel, 16, ModernStyle.Muted, TextAnchor.MiddleCenter);
-            var subR = (RectTransform)sub.transform;
-            subR.sizeDelta = new Vector2(440, 30); subR.anchoredPosition = new Vector2(0, -66);
+                    var sub = MLabel("Build your tactical club.", panel, 16, ModernStyle.Muted, TextAnchor.MiddleCenter);
+                    var subR = (RectTransform)sub.transform;
+                    subR.anchorMin = new Vector2(0, 1); subR.anchorMax = new Vector2(0, 1); subR.pivot = new Vector2(0.5f, 0.5f);
+                    subR.sizeDelta = new Vector2(440, 30); subR.anchoredPosition = new Vector2(240, -95);
 
-            // Account input
-            var inpR = PanelRect("Input", panel, 0, -110, 420, 48);
-            inpR.anchorMin = new Vector2(0.5f, 0.5f); inpR.anchorMax = new Vector2(0.5f, 0.5f);
-            var inpBg = inpR.gameObject.AddComponent<Image>();
-            inpBg.sprite = ModernStyle.WhiteSprite(); inpBg.color = ModernStyle.Bg2; inpBg.raycastTarget = true;
-            var inp = inpR.gameObject.AddComponent<InputField>();
-            inp.textComponent = MLabel(account, inpR, 18, ModernStyle.Ink, TextAnchor.MiddleLeft);
-            var inpText = (RectTransform)inp.textComponent.transform;
-            inpText.sizeDelta = new Vector2(400, 40); inpText.anchoredPosition = new Vector2(0, 0);
-            inp.text = account; inp.characterLimit = 44;
-            inp.onValueChanged.AddListener(v => account = v);
+                    // Account input
+                    var inpR = PanelRect("Input", panel, 240, -130, 420, 48);
+                    inpR.anchorMin = new Vector2(0.5f, 0.5f); inpR.anchorMax = new Vector2(0.5f, 0.5f); inpR.pivot = new Vector2(0.5f, 0.5f);
+                    inpR.anchoredPosition = new Vector2(0, -10);
+                    var inpBg = inpR.gameObject.AddComponent<Image>();
+                    inpBg.sprite = ModernStyle.WhiteSprite(); inpBg.color = ModernStyle.Bg2; inpBg.raycastTarget = true;
+                    var inp = inpR.gameObject.AddComponent<InputField>();
+                    inp.textComponent = MLabel(account, inpR, 18, ModernStyle.Ink, TextAnchor.MiddleLeft);
+                    var inpText = (RectTransform)inp.textComponent.transform;
+                    inpText.sizeDelta = new Vector2(400, 40); inpText.anchoredPosition = new Vector2(0, 0);
 
-            MButton("ENTER CLUB", panel, 0, -180, 420, 50, () => StartCoroutine(Login()), ModernStyle.Gold).transform.localScale = Vector3.one;
-            var s = MLabel(status, panel, 13, ModernStyle.Orange, TextAnchor.MiddleCenter);
-            ((RectTransform)s.transform).sizeDelta = new Vector2(440, 30);
-            ((RectTransform)s.transform).anchoredPosition = new Vector2(0, -245);
-        }
+                    MButton("ENTER CLUB", panel, 240, 30, 420, 50, () => StartCoroutine(Login()), ModernStyle.Gold);
+                    var s = MLabel(status, panel, 13, ModernStyle.Orange, TextAnchor.MiddleCenter);
+                    var sR = (RectTransform)s.transform;
+                    sR.anchorMin = new Vector2(0, 1); sR.anchorMax = new Vector2(0, 1); sR.pivot = new Vector2(0.5f, 0.5f);
+                    sR.sizeDelta = new Vector2(440, 30); sR.anchoredPosition = new Vector2(240, -240);
+                }
 
         void RenderChrome(RectTransform root)
         {
-            // Nav sidebar
-            var nav = PanelRect("Nav", root, 0, 0, 220, 920);
-            nav.anchorMin = Vector2.zero; nav.anchorMax = new Vector2(0, 1);
+            // Nav sidebar (left, full height)
+            var nav = PanelRect("Nav", root, 0, 0, 220, MY); // anchored top-left
+            nav.anchorMin = new Vector2(0, 0); nav.anchorMax = new Vector2(0, 1);
+            nav.sizeDelta = new Vector2(220, 0); nav.anchoredPosition = new Vector2(0, 0);
             nav.gameObject.AddComponent<Image>().color = ModernStyle.Bg2;
             nav.GetComponent<Image>().raycastTarget = false;
-            var navB = PanelRect("Edge", nav, 0, 0, 220, 920);
-            navB.gameObject.AddComponent<Image>().color = ModernStyle.Edge;
 
             var logo = MLabel("AIRSOFT\nCLUB", nav, 26, ModernStyle.Gold, TextAnchor.MiddleCenter);
-            ((RectTransform)logo.transform).sizeDelta = new Vector2(200, 90);
-            ((RectTransform)logo.transform).anchoredPosition = new Vector2(0, 400);
+            var logoR = (RectTransform)logo.transform;
+            logoR.anchorMin = new Vector2(0, 1); logoR.anchorMax = new Vector2(0, 1); logoR.pivot = new Vector2(0.5f, 1);
+            logoR.sizeDelta = new Vector2(200, 90); logoR.anchoredPosition = new Vector2(110, -20);
 
             string[] tabs = { "Club", "Roster", "Recruitment", "Training", "Shop", "BB", "Opponents", "History", "Settings" };
-            float ty = 320;
+            float ty = 130;
             foreach (var t in tabs)
             {
                 var idx = t;
                 var b = MButton(idx, nav, 15, ty, 190, 42, () => { page = idx; scroll = Vector2.zero; inventorySlot = ""; },
                     page == idx ? ModernStyle.Neutral : ModernStyle.Card);
-                ((RectTransform)b.transform).anchoredPosition = new Vector2(0, ty);
-                ty -= 50;
+                ((RectTransform)b.transform).anchoredPosition = new Vector2(15, -(ty + 42));
+                ty += 52;
             }
 
-            // Header resources
+            // Header resources (top bar, left of nav)
             var head = PanelRect("Header", root, 220, 0, 1380, 64);
+            head.anchorMin = new Vector2(0, 1); head.anchorMax = new Vector2(1, 1);
+            head.sizeDelta = new Vector2(0, 64); head.anchoredPosition = new Vector2(0, 0);
             head.gameObject.AddComponent<Image>().color = ModernStyle.Panel;
             head.GetComponent<Image>().raycastTarget = false;
             MLabel(club != null ? club.Name : "", head, 24, ModernStyle.Ink, TextAnchor.MiddleLeft);
-            var nameR = (RectTransform)head.transform.GetChild(head.childCount - 1);
-            nameR.sizeDelta = new Vector2(300, 60); nameR.anchoredPosition = new Vector2(30, 0);
+            var nameR = (RectTransform)head.GetChild(head.childCount - 1);
+            nameR.sizeDelta = new Vector2(300, 60); nameR.anchoredPosition = new Vector2(30, 32);
 
             MLabel("Lv " + (club?.Level.ToString() ?? "") + "  ·  " + (club?.Rating.ToString() ?? ""), head, 15, ModernStyle.Muted, TextAnchor.MiddleLeft);
-            var lvR = (RectTransform)head.transform.GetChild(head.childCount - 1);
-            lvR.sizeDelta = new Vector2(300, 60); lvR.anchoredPosition = new Vector2(360, 0);
+            var lvR = (RectTransform)head.GetChild(head.childCount - 1);
+            lvR.sizeDelta = new Vector2(300, 60); lvR.anchoredPosition = new Vector2(360, 32);
 
-            WalletModern(head, "MONEY", club?.Money.ToString("N0") ?? "", ModernStyle.Gold, new Vector2(980, 0));
-            WalletModern(head, "CREDITS", club?.Credits.ToString("N0") ?? "", ModernStyle.Blue, new Vector2(1170, 0));
+            WalletModern(head, "MONEY", club?.Money.ToString("N0") ?? "", ModernStyle.Gold, new Vector2(980, 32));
+            WalletModern(head, "CREDITS", club?.Credits.ToString("N0") ?? "", ModernStyle.Blue, new Vector2(1170, 32));
         }
 
         void WalletModern(Transform parent, string name, string amount, Color c, Vector2 pos)
         {
             var w = PanelRect(name, parent, pos.x, pos.y, 170, 44);
+            w.anchorMin = new Vector2(0, 1); w.anchorMax = new Vector2(0, 1); w.pivot = new Vector2(0, 0.5f);
+            w.anchoredPosition = new Vector2(pos.x, -pos.y);
             w.gameObject.AddComponent<Image>().color = ModernStyle.Bg2;
             w.GetComponent<Image>().raycastTarget = false;
             var l = MLabel(name, w, 11, ModernStyle.Muted, TextAnchor.MiddleLeft);
-            var lR = (RectTransform)l.transform; lR.sizeDelta = new Vector2(160, 20); lR.anchoredPosition = new Vector2(8, 10);
+            var lR = (RectTransform)l.transform; lR.sizeDelta = new Vector2(160, 20); lR.anchoredPosition = new Vector2(8, 22);
             var v = MLabel(amount, w, 16, c, TextAnchor.MiddleLeft);
-            var vR = (RectTransform)v.transform; vR.sizeDelta = new Vector2(160, 24); vR.anchoredPosition = new Vector2(8, -10);
+            var vR = (RectTransform)v.transform; vR.sizeDelta = new Vector2(160, 24); vR.anchoredPosition = new Vector2(8, -4);
         }
     }
 }

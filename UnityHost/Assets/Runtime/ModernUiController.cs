@@ -63,7 +63,7 @@ namespace AirsoftClub.Unity
             var scaler = go.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1600, 920);
-            scaler.matchWidthOrHeight = 0.5f;
+            scaler.matchWidthOrHeight = 0f; // width-locked: the 1600x920 layout maps exactly
             var r = (RectTransform)go.transform;
             r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one;
             r.offsetMin = Vector2.zero; r.offsetMax = Vector2.zero;

@@ -7,8 +7,9 @@ namespace AirsoftClub.Unity
 {
     public sealed partial class ClubClient
     {
-        // Base content region (right of the 220px nav, below the 64px header)
-        const float CX = 250f, CY = 150f, CW = 1310f, CH = 740f;
+        // Base content region (right of the 220px nav, below the 64px header).
+        // Top-left: content starts at x=250 (left), y=90 (from top of canvas).
+        const float CX = 250f, CY = 90f, CW = 1310f, CH = 740f;
 
         void RenderArtModern(RectTransform root)
         {
@@ -30,23 +31,26 @@ namespace AirsoftClub.Unity
         // ---- Hub (Club) ----
         void RenderHubModern(RectTransform root)
         {
-            // Hero banner
+            // Hero banner (top of content area)
             var hero = PanelRect("Hero", root, CX, CY, CW, 220);
             var heroBg = hero.gameObject.AddComponent<Image>();
             heroBg.sprite = ModernStyle.WhiteSprite(); heroBg.color = ModernStyle.Panel; heroBg.raycastTarget = false;
 
             MLabel("HEADQUARTERS", hero, 15, ModernStyle.Gold, TextAnchor.MiddleLeft);
-            ((RectTransform)hero.GetChild(0)).sizeDelta = new Vector2(400, 30); ((RectTransform)hero.GetChild(0)).anchoredPosition = new Vector2(30, -24);
+            var hl = (RectTransform)hero.GetChild(hero.childCount - 1);
+            hl.sizeDelta = new Vector2(400, 30); hl.anchoredPosition = new Vector2(30, 24);
 
             MLabel(club == null ? "" : "YOUR CLUB, YOUR NEXT BATTLE.", hero, 30, ModernStyle.Ink, TextAnchor.MiddleLeft);
-            ((RectTransform)hero.GetChild(1)).sizeDelta = new Vector2(700, 60); ((RectTransform)hero.GetChild(1)).anchoredPosition = new Vector2(30, -70);
+            var tl = (RectTransform)hero.GetChild(hero.childCount - 1);
+            tl.sizeDelta = new Vector2(700, 60); tl.anchoredPosition = new Vector2(30, 70);
 
             MLabel(club == null ? "" : club.Fighters.Length + " fighters  ·  " + club.Fighters.Count(f => f.Ready) + " ready", hero, 15, ModernStyle.Muted, TextAnchor.MiddleLeft);
-            ((RectTransform)hero.GetChild(2)).sizeDelta = new Vector2(400, 30); ((RectTransform)hero.GetChild(2)).anchoredPosition = new Vector2(30, -170);
+            var fl = (RectTransform)hero.GetChild(hero.childCount - 1);
+            fl.sizeDelta = new Vector2(400, 30); fl.anchoredPosition = new Vector2(30, 170);
 
-            MButton(club == null || club.Fighters.Length == 0 ? "CHOOSE FIRST RECRUIT" : "FIND A BATTLE", hero, 700, -150, 260, 52, () => page = club == null || club.Fighters.Length == 0 ? "Recruitment" : "Opponents", ModernStyle.Gold);
+            MButton(club == null || club.Fighters.Length == 0 ? "CHOOSE FIRST RECRUIT" : "FIND A BATTLE", hero, 700, 160, 260, 52, () => page = club == null || club.Fighters.Length == 0 ? "Recruitment" : "Opponents", ModernStyle.Gold);
 
-            // Stat cards
+            // Stat cards row (below hero)
             string[] names = { "TEAM READINESS", "CLUB PROGRESSION", "SUPPLY STATUS" };
             string[] vals = {
                 club == null ? "-" : club.Fighters.Count(f => f.Ready) + " / " + club.Fighters.Length + " READY",
@@ -54,39 +58,44 @@ namespace AirsoftClub.Unity
                 club == null || club.BbStock == null ? "-" : (club.BbStock[club.ActiveBbTier]) + " / " + club.Capacity + " BB" };
             for (int n = 0; n < 3; n++)
             {
-                var card = PanelRect("Stat" + n, root, CX + n * 440, CY + 340, 420, 200);
+                var card = PanelRect("Stat" + n, root, CX + n * 442, CY + 250, 426, 190);
                 card.gameObject.AddComponent<Image>().color = ModernStyle.Card;
                 card.GetComponent<Image>().raycastTarget = false;
                 MLabel(names[n], card, 15, ModernStyle.Muted, TextAnchor.MiddleLeft);
-                ((RectTransform)card.GetChild(0)).sizeDelta = new Vector2(380, 30); ((RectTransform)card.GetChild(0)).anchoredPosition = new Vector2(20, -20);
+                var c1 = (RectTransform)card.GetChild(card.childCount - 1);
+                c1.sizeDelta = new Vector2(380, 30); c1.anchoredPosition = new Vector2(20, 20);
                 MLabel(vals[n], card, 24, ModernStyle.Gold, TextAnchor.MiddleLeft);
-                ((RectTransform)card.GetChild(1)).sizeDelta = new Vector2(380, 60); ((RectTransform)card.GetChild(1)).anchoredPosition = new Vector2(20, -80);
+                var c2 = (RectTransform)card.GetChild(card.childCount - 1);
+                c2.sizeDelta = new Vector2(380, 60); c2.anchoredPosition = new Vector2(20, 70);
             }
 
-            // Daily / protection
-            var left = PanelRect("Daily", root, CX, CY + 560, 640, 150);
+            // Daily / protection row (bottom)
+            var left = PanelRect("Daily", root, CX, CY + 470, 640, 160);
             left.gameObject.AddComponent<Image>().color = ModernStyle.Card;
             left.GetComponent<Image>().raycastTarget = false;
             MLabel("REWARDS & PROGRESS", left, 15, ModernStyle.Gold, TextAnchor.MiddleLeft);
-            ((RectTransform)left.GetChild(0)).sizeDelta = new Vector2(600, 28); ((RectTransform)left.GetChild(0)).anchoredPosition = new Vector2(20, -20);
+            var l1 = (RectTransform)left.GetChild(left.childCount - 1);
+            l1.sizeDelta = new Vector2(600, 28); l1.anchoredPosition = new Vector2(20, 20);
             var streak = "Daily streak " + (club == null ? 0 : club.Streak) + "/7";
             MLabel(streak, left, 14, ModernStyle.Muted, TextAnchor.MiddleLeft);
-            ((RectTransform)left.GetChild(1)).sizeDelta = new Vector2(600, 24); ((RectTransform)left.GetChild(1)).anchoredPosition = new Vector2(20, -50);
-            MButton("CLAIM DAILY", left, 20, -84, 150, 44, () => StartCoroutine(Send(Intent("Daily"))), ModernStyle.Gold);
-            MButton("CLAIM CREDITS", left, 190, -84, 160, 44, () => StartCoroutine(Send(Intent("Progression"))), ModernStyle.Blue);
+            var l2 = (RectTransform)left.GetChild(left.childCount - 1);
+            l2.sizeDelta = new Vector2(600, 24); l2.anchoredPosition = new Vector2(20, 50);
+            MButton("CLAIM DAILY", left, 20, 84, 150, 44, () => StartCoroutine(Send(Intent("Daily"))), ModernStyle.Gold);
+            MButton("CLAIM CREDITS", left, 190, 84, 160, 44, () => StartCoroutine(Send(Intent("Progression"))), ModernStyle.Blue);
 
-            var right = PanelRect("Protection", root, CX + 670, CY + 560, 640, 150);
+            var right = PanelRect("Protection", root, CX + 670, CY + 470, 640, 160);
             right.gameObject.AddComponent<Image>().color = ModernStyle.Card;
             right.GetComponent<Image>().raycastTarget = false;
             MLabel("CLUB PROTECTION", right, 15, ModernStyle.Gold, TextAnchor.MiddleLeft);
-            ((RectTransform)right.GetChild(0)).sizeDelta = new Vector2(600, 28); ((RectTransform)right.GetChild(0)).anchoredPosition = new Vector2(20, -20);
+            var r1 = (RectTransform)right.GetChild(right.childCount - 1);
+            r1.sizeDelta = new Vector2(600, 28); r1.anchoredPosition = new Vector2(20, 20);
             MLabel(club != null && club.ShieldUntil > club.ServerNow ? "SHIELD ACTIVE" : "No active shield", right, 14, club != null && club.ShieldUntil > club.ServerNow ? ModernStyle.Blue : ModernStyle.Muted, TextAnchor.MiddleLeft);
-            ((RectTransform)right.GetChild(1)).sizeDelta = new Vector2(600, 24); ((RectTransform)right.GetChild(1)).anchoredPosition = new Vector2(20, -50);
+            var r2 = (RectTransform)right.GetChild(right.childCount - 1);
+            r2.sizeDelta = new Vector2(600, 24); r2.anchoredPosition = new Vector2(20, 50);
             if (club != null) for (int n = 0; n < club.Shields.Length && n < 4; n++)
             {
-                var idx = n;
                 var sh = club.Shields[n];
-                MButton(sh.Hours + "h  ·  " + sh.Credits + " C", right, 20 + n * 155, -84, 140, 44, () => StartCoroutine(Send(Intent("Shield", number: sh.Hours))), ModernStyle.Neutral);
+                MButton(sh.Hours + "h  ·  " + sh.Credits + " C", right, 20 + n * 155, 84, 140, 44, () => StartCoroutine(Send(Intent("Shield", number: sh.Hours))), ModernStyle.Neutral);
             }
         }
 
@@ -94,7 +103,8 @@ namespace AirsoftClub.Unity
         void RenderRosterModern(RectTransform root)
         {
             MLabel("YOUR FIGHTERS", root, 22, ModernStyle.Gold, TextAnchor.MiddleLeft);
-            ((RectTransform)root.GetChild(root.childCount - 1)).sizeDelta = new Vector2(500, 36); ((RectTransform)root.GetChild(root.childCount - 1)).anchoredPosition = new Vector2(CX, MY - 60);
+            var tt = (RectTransform)root.GetChild(root.childCount - 1);
+            tt.sizeDelta = new Vector2(500, 36); tt.anchoredPosition = new Vector2(CX, CY + 8);
             if (club == null) { return; }
 
             if (club.Fighters.Length == 0)
@@ -104,24 +114,26 @@ namespace AirsoftClub.Unity
             }
 
             // Card list (left)
-            var list = PanelRect("RosterList", root, CX, CY, 640, CH);
+            var list = PanelRect("RosterList", root, CX, CY + 60, 640, CH - 60);
             list.gameObject.AddComponent<Image>().color = ModernStyle.Panel;
             list.GetComponent<Image>().raycastTarget = false;
             for (int n = 0; n < club.Fighters.Length; n++)
             {
                 var f = club.Fighters[n];
-                var card = PanelRect("Fighter" + n, list, 15, -20 - n * 120, 610, 108);
+                var card = PanelRect("Fighter" + n, list, 15, 12 + n * 120, 610, 108);
                 card.gameObject.AddComponent<Image>().color = f.Id == selectedFighter ? ModernStyle.Neutral : ModernStyle.Card;
                 card.GetComponent<Image>().raycastTarget = false;
-                // name + level
                 MLabel(f.Name, card, 17, ModernStyle.Ink, TextAnchor.MiddleLeft);
-                ((RectTransform)card.GetChild(0)).sizeDelta = new Vector2(260, 30); ((RectTransform)card.GetChild(0)).anchoredPosition = new Vector2(20, -15);
+                var c0 = (RectTransform)card.GetChild(card.childCount - 1);
+                c0.sizeDelta = new Vector2(260, 30); c0.anchoredPosition = new Vector2(20, 18);
                 MLabel("LV " + f.Level + "  ·  " + (f.Ready ? "READY" : "RECOVERING"), card, 13, f.Ready ? ModernStyle.Blue : ModernStyle.Orange, TextAnchor.MiddleLeft);
-                ((RectTransform)card.GetChild(1)).sizeDelta = new Vector2(240, 24); ((RectTransform)card.GetChild(1)).anchoredPosition = new Vector2(20, -48);
+                var c1 = (RectTransform)card.GetChild(card.childCount - 1);
+                c1.sizeDelta = new Vector2(240, 24); c1.anchoredPosition = new Vector2(20, 52);
                 MLabel("ACC " + f.Accuracy + "   END " + f.Endurance + "   AGI " + f.Agility, card, 13, ModernStyle.Muted, TextAnchor.MiddleLeft);
-                ((RectTransform)card.GetChild(2)).sizeDelta = new Vector2(300, 24); ((RectTransform)card.GetChild(2)).anchoredPosition = new Vector2(20, -80);
+                var c2 = (RectTransform)card.GetChild(card.childCount - 1);
+                c2.sizeDelta = new Vector2(300, 24); c2.anchoredPosition = new Vector2(20, 84);
 
-                MButton("SELECT", card, 455, -30, 120, 44, () => selectedFighter = f.Id, ModernStyle.Gold);
+                MButton("SELECT", card, 455, 56, 120, 44, () => selectedFighter = f.Id, ModernStyle.Gold);
             }
 
             // Detail (right)
@@ -130,50 +142,55 @@ namespace AirsoftClub.Unity
             fIdx = club.Fighters.FirstOrDefault(x => x.Id == selectedFighter);
             if (fIdx == null) return;
 
-            var det = PanelRect("Detail", root, CX + 680, CY, 630, CH);
+            var det = PanelRect("Detail", root, CX + 680, CY + 60, 630, CH - 60);
             det.gameObject.AddComponent<Image>().color = ModernStyle.Panel;
             det.GetComponent<Image>().raycastTarget = false;
 
             MLabel(fIdx.Name.ToUpperInvariant(), det, 24, ModernStyle.Gold, TextAnchor.MiddleLeft);
-            ((RectTransform)det.GetChild(0)).sizeDelta = new Vector2(500, 40); ((RectTransform)det.GetChild(0)).anchoredPosition = new Vector2(24, -24);
+            var d0 = (RectTransform)det.GetChild(det.childCount - 1);
+            d0.sizeDelta = new Vector2(500, 40); d0.anchoredPosition = new Vector2(24, 24);
 
             MLabel("LEVEL " + fIdx.Level + "   ·   " + (fIdx.Hp / 10000f).ToString("0.0") + " / " + (fIdx.MaxHp / 10000f).ToString("0.0") + " HP", det, 16, ModernStyle.Ink, TextAnchor.MiddleLeft);
-            ((RectTransform)det.GetChild(1)).sizeDelta = new Vector2(500, 30); ((RectTransform)det.GetChild(1)).anchoredPosition = new Vector2(24, -70);
+            var d1 = (RectTransform)det.GetChild(det.childCount - 1);
+            d1.sizeDelta = new Vector2(500, 30); d1.anchoredPosition = new Vector2(24, 70);
 
             // Stats + training buttons
             string[] statNames = { "ACCURACY", "ENDURANCE", "AGILITY" };
             int[] statVals = { fIdx.Accuracy, fIdx.Endurance, fIdx.Agility };
-            for (int n = 0; n < 3; n++)
+            for (int nf = 0; nf < 3; nf++)
             {
-                var sn = statNames[n];
-                var row = PanelRect("Stat", det, 24, -120 - n * 60, 560, 52);
+                var sn = statNames[nf];
+                var row = PanelRect("Stat", det, 24, 110 + nf * 62, 560, 52);
                 row.gameObject.AddComponent<Image>().color = ModernStyle.Bg2;
                 row.GetComponent<Image>().raycastTarget = false;
-                MLabel(sn + "   " + statVals[n], row, 16, ModernStyle.Ink, TextAnchor.MiddleLeft);
-                ((RectTransform)row.GetChild(0)).sizeDelta = new Vector2(300, 40); ((RectTransform)row.GetChild(0)).anchoredPosition = new Vector2(14, 0);
-                MButton("+1", row, 460, 0, 70, 34, () => StartCoroutine(Send(Intent("Train", fIdx.Id, sn))), ModernStyle.Blue);
+                MLabel(sn + "   " + statVals[nf], row, 16, ModernStyle.Ink, TextAnchor.MiddleLeft);
+                var sl = (RectTransform)row.GetChild(row.childCount - 1);
+                sl.sizeDelta = new Vector2(300, 40); sl.anchoredPosition = new Vector2(14, 24);
+                MButton("+1", row, 460, 44, 70, 34, () => StartCoroutine(Send(Intent("Train", fIdx.Id, sn))), ModernStyle.Blue);
             }
 
             // Heal
-            MButton("HEAL / " + fIdx.HealMoney + " MONEY", det, 24, -330, 260, 48, () => StartCoroutine(Send(Intent("Heal", fIdx.Id))), ModernStyle.Gold);
+            MButton("HEAL / " + fIdx.HealMoney + " MONEY", det, 24, 300, 260, 48, () => StartCoroutine(Send(Intent("Heal", fIdx.Id))), ModernStyle.Gold);
 
             // Recovery text
             MLabel("Full recovery: " + Math.Ceiling(fIdx.RecoveryRemainingMs / 60000d) + " min free", det, 13, ModernStyle.Muted, TextAnchor.MiddleLeft);
-            ((RectTransform)det.GetChild(2)).sizeDelta = new Vector2(500, 26); ((RectTransform)det.GetChild(2)).anchoredPosition = new Vector2(24, -390);
+            var rc = (RectTransform)det.GetChild(det.childCount - 1);
+            rc.sizeDelta = new Vector2(500, 26); rc.anchoredPosition = new Vector2(24, 370);
 
             // Gear slots (compact read)
             string[] slots = { "Weapon", "Camouflage", "HeadProtection", "LoadBearingArmor" };
-            for (int n = 0; n < 4; n++)
+            for (int ng = 0; ng < 4; ng++)
             {
-                var eq = fIdx.Equipment.FirstOrDefault(e => e.Slot == slots[n]);
-                var gear = PanelRect("Gear", det, 24 + n % 2 * 290, -430 - n / 2 * 60, 270, 52);
+                var eq = fIdx.Equipment.FirstOrDefault(e => e.Slot == slots[ng]);
+                var gear = PanelRect("Gear", det, 24 + ng % 2 * 290, 410 + ng / 2 * 62, 270, 52);
                 gear.gameObject.AddComponent<Image>().color = ModernStyle.Card;
                 gear.GetComponent<Image>().raycastTarget = false;
                 MLabel((eq?.Definition ?? "Empty slot"), gear, 13, ModernStyle.Muted, TextAnchor.MiddleLeft);
-                ((RectTransform)gear.GetChild(0)).sizeDelta = new Vector2(250, 40); ((RectTransform)gear.GetChild(0)).anchoredPosition = new Vector2(12, 0);
+                var gl = (RectTransform)gear.GetChild(gear.childCount - 1);
+                gl.sizeDelta = new Vector2(250, 40); gl.anchoredPosition = new Vector2(12, 24);
             }
 
-            MButton("VISIT SHOP", det, 24, -560, 260, 48, () => { page = "Shop"; shopCategory = "Weapons"; }, ModernStyle.Blue);
+            MButton("VISIT SHOP", det, 24, 550, 260, 48, () => { page = "Shop"; shopCategory = "Weapons"; }, ModernStyle.Blue);
         }
     }
 }
