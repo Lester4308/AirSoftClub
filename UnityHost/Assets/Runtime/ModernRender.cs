@@ -229,18 +229,18 @@ namespace AirsoftClub.Unity
             }
 
             // Header resources (top bar, left of nav)
-            var head = PanelRect("Header", root, 220, 0, 1380, 64);
+            var head = PanelRect("Header", root, 220, 12, 1380, 64);
             head.anchorMin = new Vector2(0, 1); head.anchorMax = new Vector2(1, 1);
-            head.sizeDelta = new Vector2(0, 64); head.anchoredPosition = new Vector2(0, 0);
+            head.sizeDelta = new Vector2(-220, 64); head.anchoredPosition = new Vector2(220, -12);
             head.gameObject.AddComponent<Image>().color = ModernStyle.Panel;
             head.GetComponent<Image>().raycastTarget = false;
             MLabel(club != null ? club.Name : "", head, 24, ModernStyle.Ink, TextAnchor.MiddleLeft);
             var nameR = (RectTransform)head.GetChild(head.childCount - 1);
-            nameR.sizeDelta = new Vector2(300, 60); nameR.anchoredPosition = new Vector2(30, 32);
+            nameR.sizeDelta = new Vector2(300, 60); nameR.anchoredPosition = new Vector2(30, -32);
 
             MLabel("Lv " + (club?.Level.ToString() ?? "") + "  ·  " + (club?.Rating.ToString() ?? ""), head, 15, ModernStyle.Muted, TextAnchor.MiddleLeft);
             var lvR = (RectTransform)head.GetChild(head.childCount - 1);
-            lvR.sizeDelta = new Vector2(300, 60); lvR.anchoredPosition = new Vector2(360, 32);
+            lvR.sizeDelta = new Vector2(300, 60); lvR.anchoredPosition = new Vector2(360, -32);
 
             WalletModern(head, "MONEY", club?.Money.ToString("N0") ?? "", ModernStyle.Gold, new Vector2(980, 32));
             WalletModern(head, "CREDITS", club?.Credits.ToString("N0") ?? "", ModernStyle.Blue, new Vector2(1170, 32));
@@ -254,9 +254,9 @@ namespace AirsoftClub.Unity
             w.gameObject.AddComponent<Image>().color = ModernStyle.Bg2;
             w.GetComponent<Image>().raycastTarget = false;
             var l = MLabel(name, w, 11, ModernStyle.Muted, TextAnchor.MiddleLeft);
-            var lR = (RectTransform)l.transform; lR.sizeDelta = new Vector2(160, 20); lR.anchoredPosition = new Vector2(8, 22);
+            var lR = (RectTransform)l.transform; lR.sizeDelta = new Vector2(160, 20); lR.anchoredPosition = new Vector2(8, -8);
             var v = MLabel(amount, w, 16, c, TextAnchor.MiddleLeft);
-            var vR = (RectTransform)v.transform; vR.sizeDelta = new Vector2(160, 24); vR.anchoredPosition = new Vector2(8, -4);
+            var vR = (RectTransform)v.transform; vR.sizeDelta = new Vector2(160, 24); vR.anchoredPosition = new Vector2(8, -24);
         }
     }
 }

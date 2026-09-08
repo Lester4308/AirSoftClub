@@ -38,15 +38,15 @@ namespace AirsoftClub.Unity
 
             MLabel("HEADQUARTERS", hero, 15, ModernStyle.Gold, TextAnchor.MiddleLeft);
             var hl = (RectTransform)hero.GetChild(hero.childCount - 1);
-            hl.sizeDelta = new Vector2(400, 30); hl.anchoredPosition = new Vector2(30, 24);
+            hl.sizeDelta = new Vector2(400, 30); hl.anchoredPosition = new Vector2(30, -24);
 
             MLabel(club == null ? "" : "YOUR CLUB, YOUR NEXT BATTLE.", hero, 30, ModernStyle.Ink, TextAnchor.MiddleLeft);
             var tl = (RectTransform)hero.GetChild(hero.childCount - 1);
-            tl.sizeDelta = new Vector2(700, 60); tl.anchoredPosition = new Vector2(30, 70);
+            tl.sizeDelta = new Vector2(700, 60); tl.anchoredPosition = new Vector2(30, -70);
 
             MLabel(club == null ? "" : club.Fighters.Length + " fighters  ·  " + club.Fighters.Count(f => f.Ready) + " ready", hero, 15, ModernStyle.Muted, TextAnchor.MiddleLeft);
             var fl = (RectTransform)hero.GetChild(hero.childCount - 1);
-            fl.sizeDelta = new Vector2(400, 30); fl.anchoredPosition = new Vector2(30, 170);
+            fl.sizeDelta = new Vector2(400, 30); fl.anchoredPosition = new Vector2(30, -170);
 
             MButton(club == null || club.Fighters.Length == 0 ? "CHOOSE FIRST RECRUIT" : "FIND A BATTLE", hero, 700, 160, 260, 52, () => page = club == null || club.Fighters.Length == 0 ? "Recruitment" : "Opponents", ModernStyle.Gold);
 
@@ -63,10 +63,10 @@ namespace AirsoftClub.Unity
                 card.GetComponent<Image>().raycastTarget = false;
                 MLabel(names[n], card, 15, ModernStyle.Muted, TextAnchor.MiddleLeft);
                 var c1 = (RectTransform)card.GetChild(card.childCount - 1);
-                c1.sizeDelta = new Vector2(380, 30); c1.anchoredPosition = new Vector2(20, 20);
+                c1.sizeDelta = new Vector2(380, 30); c1.anchoredPosition = new Vector2(20, -20);
                 MLabel(vals[n], card, 24, ModernStyle.Gold, TextAnchor.MiddleLeft);
                 var c2 = (RectTransform)card.GetChild(card.childCount - 1);
-                c2.sizeDelta = new Vector2(380, 60); c2.anchoredPosition = new Vector2(20, 70);
+                c2.sizeDelta = new Vector2(380, 60); c2.anchoredPosition = new Vector2(20, -70);
             }
 
             // Daily / protection row (bottom)
@@ -75,11 +75,11 @@ namespace AirsoftClub.Unity
             left.GetComponent<Image>().raycastTarget = false;
             MLabel("REWARDS & PROGRESS", left, 15, ModernStyle.Gold, TextAnchor.MiddleLeft);
             var l1 = (RectTransform)left.GetChild(left.childCount - 1);
-            l1.sizeDelta = new Vector2(600, 28); l1.anchoredPosition = new Vector2(20, 20);
+            l1.sizeDelta = new Vector2(600, 28); l1.anchoredPosition = new Vector2(20, -20);
             var streak = "Daily streak " + (club == null ? 0 : club.Streak) + "/7";
             MLabel(streak, left, 14, ModernStyle.Muted, TextAnchor.MiddleLeft);
             var l2 = (RectTransform)left.GetChild(left.childCount - 1);
-            l2.sizeDelta = new Vector2(600, 24); l2.anchoredPosition = new Vector2(20, 50);
+            l2.sizeDelta = new Vector2(600, 24); l2.anchoredPosition = new Vector2(20, -50);
             MButton("CLAIM DAILY", left, 20, 84, 150, 44, () => StartCoroutine(Send(Intent("Daily"))), ModernStyle.Gold);
             MButton("CLAIM CREDITS", left, 190, 84, 160, 44, () => StartCoroutine(Send(Intent("Progression"))), ModernStyle.Blue);
 
@@ -88,10 +88,10 @@ namespace AirsoftClub.Unity
             right.GetComponent<Image>().raycastTarget = false;
             MLabel("CLUB PROTECTION", right, 15, ModernStyle.Gold, TextAnchor.MiddleLeft);
             var r1 = (RectTransform)right.GetChild(right.childCount - 1);
-            r1.sizeDelta = new Vector2(600, 28); r1.anchoredPosition = new Vector2(20, 20);
+            r1.sizeDelta = new Vector2(600, 28); r1.anchoredPosition = new Vector2(20, -20);
             MLabel(club != null && club.ShieldUntil > club.ServerNow ? "SHIELD ACTIVE" : "No active shield", right, 14, club != null && club.ShieldUntil > club.ServerNow ? ModernStyle.Blue : ModernStyle.Muted, TextAnchor.MiddleLeft);
             var r2 = (RectTransform)right.GetChild(right.childCount - 1);
-            r2.sizeDelta = new Vector2(600, 24); r2.anchoredPosition = new Vector2(20, 50);
+            r2.sizeDelta = new Vector2(600, 24); r2.anchoredPosition = new Vector2(20, -50);
             if (club != null) for (int n = 0; n < club.Shields.Length && n < 4; n++)
             {
                 var sh = club.Shields[n];
@@ -104,7 +104,7 @@ namespace AirsoftClub.Unity
         {
             MLabel("YOUR FIGHTERS", root, 22, ModernStyle.Gold, TextAnchor.MiddleLeft);
             var tt = (RectTransform)root.GetChild(root.childCount - 1);
-            tt.sizeDelta = new Vector2(500, 36); tt.anchoredPosition = new Vector2(CX, CY + 8);
+            tt.sizeDelta = new Vector2(500, 36); tt.anchoredPosition = new Vector2(CX, -(CY + 8));
             if (club == null) { return; }
 
             if (club.Fighters.Length == 0)
@@ -125,13 +125,13 @@ namespace AirsoftClub.Unity
                 card.GetComponent<Image>().raycastTarget = false;
                 MLabel(f.Name, card, 17, ModernStyle.Ink, TextAnchor.MiddleLeft);
                 var c0 = (RectTransform)card.GetChild(card.childCount - 1);
-                c0.sizeDelta = new Vector2(260, 30); c0.anchoredPosition = new Vector2(20, 18);
+                c0.sizeDelta = new Vector2(260, 30); c0.anchoredPosition = new Vector2(20, -18);
                 MLabel("LV " + f.Level + "  ·  " + (f.Ready ? "READY" : "RECOVERING"), card, 13, f.Ready ? ModernStyle.Blue : ModernStyle.Orange, TextAnchor.MiddleLeft);
                 var c1 = (RectTransform)card.GetChild(card.childCount - 1);
-                c1.sizeDelta = new Vector2(240, 24); c1.anchoredPosition = new Vector2(20, 52);
+                c1.sizeDelta = new Vector2(240, 24); c1.anchoredPosition = new Vector2(20, -52);
                 MLabel("ACC " + f.Accuracy + "   END " + f.Endurance + "   AGI " + f.Agility, card, 13, ModernStyle.Muted, TextAnchor.MiddleLeft);
                 var c2 = (RectTransform)card.GetChild(card.childCount - 1);
-                c2.sizeDelta = new Vector2(300, 24); c2.anchoredPosition = new Vector2(20, 84);
+                c2.sizeDelta = new Vector2(300, 24); c2.anchoredPosition = new Vector2(20, -84);
 
                 MButton("SELECT", card, 455, 56, 120, 44, () => selectedFighter = f.Id, ModernStyle.Gold);
             }
@@ -148,11 +148,11 @@ namespace AirsoftClub.Unity
 
             MLabel(fIdx.Name.ToUpperInvariant(), det, 24, ModernStyle.Gold, TextAnchor.MiddleLeft);
             var d0 = (RectTransform)det.GetChild(det.childCount - 1);
-            d0.sizeDelta = new Vector2(500, 40); d0.anchoredPosition = new Vector2(24, 24);
+            d0.sizeDelta = new Vector2(500, 40); d0.anchoredPosition = new Vector2(24, -24);
 
             MLabel("LEVEL " + fIdx.Level + "   ·   " + (fIdx.Hp / 10000f).ToString("0.0") + " / " + (fIdx.MaxHp / 10000f).ToString("0.0") + " HP", det, 16, ModernStyle.Ink, TextAnchor.MiddleLeft);
             var d1 = (RectTransform)det.GetChild(det.childCount - 1);
-            d1.sizeDelta = new Vector2(500, 30); d1.anchoredPosition = new Vector2(24, 70);
+            d1.sizeDelta = new Vector2(500, 30); d1.anchoredPosition = new Vector2(24, -70);
 
             // Stats + training buttons
             string[] statNames = { "ACCURACY", "ENDURANCE", "AGILITY" };
@@ -165,7 +165,7 @@ namespace AirsoftClub.Unity
                 row.GetComponent<Image>().raycastTarget = false;
                 MLabel(sn + "   " + statVals[nf], row, 16, ModernStyle.Ink, TextAnchor.MiddleLeft);
                 var sl = (RectTransform)row.GetChild(row.childCount - 1);
-                sl.sizeDelta = new Vector2(300, 40); sl.anchoredPosition = new Vector2(14, 24);
+                sl.sizeDelta = new Vector2(300, 40); sl.anchoredPosition = new Vector2(14, -24);
                 MButton("+1", row, 460, 44, 70, 34, () => StartCoroutine(Send(Intent("Train", fIdx.Id, sn))), ModernStyle.Blue);
             }
 
@@ -175,7 +175,7 @@ namespace AirsoftClub.Unity
             // Recovery text
             MLabel("Full recovery: " + Math.Ceiling(fIdx.RecoveryRemainingMs / 60000d) + " min free", det, 13, ModernStyle.Muted, TextAnchor.MiddleLeft);
             var rc = (RectTransform)det.GetChild(det.childCount - 1);
-            rc.sizeDelta = new Vector2(500, 26); rc.anchoredPosition = new Vector2(24, 370);
+            rc.sizeDelta = new Vector2(500, 26); rc.anchoredPosition = new Vector2(24, -370);
 
             // Gear slots (compact read)
             string[] slots = { "Weapon", "Camouflage", "HeadProtection", "LoadBearingArmor" };
@@ -187,7 +187,7 @@ namespace AirsoftClub.Unity
                 gear.GetComponent<Image>().raycastTarget = false;
                 MLabel((eq?.Definition ?? "Empty slot"), gear, 13, ModernStyle.Muted, TextAnchor.MiddleLeft);
                 var gl = (RectTransform)gear.GetChild(gear.childCount - 1);
-                gl.sizeDelta = new Vector2(250, 40); gl.anchoredPosition = new Vector2(12, 24);
+                gl.sizeDelta = new Vector2(250, 40); gl.anchoredPosition = new Vector2(12, -24);
             }
 
             MButton("VISIT SHOP", det, 24, 550, 260, 48, () => { page = "Shop"; shopCategory = "Weapons"; }, ModernStyle.Blue);
