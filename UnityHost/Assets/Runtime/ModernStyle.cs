@@ -32,17 +32,15 @@ namespace AirsoftClub.Unity
 
         // Shared white sprite for Image.color tinting (sliced-9 by UI Image automatically).
         static Texture2D _white;
+        static Sprite _whiteSprite;
         public static Sprite WhiteSprite()
         {
-            if (_white == null)
-            {
-                _white = new Texture2D(1, 1, TextureFormat.RGBA32, false) { hideFlags = HideFlags.DontSave };
-                _white.SetPixel(0, 0, Color.white); _white.Apply();
-                Sprite sprite = Sprite.Create(_white, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 100f);
-                sprite.hideFlags = HideFlags.DontSave;
-                return sprite;
-            }
-            return Sprite.Create(_white, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 100f);
+            if (_whiteSprite != null) return _whiteSprite;
+            _white = new Texture2D(1, 1, TextureFormat.RGBA32, false) { hideFlags = HideFlags.DontSave };
+            _white.SetPixel(0, 0, Color.white); _white.Apply();
+            _whiteSprite = Sprite.Create(_white, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 100f);
+            _whiteSprite.hideFlags = HideFlags.DontSave;
+            return _whiteSprite;
         }
 
         // Font fallback: use the built-in legacy Arial (always available in players).

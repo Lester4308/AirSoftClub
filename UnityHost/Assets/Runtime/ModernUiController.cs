@@ -27,6 +27,7 @@ namespace AirsoftClub.Unity
         ClubClient C;
         Canvas _canvas;
         RectTransform _root;
+        int lastRenderFrame = -1;
 
         public RectTransform Root => _root;
 
@@ -51,7 +52,11 @@ namespace AirsoftClub.Unity
         {
             if (_root == null) return;
             for (int i = _root.childCount - 1; i >= 0; i--)
-                UnityEngine.Object.Destroy(_root.GetChild(i).gameObject);
+            {
+                var child = _root.GetChild(i).gameObject;
+                child.SetActive(false);
+                UnityEngine.Object.Destroy(child);
+            }
         }
 
         void BuildCanvas()
@@ -80,7 +85,8 @@ namespace AirsoftClub.Unity
 
         void Update()
         {
-            if (C == null) return;
+            if (C == null || lastRenderFrame == Time.frameCount) return;
+            lastRenderFrame = Time.frameCount;
             Clear();
             C.RenderModernUI(_root);
         }
