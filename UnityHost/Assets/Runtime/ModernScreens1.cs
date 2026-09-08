@@ -123,15 +123,19 @@ namespace AirsoftClub.Unity
                 var card = PanelRect("Fighter" + n, list, 15, 12 + n * 120, 610, 108);
                 card.gameObject.AddComponent<Image>().color = f.Id == selectedFighter ? ModernStyle.Neutral : ModernStyle.Card;
                 card.GetComponent<Image>().raycastTarget = false;
+                var thumbnail = Male017UiView.Create(card, "Portrait", new Vector2(68, 96));
+                thumbnail.Root.anchoredPosition = new Vector2(12, -6);
+                thumbnail.Apply(Gear(f, "Camouflage") != null, Gear(f, "HeadProtection") != null,
+                    Gear(f, "LoadBearingArmor") != null, Gear(f, "Weapon") != null, true, f.Hp > 0);
                 MLabel(f.Name, card, 17, ModernStyle.Ink, TextAnchor.MiddleLeft);
                 var c0 = (RectTransform)card.GetChild(card.childCount - 1);
-                c0.sizeDelta = new Vector2(260, 30); c0.anchoredPosition = new Vector2(20, -18);
+                c0.sizeDelta = new Vector2(260, 30); c0.anchoredPosition = new Vector2(92, -18);
                 MLabel("LV " + f.Level + "  ·  " + (f.Ready ? "READY" : "RECOVERING"), card, 13, f.Ready ? ModernStyle.Blue : ModernStyle.Orange, TextAnchor.MiddleLeft);
                 var c1 = (RectTransform)card.GetChild(card.childCount - 1);
-                c1.sizeDelta = new Vector2(240, 24); c1.anchoredPosition = new Vector2(20, -52);
+                c1.sizeDelta = new Vector2(300, 24); c1.anchoredPosition = new Vector2(92, -52);
                 MLabel("ACC " + f.Accuracy + "   END " + f.Endurance + "   AGI " + f.Agility, card, 13, ModernStyle.Muted, TextAnchor.MiddleLeft);
                 var c2 = (RectTransform)card.GetChild(card.childCount - 1);
-                c2.sizeDelta = new Vector2(300, 24); c2.anchoredPosition = new Vector2(20, -84);
+                c2.sizeDelta = new Vector2(330, 24); c2.anchoredPosition = new Vector2(92, -84);
 
                 MButton("SELECT", card, 455, 56, 120, 44, () => selectedFighter = f.Id, ModernStyle.Gold);
             }
@@ -145,6 +149,11 @@ namespace AirsoftClub.Unity
             var det = PanelRect("Detail", root, CX + 680, CY + 60, 630, CH - 60);
             det.gameObject.AddComponent<Image>().color = ModernStyle.Panel;
             det.GetComponent<Image>().raycastTarget = false;
+
+            var portrait = Male017UiView.Create(det, "SelectedFighter", new Vector2(190, 285));
+            portrait.Root.anchoredPosition = new Vector2(410, -16);
+            portrait.Apply(Gear(fIdx, "Camouflage") != null, Gear(fIdx, "HeadProtection") != null,
+                Gear(fIdx, "LoadBearingArmor") != null, Gear(fIdx, "Weapon") != null, true, fIdx.Hp > 0);
 
             MLabel(fIdx.Name.ToUpperInvariant(), det, 24, ModernStyle.Gold, TextAnchor.MiddleLeft);
             var d0 = (RectTransform)det.GetChild(det.childCount - 1);

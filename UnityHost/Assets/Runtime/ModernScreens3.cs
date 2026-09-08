@@ -54,11 +54,10 @@ namespace AirsoftClub.Unity
             // BB legend + skip
             for (int n = 0; n < 5; n++)
             {
-                var sw = new Color(0, 0, 0, 0);
                 var c = BetaTheme.BbColor(n);
                 var chip = PanelRect("Legend" + n, root, CX + n * 200, CY + 650, 190, 44);
                 chip.gameObject.AddComponent<Image>().color = new Color(c.r, c.g, c.b, 0.28f); chip.GetComponent<Image>().raycastTarget = false;
-                MLabel((club != null && club.BbCatalog != null && club.BbCatalog.Length > n ? club.BbCatalog[n].Name : "BB") + "  ·  " + c.ToString(), chip, 13, ModernStyle.Muted, TextAnchor.MiddleLeft);
+                MLabel(club != null && club.BbCatalog != null && club.BbCatalog.Length > n ? club.BbCatalog[n].Name : "BB", chip, 13, ModernStyle.Muted, TextAnchor.MiddleLeft);
                 ((RectTransform)chip.GetChild(0)).sizeDelta = new Vector2(170, 36); ((RectTransform)chip.GetChild(0)).anchoredPosition = new Vector2(12, -4);
             }
             MButton("SKIP TO RESULT", root, CX + 1070, CY + 650, 240, 44, () => { replayTime = replayResult.SimulatedDurationMs + 1; }, ModernStyle.Blue);
@@ -91,18 +90,27 @@ namespace AirsoftClub.Unity
                     float y = row * lane + 30;
                     if (y + fh > h) continue;
                     var body = PanelRect("Fig" + (left ? "A" : "D") + i, parent, x, y, fw, fh);
-                    body.gameObject.AddComponent<Image>().color = (left ? ModernStyle.Blue : ModernStyle.Orange);
-                    body.GetComponent<Image>().color = new Color((left ? ModernStyle.Blue : ModernStyle.Orange).r, (left ? ModernStyle.Blue : ModernStyle.Orange).g, (left ? ModernStyle.Blue : ModernStyle.Orange).b, 0.25f);
-                    body.GetComponent<Image>().raycastTarget = false;
+                    var bodyImage = body.gameObject.AddComponent<Image>();
+                    Color teamColor = left ? ModernStyle.Blue : ModernStyle.Orange;
+                    bodyImage.color = new Color(teamColor.r, teamColor.g, teamColor.b, 0.12f);
+                    bodyImage.raycastTarget = false;
+
+                    string key = (left ? "A" : "D") + f.Id;
+                    long hpV = hp != null && hp.TryGetValue(key, out var val) ? val : f.StartingHp.Raw;
+                    var look = appearance?.FirstOrDefault(a => a.Id == f.Id && a.Side == (left ? "A" : "D"));
+                    bool firing = result.Events.Any(e => e.ActorId == f.Id && e.ActorSide == (left ? Side.Attacker : Side.Defender) && e.TimeMs <= time && e.TimeMs > time - 180);
+                    float recoil = firing ? Mathf.Sin(Mathf.Clamp01((time - result.Events.Where(e => e.ActorId == f.Id && e.ActorSide == (left ? Side.Attacker : Side.Defender) && e.TimeMs <= time).Max(e => e.TimeMs)) / 180f) * Mathf.PI) * 6f : 0f;
+                    var fighterArt = Male017UiView.Create(body, "FighterArt", new Vector2(fw, fh));
+                    fighterArt.Root.anchoredPosition = Vector2.zero;
+                    fighterArt.Apply(look?.Camo == true, look?.Head == true, look?.Rig == true,
+                        f.Weapon != null, left, hpV > 0, recoil);
 
                     // name plate
                     MLabel(f.Id.Substring(0, Math.Min(5, f.Id.Length)), body, 11, ModernStyle.Ink, TextAnchor.MiddleCenter);
-                    var nameT = (RectTransform)body.GetChild(0);
+                    var nameT = (RectTransform)body.GetChild(body.childCount - 1);
                     nameT.sizeDelta = new Vector2(fw, 20); nameT.anchoredPosition = new Vector2(0, -12);
 
                     // HP bar
-                    string key = (left ? "A" : "D") + f.Id;
-                    long hpV = hp != null && hp.TryGetValue(key, out var val) ? val : f.StartingHp.Raw;
                     float frac = (float)hpV / 10000f / ((float)Formulas.MaxHp(f.Endurance, input.Rules).Raw / 10000f);
                     frac = Mathf.Clamp01(frac);
                     var hpBar = PanelRect("HP", body, 10, fh - 18, fw - 20, 8);
@@ -111,9 +119,6 @@ namespace AirsoftClub.Unity
                     var hpFill = PanelRect("Fill", hpBar, 0, 0, (fw - 20) * frac, 8);
                     hpFill.gameObject.AddComponent<Image>().color = left ? ModernStyle.Blue : ModernStyle.Orange;
                     hpFill.GetComponent<Image>().raycastTarget = false;
-                    // (fill anchored to left via rect setup)
-                    ((RectTransform)hpFill.transform).anchorMin = new Vector2(0, 0); ((RectTransform)hpFill.transform).anchorMax = new Vector2(0, 1);
-                    ((RectTransform)hpFill.transform).pivot = new Vector2(0, 0.5f);
                 }
             }
             DrawSide(input.Attacker, true);
@@ -139,8 +144,20 @@ namespace AirsoftClub.Unity
                 float trailX = e.ActorSide == Side.Attacker
                     ? 30f + (w - 74f) * phase
                     : w - 44f - (w - 74f) * phase;
-                int targetLane = (e.TargetId.GetHashCode() & int.MaxValue) % Math.Max(1, (int)(h - 80f));
-                var dot = PanelRect("Trail", parent, trailX, 40f + targetLane, 14, 14);
+                int targetIndex = 0;
+                var targetTeam = e.ActorSide == Side.Attacker ? input.Defender : input.Attacker;
+                for (int i = 0; i < targetTeam.Fighters.Count; i++)
+                {
+                    if (string.Equals(targetTeam.Fighters[i].Id, e.TargetId, StringComparison.Ordinal))
+                    {
+                        targetIndex = i;
+                        break;
+                    }
+                }
+                int targetRow = targetIndex / 4;
+                float targetHeight = Mathf.Min(200f, lane - 50f);
+                float trailY = targetRow * lane + 30f + targetHeight * 0.5f - 7f;
+                var dot = PanelRect("Trail", parent, trailX, trailY, 14, 14);
                 dot.gameObject.AddComponent<Image>().color = new Color(col.r, col.g, col.b, 0.85f);
                 dot.GetComponent<Image>().raycastTarget = false;
             }
