@@ -7,7 +7,7 @@ if (!(Test-Path $secretPath)) {
  [IO.File]::WriteAllText($secretPath,[Guid]::NewGuid().ToString('N'))
 }
 $env:AIRSOFT_DB_PASSWORD=[IO.File]::ReadAllText($secretPath)
-$env:AIRSOFT_CONNECTION="Host=127.0.0.1;Port=55432;Database=airsoft_club_dev;Username=airsoft_dev;Password=$env:AIRSOFT_DB_PASSWORD"
+$env:AIRSOFT_CONNECTION="Host=127.0.0.1;Port=55470;Database=airsoft_club_dev;Username=airsoft_dev;Password=$env:AIRSOFT_DB_PASSWORD"
 docker compose up -d --wait
 if($LASTEXITCODE -ne 0){throw 'Development DB startup failed'}
 if($Migrate) {
