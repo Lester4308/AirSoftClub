@@ -32,10 +32,16 @@ Write-Output 'Backend at http://127.0.0.1:5080. Open Client/AirsoftClubIntegrati
 dotnet Server/Airsoft.Server.dll
 '@
 [IO.File]::WriteAllText((Join-Path $bundle 'Start-Backend.ps1'),$launcher)
-$compose=[IO.File]::ReadAllText((Join-Path $bundle 'compose.yaml')).Replace('55432:5432','55433:5432')
+$compose=[IO.File]::ReadAllText((Join-Path $bundle 'compose.yaml')).Replace('55470:5432','55433:5432').Replace('55432:5432','55433:5432')
 [IO.File]::WriteAllText((Join-Path $bundle 'compose.yaml'),$compose)
-$notice='Requires Windows x64, .NET10 runtime and Docker Desktop. Run Start-Backend.ps1, then open Client/AirsoftClubIntegration.exe. Stop another development backend using port5080 first. Database/password are local to this bundle. Placeholder art; no live Steam/payments. See DEVELOPMENT_RUNBOOK.md.'
+$notice='Requires Windows x64, .NET10 runtime and Docker Desktop. Run Start-Backend.ps1, then run Start-Game.ps1 to open the current UGUI client. Stop another development backend using port5080 first. Database/password are local to this bundle. Prototype art; no live Steam/payments. See DEVELOPMENT_RUNBOOK.md.'
 [IO.File]::WriteAllText((Join-Path $bundle 'START-HERE.txt'),$notice)
-$archivePaths=@('Client','Server','compose.yaml','DEVELOPMENT_RUNBOOK.md','MONETIZATION_BALANCE_014.md','VISUAL_FOUNDATION_014.md','VISUAL_BETA_015.md','BUILD-MANIFEST.json','evidence','Start-Backend.ps1','START-HERE.txt') | ForEach-Object { Join-Path $bundle $_ }
+$gameLauncher=@'
+$ErrorActionPreference='Stop'
+Set-Location $PSScriptRoot
+Start-Process -FilePath (Join-Path $PSScriptRoot 'Client/AirsoftClubIntegration.exe') -ArgumentList @('--modern-ui','-screen-fullscreen','0')
+'@
+[IO.File]::WriteAllText((Join-Path $bundle 'Start-Game.ps1'),$gameLauncher)
+$archivePaths=@('Client','Server','compose.yaml','DEVELOPMENT_RUNBOOK.md','MONETIZATION_BALANCE_014.md','VISUAL_FOUNDATION_014.md','VISUAL_BETA_015.md','BUILD-MANIFEST.json','evidence','Start-Backend.ps1','Start-Game.ps1','START-HERE.txt') | ForEach-Object { Join-Path $bundle $_ }
 Compress-Archive -Path $archivePaths -DestinationPath (Join-Path $root 'Artifacts/AirsoftClub-Development-Windows-x64.zip') -Force
 Get-FileHash (Join-Path $root 'Artifacts/AirsoftClub-Development-Windows-x64.zip') -Algorithm SHA256
