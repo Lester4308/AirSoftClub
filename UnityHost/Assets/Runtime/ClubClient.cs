@@ -61,6 +61,9 @@ namespace AirsoftClub.Unity
         string account, token = "", page = "Club", status = "Connect to your local development server.", selectedFighter = "", lastPayload, selectedTarget = "";
         string mode = "Practice", rewardSummary = "", profileName = "", lastEndpoint = "/api/command";
         bool steamSession, showPremium;
+        internal bool useModern; // when true, ClubClient renders via the UGUI/Canvas controller instead of legacy OnGUI
+        public ModernUiController Modern; // UGUI/Canvas presentation controller (null when legacy)
+        public void SetModernForTest(bool on) { useModern = on; if (on && Modern == null) ControllerBoot.Create(this); }
         AppearanceView[] appearance = Array.Empty<AppearanceView>();
         LeaderView[] leaders = Array.Empty<LeaderView>();
         ClubView club;
@@ -81,7 +84,13 @@ namespace AirsoftClub.Unity
             if (args.Contains("--airsoft-smoke") || Application.isBatchMode && !args.Contains("--club-ui-smoke")) return;
             var cameraObject = new GameObject("Club presentation camera"); DontDestroyOnLoad(cameraObject);
             var camera = cameraObject.AddComponent<Camera>(); camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = new Color(.055f, .085f, .11f);
-            var go = new GameObject("Club development client"); DontDestroyOnLoad(go); go.AddComponent<ClubClient>();
+            var go = new GameObject("Club development client"); DontDestroyOnLoad(go);
+            var client = go.AddComponent<ClubClient>();
+            // New UGUI/Canvas presentation is opt-in via command line so the legacy OnGUI
+            // client stays as a fallback. Boot members are static; ModernUiController reads
+            // the flag via the same args through a static hook.
+            client.useModern = args.Contains("--modern-ui");
+            ControllerBoot.Create(client);
         }
         void Start()
         {

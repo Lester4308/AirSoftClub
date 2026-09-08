@@ -15,6 +15,7 @@ namespace AirsoftClub.Unity
         string selectedOffer="", selectedItem="", shopCategory="Weapons", inventorySlot="", hoverText="";
         void OnGUI()
         {
+            if (useModern) return; // UGUI/Canvas controller renders instead of legacy IMGUI
             Init(); title=Heading; label=Body; small=Small; button=new GUIStyle(Button){fixedHeight=34};
             float scale=Mathf.Min(Screen.width/1600f,Screen.height/900f);
             GUI.matrix=Matrix4x4.TRS(new Vector3((Screen.width-1600*scale)/2,(Screen.height-900*scale)/2,0),Quaternion.identity,new Vector3(scale,scale,1));
