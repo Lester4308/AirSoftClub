@@ -147,7 +147,21 @@ namespace AirsoftClub.Unity
                 ((RectTransform)card.GetChild(card.childCount - 1)).sizeDelta = new Vector2(180, 22); ((RectTransform)card.GetChild(card.childCount - 1)).anchoredPosition = new Vector2(68, -36);
                 MLabel(i.Slot == "Weapon" ? ("DMG " + i.Damage + " · int " + i.Interval + "ms") : ("PROT " + i.Protection + " · AGI-PEN " + i.AgilityPenalty), card, 12, ModernStyle.Muted, TextAnchor.MiddleLeft);
                 ((RectTransform)card.GetChild(card.childCount - 1)).sizeDelta = new Vector2(180, 22); ((RectTransform)card.GetChild(card.childCount - 1)).anchoredPosition = new Vector2(68, -60);
-                MButton("BUY", card, 14, 86, 105, 32, () => StartCoroutine(Send(Intent("Buy", i.Id))), i.Credits > 0 ? ModernStyle.Gold : ModernStyle.Blue);
+                if (i.EarlyAllowed)
+                {
+                    MButton("UNLOCK EARLY / " + i.EarlyPrice + " CREDITS", card, 14, 86, 225, 32,
+                        () => ConfirmCredits(Intent("EarlyUnlock", i.Id), i.EarlyPrice,
+                            "EARLY ACCESS", "Unlock access to " + i.Id + ". The item is still purchased separately with Money."), ModernStyle.Gold);
+                }
+                else
+                {
+                    MButton("BUY", card, 14, 86, 105, 32, () =>
+                    {
+                        if (i.Credits > 0)
+                            ConfirmCredits(Intent("Buy", i.Id), (int)i.Credits, "CREDITS PURCHASE", "Buy " + i.Id + " using Credits.");
+                        else StartCoroutine(Send(Intent("Buy", i.Id)));
+                    }, i.Credits > 0 ? ModernStyle.Gold : ModernStyle.Blue);
+                }
             }
         }
 

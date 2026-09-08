@@ -56,17 +56,27 @@ public sealed class Wallet
     public long Money { get; set; }
     public long Credits { get; set; }
     public List<LedgerEntry> Entries { get; set; } = new();
-    // Caller persists the aggregate atomically; this method performs no partial mutation on failure.
-    public bool Apply(string operation, string reason, long money, long credits)
+    public LedgerEntry? Find(string operation)
+    {
+        if (string.IsNullOrWhiteSpace(operation)) throw new ArgumentException("Ledger identity required");
+        return Entries.SingleOrDefault(e => e.Operation == operation);
+    }
+    // Validates an exact retry without mutating the wallet. Aggregate commands use this
+    // before state-based eligibility checks so a completed purchase can be retried safely.
+    public bool IsReplay(string operation, string reason, long money, long credits)
     {
         if (string.IsNullOrWhiteSpace(operation) || string.IsNullOrWhiteSpace(reason)) throw new ArgumentException("Ledger identity required");
         var entry = new LedgerEntry(operation, reason, money, credits);
         var prior = Entries.SingleOrDefault(e => e.Operation == operation);
-        if (prior != null)
-        {
-            if (prior != entry) throw new InvalidOperationException("Idempotency payload conflict");
-            return false;
-        }
+        if (prior == null) return false;
+        if (prior != entry) throw new InvalidOperationException("Idempotency payload conflict");
+        return true;
+    }
+    // Caller persists the aggregate atomically; this method performs no partial mutation on failure.
+    public bool Apply(string operation, string reason, long money, long credits)
+    {
+        if (IsReplay(operation, reason, money, credits)) return false;
+        var entry = new LedgerEntry(operation, reason, money, credits);
         long nextMoney = checked(Money + money), nextCredits = checked(Credits + credits);
         if (nextMoney < 0 || nextCredits < 0) throw new InvalidOperationException(nextMoney < 0 ? "Insufficient Money" : "Insufficient Credits");
         Entries.Add(entry); Money = nextMoney; Credits = nextCredits;

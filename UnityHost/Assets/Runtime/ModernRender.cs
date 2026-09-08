@@ -10,6 +10,9 @@ namespace AirsoftClub.Unity
     {
         // Canvas-space utilities (built under root via ModernStyle).
         RectTransform MRoot;
+        CommandRequest pendingCreditsCommand;
+        int pendingCreditsCost;
+        string pendingCreditsTitle = "", pendingCreditsDetail = "";
         const float MX = 1600f, MY = 920f;
 
         // Invoked every frame by ModernUiController.
@@ -42,6 +45,8 @@ namespace AirsoftClub.Unity
                 case "ArtSheet": RenderArtModern(root); break;
                 default: RenderHubModern(root); break;
             }
+            RenderTransactionStateModern(root);
+            RenderCreditsConfirmationModern(root);
         }
 
         void ClearModern(RectTransform root)
@@ -150,7 +155,15 @@ namespace AirsoftClub.Unity
             img.color = fill ?? ModernStyle.Card;
             var btn = rt.gameObject.AddComponent<Button>();
             btn.targetGraphic = img;
+            btn.interactable = ActionsEnabled;
             btn.onClick.AddListener(() => onClick());
+            var colors = btn.colors;
+            colors.normalColor = Color.white;
+            colors.highlightedColor = new Color(1.08f, 1.08f, 1.08f, 1f);
+            colors.pressedColor = new Color(.78f, .78f, .78f, 1f);
+            colors.disabledColor = new Color(.42f, .42f, .42f, .65f);
+            colors.fadeDuration = .08f;
+            btn.colors = colors;
             // label
             var tgo = new GameObject("Label", typeof(RectTransform));
             tgo.transform.SetParent(rt, false);
@@ -164,6 +177,39 @@ namespace AirsoftClub.Unity
             t.horizontalOverflow = HorizontalWrapMode.Overflow; t.verticalOverflow = VerticalWrapMode.Overflow;
             t.text = label; t.raycastTarget = false;
             return btn;
+        }
+
+        void ConfirmCredits(CommandRequest command, int credits, string title, string detail)
+        {
+            pendingCreditsCommand = command;
+            pendingCreditsCost = credits;
+            pendingCreditsTitle = title;
+            pendingCreditsDetail = detail;
+        }
+
+        void RenderCreditsConfirmationModern(RectTransform root)
+        {
+            if (pendingCreditsCommand == null) return;
+            var shade = PanelRect("CreditsConfirmationShade", root, 0, 0, MX, MY);
+            shade.gameObject.AddComponent<Image>().color = new Color(0f, 0f, 0f, .72f);
+            var panel = PanelRect("CreditsConfirmation", shade, 500, 285, 600, 300);
+            panel.gameObject.AddComponent<Image>().color = ModernStyle.PanelAlt;
+            MLabel(pendingCreditsTitle, panel, 22, ModernStyle.Gold, TextAnchor.MiddleCenter);
+            ((RectTransform)panel.GetChild(0)).sizeDelta = new Vector2(552, 50); ((RectTransform)panel.GetChild(0)).anchoredPosition = new Vector2(24, -28);
+            MLabel(pendingCreditsDetail + "\n\nBalance is authoritative and will refresh from the server.", panel, 15, ModernStyle.Ink, TextAnchor.MiddleCenter);
+            ((RectTransform)panel.GetChild(1)).sizeDelta = new Vector2(552, 110); ((RectTransform)panel.GetChild(1)).anchoredPosition = new Vector2(24, -88);
+            MButton("CONFIRM " + pendingCreditsCost + " CREDITS", panel, 35, 220, 250, 52, () => { var command = pendingCreditsCommand; pendingCreditsCommand = null; StartCoroutine(Send(command)); }, ModernStyle.Gold);
+            MButton("CANCEL", panel, 315, 220, 250, 52, () => pendingCreditsCommand = null, ModernStyle.Neutral);
+        }
+
+        void RenderTransactionStateModern(RectTransform root)
+        {
+            if (!busy && !failed) return;
+            var bar = PanelRect("TransactionState", root, CX, 844, CW, 54);
+            bar.gameObject.AddComponent<Image>().color = failed ? new Color(.42f, .12f, .08f, .98f) : ModernStyle.PanelAlt;
+            MLabel(busy ? "SERVER TRANSACTION IN PROGRESS — waiting for authoritative receipt" : status, bar, 14, ModernStyle.Ink, TextAnchor.MiddleLeft);
+            ((RectTransform)bar.GetChild(0)).sizeDelta = new Vector2(980, 46); ((RectTransform)bar.GetChild(0)).anchoredPosition = new Vector2(16, -4);
+            if (failed) MButton(lastPayload == null ? "REFRESH STATE" : "RETRY / REFRESH", bar, 1050, 7, 240, 40, () => StartCoroutine(Retry()), ModernStyle.Orange);
         }
 
         // ---- Login ----

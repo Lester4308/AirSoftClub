@@ -44,7 +44,7 @@ namespace AirsoftClub.Unity
             var tl = (RectTransform)hero.GetChild(hero.childCount - 1);
             tl.sizeDelta = new Vector2(700, 60); tl.anchoredPosition = new Vector2(30, -70);
 
-            MLabel(club == null ? "" : club.Fighters.Length + " fighters  ·  " + club.Fighters.Count(f => f.Ready) + " ready", hero, 15, ModernStyle.Muted, TextAnchor.MiddleLeft);
+            MLabel(club == null ? "" : club.Fighters.Length + " fighters  ·  " + club.Fighters.Count(f => f.Ready) + " ready" + (club.History != null && club.History.Length == 0 ? "  ·  FIRST BATTLE READY" : ""), hero, 15, ModernStyle.Muted, TextAnchor.MiddleLeft);
             var fl = (RectTransform)hero.GetChild(hero.childCount - 1);
             fl.sizeDelta = new Vector2(400, 30); fl.anchoredPosition = new Vector2(30, -170);
 
@@ -55,7 +55,7 @@ namespace AirsoftClub.Unity
             string[] vals = {
                 club == null ? "-" : club.Fighters.Count(f => f.Ready) + " / " + club.Fighters.Length + " READY",
                 club == null ? "-" : (club.Xp % 1000) + " / 1,000 XP",
-                club == null || club.BbStock == null ? "-" : (club.BbStock[club.ActiveBbTier]) + " / " + club.Capacity + " BB" };
+                club == null || club.BbStock == null || club.BbStock.Length == 0 ? "-" : (club.BbStock[Mathf.Clamp(club.ActiveBbTier, 0, club.BbStock.Length - 1)]) + " / " + club.Capacity + " BB" };
             for (int n = 0; n < 3; n++)
             {
                 var card = PanelRect("Stat" + n, root, CX + n * 442, CY + 250, 426, 190);
@@ -76,12 +76,15 @@ namespace AirsoftClub.Unity
             MLabel("REWARDS & PROGRESS", left, 15, ModernStyle.Gold, TextAnchor.MiddleLeft);
             var l1 = (RectTransform)left.GetChild(left.childCount - 1);
             l1.sizeDelta = new Vector2(600, 28); l1.anchoredPosition = new Vector2(20, -20);
-            var streak = "Daily streak " + (club == null ? 0 : club.Streak) + "/7";
+            bool claimedToday = club != null && club.LastDay == club.ServerNow / 86400000L;
+            var streak = claimedToday ? "Claimed today · next reset 00:00 UTC" : "Daily streak " + (club == null ? 0 : club.Streak) + "/7 · resets 00:00 UTC";
             MLabel(streak, left, 14, ModernStyle.Muted, TextAnchor.MiddleLeft);
             var l2 = (RectTransform)left.GetChild(left.childCount - 1);
             l2.sizeDelta = new Vector2(600, 24); l2.anchoredPosition = new Vector2(20, -50);
-            MButton("CLAIM DAILY", left, 20, 84, 150, 44, () => StartCoroutine(Send(Intent("Daily"))), ModernStyle.Gold);
+            if (!claimedToday) MButton("CLAIM DAILY", left, 20, 84, 150, 44, () => StartCoroutine(Send(Intent("Daily"))), ModernStyle.Gold);
             MButton("CLAIM CREDITS", left, 190, 84, 160, 44, () => StartCoroutine(Send(Intent("Progression"))), ModernStyle.Blue);
+            MButton("CONVERT 1 CREDIT → " + club.ConvertRate + " MONEY", left, 370, 84, 220, 44,
+                () => ConfirmCredits(Intent("Convert", number: 1), 1, "CREDITS CONVERSION", "1 CREDIT → " + club.ConvertRate + " MONEY. Conversion cannot be reversed."), ModernStyle.Neutral);
 
             var right = PanelRect("Protection", root, CX + 670, CY + 470, 640, 160);
             right.gameObject.AddComponent<Image>().color = ModernStyle.Card;
@@ -89,13 +92,17 @@ namespace AirsoftClub.Unity
             MLabel("CLUB PROTECTION", right, 15, ModernStyle.Gold, TextAnchor.MiddleLeft);
             var r1 = (RectTransform)right.GetChild(right.childCount - 1);
             r1.sizeDelta = new Vector2(600, 28); r1.anchoredPosition = new Vector2(20, -20);
-            MLabel(club != null && club.ShieldUntil > club.ServerNow ? "SHIELD ACTIVE" : "No active shield", right, 14, club != null && club.ShieldUntil > club.ServerNow ? ModernStyle.Blue : ModernStyle.Muted, TextAnchor.MiddleLeft);
+            string shieldState = club != null && club.ShieldUntil > club.ServerNow
+                ? "SHIELD ACTIVE · Ranked or rated Revenge removes it"
+                : "No active shield · blocks new incoming attacks";
+            MLabel(shieldState, right, 14, club != null && club.ShieldUntil > club.ServerNow ? ModernStyle.Blue : ModernStyle.Muted, TextAnchor.MiddleLeft);
             var r2 = (RectTransform)right.GetChild(right.childCount - 1);
             r2.sizeDelta = new Vector2(600, 24); r2.anchoredPosition = new Vector2(20, -50);
             if (club != null) for (int n = 0; n < club.Shields.Length && n < 4; n++)
             {
                 var sh = club.Shields[n];
-                MButton(sh.Hours + "h  ·  " + sh.Credits + " C", right, 20 + n * 155, 84, 140, 44, () => StartCoroutine(Send(Intent("Shield", number: sh.Hours))), ModernStyle.Neutral);
+                MButton(sh.Hours + "h  ·  " + sh.Credits + " C", right, 20 + n * 155, 84, 140, 44,
+                    () => ConfirmCredits(Intent("Shield", number: sh.Hours), sh.Credits, "ACTIVATE SHIELD", sh.Hours + "h protection. Ranked or rated Revenge removes it."), ModernStyle.Neutral);
             }
         }
 
