@@ -47,6 +47,9 @@ namespace AirsoftClub.Unity
             ((RectTransform)root.GetChild(root.childCount - 1)).sizeDelta = new Vector2(700, 30);
             ((RectTransform)root.GetChild(root.childCount - 1)).anchoredPosition = new Vector2(CX, -(CY + 38));
 
+            if (club.RefreshAvailableAt <= club.ServerNow)
+                MButton("REFRESH POOL", root, CX + 700, CY + 38, 180, 36, () => StartCoroutine(Send(Intent("Refresh"))), ModernStyle.Blue);
+
             // Compact two-column candidate grid leaves room for the detail panel.
             int offerRows = Mathf.CeilToInt(club.Offers.Length / 2f);
             var offers = VerticalScrollArea("Offers", root, CX, CY + 80, 515, CH - 80, offerRows * 145 - 15, recruitmentScroll, value => recruitmentScroll = value);
@@ -192,7 +195,11 @@ namespace AirsoftClub.Unity
                 MLabel((club.BbStock[n]) + " / " + club.Capacity + " BB", card, 14, ModernStyle.Muted, TextAnchor.MiddleLeft);
                 ((RectTransform)card.GetChild(1)).sizeDelta = new Vector2(300, 26); ((RectTransform)card.GetChild(1)).anchoredPosition = new Vector2(20, -60);
                 MButton("SELECT TIER", card, 400, 20, 170, 44, () => StartCoroutine(Send(Intent("BbTier", number: tier))), n == club.ActiveBbTier ? ModernStyle.Neutral : ModernStyle.Blue);
-                MButton("REFILL / " + (b.Money > 0 ? b.Money + " MONEY" : b.Credits + " CREDITS"), card, 590, 20, 200, 44, () => StartCoroutine(Send(Intent("Refill", number: tier))), ModernStyle.Gold);
+                MButton("REFILL / " + (b.Money > 0 ? b.Money + " MONEY" : b.Credits + " CREDITS"), card, 590, 20, 200, 44, () => {
+                    if (b.Credits > 0)
+                        ConfirmCredits(Intent("Refill", number: tier), (int)b.Credits, "BB REFILL", "Refill " + b.Name + " using " + b.Credits + " Credits.");
+                    else StartCoroutine(Send(Intent("Refill", number: tier)));
+                }, ModernStyle.Gold);
             }
         }
 

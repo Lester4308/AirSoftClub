@@ -51,7 +51,8 @@ namespace AirsoftClub.Unity
                 case "Opponents": RenderOpponentsModern(root); break;
                 case "Battle": RenderBattleModern(root); break;
                 case "History": RenderHistoryModern(root); break;
-                case "Status": RenderStatusModern(root); break;
+                case "Status":
+                case "Settings": RenderStatusModern(root); break;
                 case "ArtSheet": RenderArtModern(root); break;
                 default: RenderHubModern(root); break;
             }
@@ -71,12 +72,12 @@ namespace AirsoftClub.Unity
             panel.gameObject.AddComponent<Image>().color = ModernStyle.PanelAlt;
             MLabel("EQUIPMENT / " + inventorySlot.ToUpperInvariant(), panel, 20, ModernStyle.Gold, TextAnchor.MiddleLeft);
             ((RectTransform)panel.GetChild(0)).sizeDelta = new Vector2(760, 40); ((RectTransform)panel.GetChild(0)).anchoredPosition = new Vector2(24, -24);
-            MButton("CLOSE", panel, 690, 18, 96, 38, () => inventorySlot = "", ModernStyle.Neutral);
+            MButton("CLOSE", panel, 690, 18, 96, 38, () => inventorySlot = "", ModernStyle.Neutral, forceEnabled: true);
             var equipped = f.Equipment.FirstOrDefault(e => e.Slot == inventorySlot);
             if (equipped != null)
             {
                 var capturedSlot = inventorySlot;
-                MButton("UNEQUIP " + equipped.Definition, panel, 27, 80, 750, 42, () => { inventorySlot = ""; StartCoroutine(Send(Intent("Unequip", f.Id, capturedSlot))); }, ModernStyle.Orange);
+                MButton("UNEQUIP " + equipped.Definition, panel, 27, 80, 750, 42, () => { inventorySlot = ""; StartCoroutine(Send(Intent("Unequip", f.Id, capturedSlot))); }, ModernStyle.Orange, forceEnabled: true);
             }
             var items = club.Items.Where(i => i.Slot == inventorySlot && !i.Equipped).ToArray();
             float ih = 24 + items.Length * 56;
@@ -87,7 +88,7 @@ namespace AirsoftClub.Unity
                 MLabel(it.Definition, iv, 14, ModernStyle.Ink, TextAnchor.MiddleLeft);
                 var itL = (RectTransform)iv.GetChild(iv.childCount - 1);
                 itL.sizeDelta = new Vector2(560, 40); itL.anchoredPosition = new Vector2(10, -n * 56 - 8);
-                MButton("EQUIP", iv, 590, n * 56 + 4, 140, 42, () => { inventorySlot = ""; StartCoroutine(Send(Intent("Equip", f.Id, it.Id))); }, ModernStyle.Blue);
+                MButton("EQUIP", iv, 590, n * 56 + 4, 140, 42, () => { inventorySlot = ""; StartCoroutine(Send(Intent("Equip", f.Id, it.Id))); }, ModernStyle.Blue, forceEnabled: true);
             }
             if (items.Length == 0)
                 MLabel("No unequipped items in this slot.\\nBuy equipment in the shop, then return here.", panel, 14, ModernStyle.Muted, TextAnchor.MiddleLeft);
@@ -191,7 +192,7 @@ namespace AirsoftClub.Unity
             return t;
         }
 
-        Button MButton(string label, Transform parent, float x, float y, float w, float h, Action onClick, Color? fill = null)
+        Button MButton(string label, Transform parent, float x, float y, float w, float h, Action onClick, Color? fill = null, bool forceEnabled = false)
         {
             var rt = PanelRect("Btn", parent, x, y, w, h);
             var img = rt.gameObject.AddComponent<Image>();
@@ -199,7 +200,7 @@ namespace AirsoftClub.Unity
             img.color = fill ?? ModernStyle.Card;
             var btn = rt.gameObject.AddComponent<Button>();
             btn.targetGraphic = img;
-            btn.interactable = ActionsEnabled;
+            btn.interactable = forceEnabled || ActionsEnabled;
             btn.onClick.AddListener(() => onClick());
             var colors = btn.colors;
             colors.normalColor = Color.white;

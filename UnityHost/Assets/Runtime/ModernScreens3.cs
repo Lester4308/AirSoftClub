@@ -108,7 +108,7 @@ namespace AirsoftClub.Unity
                     if (f.Weapon != null)
                     {
                         var w = VolumetricWeapon017UiView.CreateSilhouette(body, "WeaponOverlay", new Vector2(dense ? 36 : 48, dense ? 22 : 28));
-                        w.Root.anchoredPosition = new Vector2(fw * 0.55f, fh * 0.42f);
+                        w.Root.anchoredPosition = new Vector2(fw * 0.55f, -fh * 0.42f);
                         w.ApplyFamily((int)f.Weapon.Family);
                     }
 

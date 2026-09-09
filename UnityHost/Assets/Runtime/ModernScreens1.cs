@@ -85,6 +85,9 @@ namespace AirsoftClub.Unity
             MButton("CLAIM CREDITS", left, 190, 84, 160, 44, () => StartCoroutine(Send(Intent("Progression"))), ModernStyle.Blue);
             MButton("CONVERT 1 CREDIT → " + club.ConvertRate + " MONEY", left, 370, 84, 220, 44,
                 () => ConfirmCredits(Intent("Convert", number: 1), 1, "CREDITS CONVERSION", "1 CREDIT → " + club.ConvertRate + " MONEY. Conversion cannot be reversed."), ModernStyle.Neutral);
+            MButton("EMERGENCY BASIC BB", left, 20, 138, 220, 44, () => StartCoroutine(Send(Intent("Emergency"))), ModernStyle.Orange);
+            if (club != null)
+                MButton((club.AutoBuyBasic ? "AUTO-BUY: ON" : "AUTO-BUY: OFF"), left, 250, 138, 180, 44, () => StartCoroutine(Send(Intent("AutoBuyBasic", flag: !club.AutoBuyBasic))), club.AutoBuyBasic ? ModernStyle.Blue : ModernStyle.Neutral);
 
             var right = PanelRect("Protection", root, CX + 670, CY + 470, 640, 160);
             right.gameObject.AddComponent<Image>().color = ModernStyle.Card;
@@ -173,17 +176,18 @@ namespace AirsoftClub.Unity
             for (int nf = 0; nf < 3; nf++)
             {
                 var sn = statNames[nf];
-                var row = PanelRect("Stat", det, 24, 110 + nf * 62, 560, 52);
+                var row = PanelRect("Stat", det, 24, 110 + nf * 56, 560, 48);
                 row.gameObject.AddComponent<Image>().color = ModernStyle.Bg2;
                 row.GetComponent<Image>().raycastTarget = false;
                 MLabel(sn + "   " + statVals[nf], row, 16, ModernStyle.Ink, TextAnchor.MiddleLeft);
                 var sl = (RectTransform)row.GetChild(row.childCount - 1);
                 sl.sizeDelta = new Vector2(300, 40); sl.anchoredPosition = new Vector2(14, -24);
-                MButton("+1", row, 460, 44, 70, 34, () => StartCoroutine(Send(Intent("Train", fIdx.Id, sn))), ModernStyle.Blue);
+                MButton("+1", row, 460, 8, 120, 34, () => StartCoroutine(Send(Intent("Train", fIdx.Id, sn))), ModernStyle.Blue);
             }
 
             // Heal
-            MButton("HEAL / " + fIdx.HealMoney + " MONEY", det, 24, 300, 260, 48, () => StartCoroutine(Send(Intent("Heal", fIdx.Id))), ModernStyle.Gold);
+            MButton("HEAL / " + fIdx.HealMoney + " MONEY", det, 24, 280, 260, 48, () => StartCoroutine(Send(Intent("Heal", fIdx.Id))), ModernStyle.Gold);
+            MButton("DISMISS", det, 310, 300, 140, 48, () => StartCoroutine(Send(Intent("Dismiss", fIdx.Id))), ModernStyle.Orange);
 
             // Recovery text
             MLabel("Full recovery: " + Math.Ceiling(fIdx.RecoveryRemainingMs / 60000d) + " min free", det, 13, ModernStyle.Muted, TextAnchor.MiddleLeft);
