@@ -73,6 +73,7 @@ namespace AirsoftClub.Unity
             var r = (RectTransform)go.transform;
             r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one;
             r.offsetMin = Vector2.zero; r.offsetMax = Vector2.zero;
+            go.AddComponent<GraphicRaycaster>();
             _canvas = canvas; _root = r;
             // Background
             var bg = new GameObject("Background");

@@ -22,7 +22,7 @@ namespace AirsoftClub.Unity
             int replayFrame = page == "Battle" && replayResult != null ? Mathf.FloorToInt(replayTime / 33f) : 0;
             return string.Join("|", page, club?.Version.ToString() ?? "login", selectedFighter, selectedOffer,
                 selectedItem, selectedTarget, shopCategory, mode, busy, failed, status, pendingCreditsCommand?.Key,
-                replayFrame, inventorySlot, revengeOverlay, account);
+                replayFrame, inventorySlot, revengeOverlay);
         }
 
         // Invoked by ModernUiController when visible state changes.
@@ -276,16 +276,32 @@ namespace AirsoftClub.Unity
                     subR.anchorMin = new Vector2(0, 1); subR.anchorMax = new Vector2(0, 1); subR.pivot = new Vector2(0.5f, 0.5f);
                     subR.sizeDelta = new Vector2(440, 30); subR.anchoredPosition = new Vector2(240, -95);
 
-                    // Account input
+                    // Account input — InputField with proper targetGraphic + placeholder
                     var inpR = PanelRect("Input", panel, 240, -130, 420, 48);
                     inpR.anchorMin = new Vector2(0.5f, 0.5f); inpR.anchorMax = new Vector2(0.5f, 0.5f); inpR.pivot = new Vector2(0.5f, 0.5f);
                     inpR.anchoredPosition = new Vector2(0, -10);
                     var inpBg = inpR.gameObject.AddComponent<Image>();
                     inpBg.sprite = ModernStyle.WhiteSprite(); inpBg.color = ModernStyle.Bg2; inpBg.raycastTarget = true;
                     var inp = inpR.gameObject.AddComponent<InputField>();
-                    inp.textComponent = MLabel(account, inpR, 18, ModernStyle.Ink, TextAnchor.MiddleLeft);
-                    var inpText = (RectTransform)inp.textComponent.transform;
-                    inpText.sizeDelta = new Vector2(400, 40); inpText.anchoredPosition = new Vector2(0, 0);
+                    inp.targetGraphic = inpBg;
+                    // Text component — child of inpR, shows the typed account
+                    var textGO = new GameObject("Text"); textGO.transform.SetParent(inpR, false);
+                    var txt = textGO.AddComponent<Text>(); txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                    txt.fontSize = 18; txt.color = ModernStyle.Ink; txt.alignment = TextAnchor.MiddleLeft;
+                    var txtR = (RectTransform)textGO.transform;
+                    txtR.anchorMin = Vector2.zero; txtR.anchorMax = Vector2.one; txtR.offsetMin = new Vector2(12, 0); txtR.offsetMax = new Vector2(-12, 0);
+                    inp.textComponent = txt;
+                    // Placeholder
+                    var phGO = new GameObject("Placeholder"); phGO.transform.SetParent(inpR, false);
+                    var ph = phGO.AddComponent<Text>(); ph.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                    ph.fontSize = 18; ph.fontStyle = FontStyle.Italic; ph.color = ModernStyle.Muted; ph.alignment = TextAnchor.MiddleLeft;
+                    var phR = (RectTransform)phGO.transform;
+                    phR.anchorMin = Vector2.zero; phR.anchorMax = Vector2.one; phR.offsetMin = new Vector2(12, 0); phR.offsetMax = new Vector2(-12, 0);
+                    ph.text = "dev-…";
+                    inp.placeholder = ph;
+                    // Set initial text without triggering onValueChanged
+                    inp.text = account;
+                    inp.onValueChanged.AddListener(v => { if (v != account) account = v; });
 
                     MButton("ENTER CLUB", panel, 30, 175, 420, 50, () => StartCoroutine(Login()), ModernStyle.Gold);
                     var s = MLabel(status, panel, 13, ModernStyle.Orange, TextAnchor.MiddleCenter);
