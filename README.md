@@ -1,37 +1,82 @@
-> **Current UI / Visual Beta015, 2026-09-07:** cohesive tactical screens, modular 2D fighters, warehouse battles and five captured BB colors. Local Mono/native verification and screenshots: [Visual Beta015](implementation/VISUAL_BETA_015.md). Gameplay and014 monetization rules unchanged; earlier visual checkpoints below are historical. Final art and Steam sandbox remain open.
-
 # Airsoft_Club_Game
 
-> **Current: Playable Visual Alpha014, 2026-09-07 — local PASS.** [Consolidated visual/build report](implementation/VISUAL_FOUNDATION_014.md) · [Monetization and40-cell balance matrix](implementation/MONETIZATION_BALANCE_014.md) · [Launch guide](implementation/DEVELOPMENT_RUNBOOK.md). Mono/native IL2CPP verified. Intentional premium advantage; progressive early unlock replaces blanket+3. Final art and Steam sandbox remain OPEN. Earlier checkpoint text below is historical.
+> **Modern UGUI + Volumetric 2D Sprites — ACTIVE, 2026-09-09.** All screens use `Volumetric017UiView` (fighters) and `VolumetricWeapon017UiView` (6 weapon families). Login, roster, shop, training, equip/unequip, battle — all functional via Modern UI. Legacy BetaShell/TacticalArt retained for smoke tests only. Commit `66090b3`.
 
-> **Development pass 2026-09-06:** implementation003–010 now has local code and verification; current scope, remaining gates and native/package evidence are in [Verification011](implementation/VERIFICATION_011.md), with [launch instructions](implementation/DEVELOPMENT_RUNBOOK.md). Earlier documentation-only/future status text below records the pre-execution checkpoint. The user's explicit development-pass request authorizes this work; Project Airsoft remains untouched.
+## Quick start
 
+```bash
+# 1. Start PostgreSQL
+powershell -ExecutionPolicy Bypass -File tools/start-db.ps1 -Migrate
 
-## Актуальна консолідація — Master v1, 2026-09-06
+# 2. Start server (in a separate terminal)
+export ASPNETCORE_ENVIRONMENT=Development
+export AIRSOFT_DEV_AUTH=1
+export AIRSOFT_CONNECTION='Host=127.0.0.1;Port=55470;Database=airsoft_club_dev;Username=airsoft_dev;Password=<from Artifacts/local-db-password.txt>'
+export ASPNETCORE_URLS=http://127.0.0.1:5080
+dotnet run --project src/Airsoft.Server
 
-Почати з [Master Development Spec v1](AIRSOFT_CLUB_GAME_MASTER_DEVELOPMENT_SPEC_v1.md) та [Agent Implementation Pack v1](AIRSOFT_CLUB_GAME_AGENT_IMPLEMENTATION_PACK_v1.md). Усі Q01–Q15 закриті на рівні рішень; balance hypotheses і residual details виділені окремо. Implementation001–002 завершені, native IL2CPP PASS. Цей pass змінює лише документацію; виконання pack потребує окремого стартового доручення.
+# 3. Build Unity client
+powershell -ExecutionPolicy Bypass -File tools/verify-unity.ps1 -Stage MonoBuild
 
-Нижче збережено попередні записи стану. Їхні старі OPEN/нестворені системи/обмеження окремих milestones читаються історично; актуальний статус і правила визначає master.
+# 4. Launch game
+Artifacts/Mono/AirsoftClubIntegration.exe
+```
 
-## Поточний стан — Implementation 002
+Game auto-creates a `dev-*` account on first launch. Login screen is Modern UGUI with GraphicRaycaster-enabled Canvas.
 
-Unity host: UnityHost/ — **6000.3.21f1 LTS**. Pure battle core підключено одним local package, без копії simulator. [Як відкрити проєкт, запустити тести й builds](implementation/UNITY_INTEGRATION_002.md), [точні результати](implementation/VERIFICATION_002.md).
+## Run all tests
 
-.NET, EditMode, PlayMode та Windows Mono golden result збігаються. Повний Windows x64 IL2CPP native build/run пройдено; golden digest і regressions збігаються. [Blocker закрито](implementation/VERIFICATION_002_IL2CPP_FINAL.md). До наступних gameplay/UI/backend систем не переходили.
+```bash
+# Server-side (battle 46/46, club 37/37, simulation 10K)
+powershell -ExecutionPolicy Bypass -File tools/verify.ps1
 
+# Unity EditMode (15/15)
+powershell -ExecutionPolicy Bypass -File tools/verify-unity.ps1 -Stage EditMode
 
-## Попередній стан — Implementation 001
+# Unity MonoBuild
+powershell -ExecutionPolicy Bypass -File tools/verify-unity.ps1 -Stage MonoBuild
+```
 
-Окремим запитом користувача дозволено й реалізовано pure C# deterministic headless battle core. [Architecture / formulas / scope](implementation/IMPLEMENTATION_001.md), [verification](implementation/VERIFICATION_001.md). Запуск усіх перевірок: powershell -ExecutionPolicy Bypass -File tools/verify.ps1.
+## Project structure
 
-Нижче збережено історичний стан design gate до дозволу на цей milestone. Дозвіл поширюється тільки на core/tests/harness; решта систем не дозволені.
+| Directory | Purpose |
+|---|---|
+| `UnityHost/` | Unity 6000.3.21f1 LTS project |
+| `UnityHost/Assets/Runtime/` | Game scripts (ModernScreens1-3, Volumetric017UiView, etc.) |
+| `UnityHost/Assets/Resources/Art/Volumetric017/` | Runtime sprites (fighters + 6 weapon families) |
+| `UnityHost/Assets/Tests/` | EditMode + PlayMode tests |
+| `src/Airsoft.Server/` | ASP.NET Core backend |
+| `src/Airsoft.Battle/` | Pure C# deterministic battle core |
+| `src/Airsoft.Club/` | Club domain library |
+| `tests/` | .NET test projects |
+| `art/` | Source art assets |
+| `art/volumetric-017/` | Current volumetric 2D sprite source |
+| `design/` | Product design, decisions, art direction |
+| `implementation/` | Milestone reports and evidence |
+| `tools/` | Build, test, and DB scripts |
+| `Artifacts/` | Build output (Mono build, test logs) — .gitignored |
 
+## Tech stack
 
-Нова незалежна airsoft management game, натхненна management loop «Пейнтбольные войны», зі Steam social/asynchronous PvP. [Обов'язкова project boundary](PROJECT_BOUNDARY.md): Project Airsoft / Airsoft Manager не змінюється і не є основою.
+- **Client:** Unity 6000.3.21f1 LTS, C#, UGUI/Canvas
+- **Server:** ASP.NET Core, .NET 10.0.302
+- **Database:** PostgreSQL 15 (Docker)
+- **Art:** Volumetric 2D sprites (programmatic + post-processed PNGs)
+- **Branch:** `codex/implementation-003-development-pass`
 
-**PRODUCT DESIGN GATE v3 — APPROVED FOR IMPLEMENTATION PREPARATION**
-**IMPLEMENTATION NOT YET AUTHORIZED.**
+## Key decisions
 
-Почати з [короткого summary v3](design/AIRSOFT_CLUB_GAME_UPDATED_PRODUCT_DECISION_SUMMARY_v3.md) та [повного Gate v3](design/AIRSOFT_CLUB_GAME_PRODUCT_DESIGN_GATE_v3.md). [Індекс усієї документації](design/README.md), [roadmap](ROADMAP.md), [майбутній перший scope](design/MVP_IMPLEMENTATION_PLAN.md), [validation](design/VALIDATION.md).
+- `useModern = true` by default — Modern UGUI is the primary UI
+- Stable fighter gender via `IsFemale(fighterId)` deterministic hash
+- Explicit `CatalogToFamily` dictionary for 6 weapon families
+- Battle weapon overlay uses `CreateSilhouette()` at hands level
+- GraphicRaycaster required on Canvas for mouse input routing
+- `account` excluded from `ModernRenderSignature()` to prevent per-keystroke UI rebuild
 
-Стек обрано: Unity/C# client, C#/ASP.NET Core backend, PostgreSQL, Steam-first. Це design-only repository: code, integration, production UI/art та live services ще не створені. Final art OPEN. Баланс і implementation-level питання явно позначені, не приховані як final constants.
+## Documentation
+
+- [Master Development Spec v1](AIRSOFT_CLUB_GAME_MASTER_DEVELOPMENT_SPEC_v1.md)
+- [Agent Implementation Pack v1](AIRSOFT_CLUB_GAME_AGENT_IMPLEMENTATION_PACK_v1.md)
+- [Volumetric 2D Art Direction](design/VOLUMETRIC_2D_SPRITE_ART_DIRECTION_017.md)
+- [Cleanup Report](CLEANUP_REPORT.md)
+- [Development Runbook](implementation/DEVELOPMENT_RUNBOOK.md)
