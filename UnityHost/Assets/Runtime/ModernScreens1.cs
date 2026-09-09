@@ -120,19 +120,18 @@ namespace AirsoftClub.Unity
                 return;
             }
 
-            // Card list (left)
-            var list = PanelRect("RosterList", root, CX, CY + 60, 640, CH - 60);
-            list.gameObject.AddComponent<Image>().color = ModernStyle.Panel;
-            list.GetComponent<Image>().raycastTarget = false;
+            // Card list (left) — scrollable so a 16-fighter roster never overflows.
+            float rosterContent = 12f + club.Fighters.Length * 120f;
+            var listContent = VerticalScrollArea("RosterList", root, CX, CY + 60, 640, CH - 60, rosterContent, rosterScroll, value => rosterScroll = value);
             for (int n = 0; n < club.Fighters.Length; n++)
             {
                 var f = club.Fighters[n];
-                var card = PanelRect("Fighter" + n, list, 15, 12 + n * 120, 610, 108);
+                var card = PanelRect("Fighter" + n, listContent, 15, n * 120, 610, 108);
                 card.gameObject.AddComponent<Image>().color = f.Id == selectedFighter ? ModernStyle.Neutral : ModernStyle.Card;
                 card.GetComponent<Image>().raycastTarget = false;
                 var thumbnail = Volumetric017UiView.Create(card, "Portrait", new Vector2(68, 96));
                 thumbnail.Root.anchoredPosition = new Vector2(12, -6);
-                thumbnail.Apply(true, f.Hp > 0, n % 2 == 1);
+                thumbnail.Apply(true, f.Hp > 0, Volumetric017UiView.IsFemale(f.Id));
                 MLabel(f.Name, card, 17, ModernStyle.Ink, TextAnchor.MiddleLeft);
                 var c0 = (RectTransform)card.GetChild(card.childCount - 1);
                 c0.sizeDelta = new Vector2(260, 30); c0.anchoredPosition = new Vector2(92, -18);
@@ -158,7 +157,7 @@ namespace AirsoftClub.Unity
 
             var portrait = Volumetric017UiView.Create(det, "SelectedFighter", new Vector2(190, 285));
             portrait.Root.anchoredPosition = new Vector2(410, -16);
-            portrait.Apply(true, fIdx.Hp > 0, Mathf.Abs(selectedFighter.GetHashCode()) % 2 == 1);
+            portrait.Apply(true, fIdx.Hp > 0, Volumetric017UiView.IsFemale(fIdx.Id));
 
             MLabel(fIdx.Name.ToUpperInvariant(), det, 24, ModernStyle.Gold, TextAnchor.MiddleLeft);
             var d0 = (RectTransform)det.GetChild(det.childCount - 1);
@@ -169,7 +168,7 @@ namespace AirsoftClub.Unity
             d1.sizeDelta = new Vector2(500, 30); d1.anchoredPosition = new Vector2(24, -70);
 
             // Stats + training buttons
-            string[] statNames = { "ACCURACY", "ENDURANCE", "AGILITY" };
+            string[] statNames = { "Accuracy", "Endurance", "Agility" };
             int[] statVals = { fIdx.Accuracy, fIdx.Endurance, fIdx.Agility };
             for (int nf = 0; nf < 3; nf++)
             {
@@ -196,12 +195,17 @@ namespace AirsoftClub.Unity
             for (int ng = 0; ng < 4; ng++)
             {
                 var eq = fIdx.Equipment.FirstOrDefault(e => e.Slot == slots[ng]);
+                var slotIdx = slots[ng];
+                bool occupied = eq != null;
                 var gear = PanelRect("Gear", det, 24 + ng % 2 * 290, 410 + ng / 2 * 62, 270, 52);
                 gear.gameObject.AddComponent<Image>().color = ModernStyle.Card;
                 gear.GetComponent<Image>().raycastTarget = false;
-                MLabel((eq?.Definition ?? "Empty slot"), gear, 13, ModernStyle.Muted, TextAnchor.MiddleLeft);
+                MLabel((eq?.Definition ?? "Empty slot"), gear, 13, occupied ? ModernStyle.Ink : ModernStyle.Muted, TextAnchor.MiddleLeft);
                 var gl = (RectTransform)gear.GetChild(gear.childCount - 1);
-                gl.sizeDelta = new Vector2(250, 40); gl.anchoredPosition = new Vector2(12, -24);
+                gl.sizeDelta = new Vector2(190, 40); gl.anchoredPosition = new Vector2(12, -24);
+                MButton(occupied ? "UNEQUIP" : "EQUIP…", gear, 195, 8, 62, 36,
+                    () => { if (occupied) StartCoroutine(Send(Intent("Unequip", fIdx.Id, slotIdx))); else inventorySlot = slotIdx; },
+                    occupied ? ModernStyle.Orange : ModernStyle.Blue);
             }
 
             // Equipped weapon preview (volumetric family sprite per catalog id)
@@ -211,7 +215,7 @@ namespace AirsoftClub.Unity
                 // Bigger weapon showcase beside the portrait when a weapon is equipped.
                 var wp = VolumetricWeapon017UiView.Create(det, "WeaponShowcase", new Vector2(120, 70));
                 wp.Root.anchoredPosition = new Vector2(390, -300);
-                wp.Apply(equippedWeapon.Item ?? equippedWeapon.Definition);
+                wp.Apply(equippedWeapon.Definition ?? equippedWeapon.Item);
             }
 
             MButton("VISIT SHOP", det, 24, 550, 260, 48, () => { page = "Shop"; shopCategory = "Weapons"; }, ModernStyle.Blue);

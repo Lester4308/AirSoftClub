@@ -8,7 +8,7 @@ namespace AirsoftClub.Unity
     public sealed partial class ClubClient
     {
         readonly Rect content = new Rect(226,128,1344,716);
-        Vector2 rosterScroll, catalogScroll;
+        Vector2 rosterScroll, catalogScroll, inventoryScroll;
         bool ActionsEnabled => !busy && inventorySlot.Length==0 && !revengeOverlay;
         bool revengeOverlay;
         string displayedPage=""; float pageChangedAt;

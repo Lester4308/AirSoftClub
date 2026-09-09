@@ -33,6 +33,11 @@ namespace AirsoftClub.Unity
 
         public RectTransform Root => root;
 
+        // Stable, deterministic sex derived from the fighter id so every screen
+        // (roster card, roster detail, recruitment, battle) shows the same fighter.
+        public static bool IsFemale(string id)
+            => !string.IsNullOrEmpty(id) && (Mathf.Abs(id.GetHashCode()) % 10) >= 5;
+
         public static Volumetric017UiView Create(RectTransform parent, string name, Vector2 displaySize)
             => new Volumetric017UiView(parent, name, displaySize);
 

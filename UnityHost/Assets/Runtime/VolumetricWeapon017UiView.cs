@@ -8,6 +8,12 @@ namespace AirsoftClub.Unity
     {
         const string BasePath = "Art/Volumetric017/Weapons/";
         static readonly string[] Families = { "pistol", "smg", "assault-rifle", "pump-shotgun", "dmr", "sniper-rifle" };
+        // Explicit map from catalog definition prefix (e.g. "AssaultRifle-MK2") to Families index.
+        // Never silently falls back to pistol — returns -1 for truly unknown ids.
+        static readonly (string prefix, int index)[] FamilyMap =
+        {
+            ("Pistol", 0), ("Smg", 1), ("AssaultRifle", 2), ("Shotgun", 3), ("Dmr", 4), ("SniperRifle", 5),
+        };
         static Sprite[] cards, silhouettes;
         readonly RectTransform root;
         readonly Image image;
@@ -34,27 +40,34 @@ namespace AirsoftClub.Unity
         public static VolumetricWeapon017UiView Create(RectTransform parent, string name, Vector2 size)
             => new VolumetricWeapon017UiView(parent, name, size);
 
+        // Battle-field compact read: the family silhouette (not the full card art).
+        public static VolumetricWeapon017UiView CreateSilhouette(RectTransform parent, string name, Vector2 size)
+            => new VolumetricWeapon017UiView(parent, name, size, silhouette: true);
+
         // Precisely maps the equipped catalog id (e.g. "AssaultRifle-MK2") to the
-        // matching volumetric family sprite. Falls back to Pistol for unknown ids.
-        public void Apply(string weaponId)
+        // matching volumetric family sprite. Returns false if the id is unrecognized.
+        public bool Apply(string weaponId)
         {
             int index = FamilyIndex(weaponId);
+            if (index < 0) return false;
             image.sprite = silhouetteMode ? silhouettes[index] : cards[index];
+            return true;
         }
 
         // WeaponFamily ordinal matches Families order (Pistol..SniperRifle).
         internal void ApplyFamily(int ordinal)
         {
-            int index = ordinal >= 0 && ordinal < Families.Length ? ordinal : 0;
-            image.sprite = silhouetteMode ? silhouettes[index] : cards[index];
+            if (ordinal < 0 || ordinal >= Families.Length) return;
+            image.sprite = silhouetteMode ? silhouettes[ordinal] : cards[ordinal];
         }
 
         static int FamilyIndex(string weaponId)
         {
-            for (int i = 0; i < Families.Length; i++)
-                if (weaponId != null && weaponId.IndexOf(Families[i], StringComparison.OrdinalIgnoreCase) >= 0)
-                    return i;
-            return 0; // pistol fallback
+            if (weaponId == null) return -1;
+            for (int i = 0; i < FamilyMap.Length; i++)
+                if (weaponId.StartsWith(FamilyMap[i].prefix, StringComparison.Ordinal))
+                    return FamilyMap[i].index;
+            return -1; // unknown — caller decides fallback
         }
 
         static void EnsureLoaded()

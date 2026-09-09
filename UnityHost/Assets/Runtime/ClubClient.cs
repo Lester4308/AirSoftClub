@@ -89,7 +89,7 @@ namespace AirsoftClub.Unity
             // New UGUI/Canvas presentation is opt-in via command line so the legacy OnGUI
             // client stays as a fallback. Boot members are static; ModernUiController reads
             // the flag via the same args through a static hook.
-            client.useModern = args.Contains("--modern-ui");
+            client.useModern = true; // Modern UGUI is the primary UI; legacy IMGUI retained only for smoke tests
             ControllerBoot.Create(client);
         }
         void Start()

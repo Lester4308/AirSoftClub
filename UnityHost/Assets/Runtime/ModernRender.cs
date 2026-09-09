@@ -57,6 +57,40 @@ namespace AirsoftClub.Unity
             }
             RenderTransactionStateModern(root);
             RenderCreditsConfirmationModern(root);
+            RenderInventoryModern(root);
+        }
+
+        void RenderInventoryModern(RectTransform root)
+        {
+            if (inventorySlot.Length == 0 || club == null) return;
+            var f = club.Fighters.FirstOrDefault(x => x.Id == selectedFighter);
+            if (f == null) { inventorySlot = ""; return; }
+            var shade = PanelRect("InventoryShade", root, 0, 0, MX, MY);
+            shade.gameObject.AddComponent<Image>().color = new Color(0f, 0f, 0f, .72f);
+            var panel = PanelRect("Inventory", shade, 430, 171, 810, 558);
+            panel.gameObject.AddComponent<Image>().color = ModernStyle.PanelAlt;
+            MLabel("EQUIPMENT / " + inventorySlot.ToUpperInvariant(), panel, 20, ModernStyle.Gold, TextAnchor.MiddleLeft);
+            ((RectTransform)panel.GetChild(0)).sizeDelta = new Vector2(760, 40); ((RectTransform)panel.GetChild(0)).anchoredPosition = new Vector2(24, -24);
+            MButton("CLOSE", panel, 690, 18, 96, 38, () => inventorySlot = "", ModernStyle.Neutral);
+            var equipped = f.Equipment.FirstOrDefault(e => e.Slot == inventorySlot);
+            if (equipped != null)
+            {
+                var capturedSlot = inventorySlot;
+                MButton("UNEQUIP " + equipped.Definition, panel, 27, 80, 750, 42, () => { inventorySlot = ""; StartCoroutine(Send(Intent("Unequip", f.Id, capturedSlot))); }, ModernStyle.Orange);
+            }
+            var items = club.Items.Where(i => i.Slot == inventorySlot && !i.Equipped).ToArray();
+            float ih = 24 + items.Length * 56;
+            var iv = VerticalScrollArea("InvItems", panel, 27, 150, 756, 350, ih, inventoryScroll, value => inventoryScroll = value);
+            for (int n = 0; n < items.Length; n++)
+            {
+                var it = items[n];
+                MLabel(it.Definition, iv, 14, ModernStyle.Ink, TextAnchor.MiddleLeft);
+                var itL = (RectTransform)iv.GetChild(iv.childCount - 1);
+                itL.sizeDelta = new Vector2(560, 40); itL.anchoredPosition = new Vector2(10, -n * 56 - 8);
+                MButton("EQUIP", iv, 590, n * 56 + 4, 140, 42, () => { inventorySlot = ""; StartCoroutine(Send(Intent("Equip", f.Id, it.Id))); }, ModernStyle.Blue);
+            }
+            if (items.Length == 0)
+                MLabel("No unequipped items in this slot.\\nBuy equipment in the shop, then return here.", panel, 14, ModernStyle.Muted, TextAnchor.MiddleLeft);
         }
 
         void ClearModern(RectTransform root)

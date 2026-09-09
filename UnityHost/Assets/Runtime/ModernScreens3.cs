@@ -99,20 +99,16 @@ namespace AirsoftClub.Unity
 
                     string key = (left ? "A" : "D") + f.Id;
                     long hpV = hp != null && hp.TryGetValue(key, out var val) ? val : f.StartingHp.Raw;
-                    var look = appearance?.FirstOrDefault(a => a.Id == f.Id && a.Side == (left ? "A" : "D"));
-                    bool firing = result.Events.Any(e => e.ActorId == f.Id && e.ActorSide == (left ? Side.Attacker : Side.Defender) && e.TimeMs <= time && e.TimeMs > time - 180);
-                    float recoil = firing ? Mathf.Sin(Mathf.Clamp01((time - result.Events.Where(e => e.ActorId == f.Id && e.ActorSide == (left ? Side.Attacker : Side.Defender) && e.TimeMs <= time).Max(e => e.TimeMs)) / 180f) * Mathf.PI) * 6f : 0f;
-                    var fighterArt = Male017UiView.Create(body, "FighterArt", new Vector2(fw, fh));
+                    var fighterArt = Volumetric017UiView.Create(body, "FighterArt", new Vector2(fw, fh));
                     fighterArt.Root.anchoredPosition = Vector2.zero;
-                    fighterArt.Apply(look?.Camo == true, look?.Head == true, look?.Rig == true,
-                        f.Weapon != null, left, hpV > 0, recoil);
+                    fighterArt.Apply(left, hpV > 0);
 
-                    // Overlay the volumetric family weapon as a compact grounded silhouette,
-                    // replacing the static generic rifle for a per-fighter weapon read.
+                    // Overlay the volumetric family weapon as a compact grounded silhouette
+                    // at the fighter's hands line (not drifting above), read per fighter.
                     if (f.Weapon != null)
                     {
-                        var w = VolumetricWeapon017UiView.Create(body, "WeaponOverlay", new Vector2(dense ? 36 : 48, dense ? 24 : 32));
-                        w.Root.anchoredPosition = new Vector2(left ? fw - 42 : 14, fh - 26);
+                        var w = VolumetricWeapon017UiView.CreateSilhouette(body, "WeaponOverlay", new Vector2(dense ? 36 : 48, dense ? 22 : 28));
+                        w.Root.anchoredPosition = new Vector2(fw * 0.55f, fh * 0.42f);
                         w.ApplyFamily((int)f.Weapon.Family);
                     }
 

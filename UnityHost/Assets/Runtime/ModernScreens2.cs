@@ -144,10 +144,9 @@ namespace AirsoftClub.Unity
                 }
                 else
                 {
-                    bool camoPreview = i.Slot == "Camouflage";
-                    var itemPreview = Male017UiView.Create(card, "Preview", new Vector2(56, 92));
+                    var itemPreview = Volumetric017UiView.Create(card, "Preview", new Vector2(56, 92));
                     itemPreview.Root.anchoredPosition = new Vector2(6, -8);
-                    itemPreview.Apply(camoPreview, i.Slot == "HeadProtection", i.Slot == "LoadBearingArmor", false, true, true);
+                    itemPreview.Apply(true, true);
                 }
                 MLabel(i.Id, card, 15, i.Credits > 0 ? ModernStyle.Gold : ModernStyle.Ink, TextAnchor.MiddleLeft);
                 ((RectTransform)card.GetChild(card.childCount - 1)).sizeDelta = new Vector2(180, 24); ((RectTransform)card.GetChild(card.childCount - 1)).anchoredPosition = new Vector2(68, -10);
