@@ -132,7 +132,7 @@ namespace AirsoftClub.Unity
                 card.GetComponent<Image>().raycastTarget = false;
                 var thumbnail = Volumetric017UiView.Create(card, "Portrait", new Vector2(68, 96));
                 thumbnail.Root.anchoredPosition = new Vector2(12, -6);
-                thumbnail.Apply(true, f.Hp > 0);
+                thumbnail.Apply(true, f.Hp > 0, n % 2 == 1);
                 MLabel(f.Name, card, 17, ModernStyle.Ink, TextAnchor.MiddleLeft);
                 var c0 = (RectTransform)card.GetChild(card.childCount - 1);
                 c0.sizeDelta = new Vector2(260, 30); c0.anchoredPosition = new Vector2(92, -18);
@@ -158,7 +158,7 @@ namespace AirsoftClub.Unity
 
             var portrait = Volumetric017UiView.Create(det, "SelectedFighter", new Vector2(190, 285));
             portrait.Root.anchoredPosition = new Vector2(410, -16);
-            portrait.Apply(true, fIdx.Hp > 0);
+            portrait.Apply(true, fIdx.Hp > 0, Mathf.Abs(selectedFighter.GetHashCode()) % 2 == 1);
 
             MLabel(fIdx.Name.ToUpperInvariant(), det, 24, ModernStyle.Gold, TextAnchor.MiddleLeft);
             var d0 = (RectTransform)det.GetChild(det.childCount - 1);

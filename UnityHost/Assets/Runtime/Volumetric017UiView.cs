@@ -9,7 +9,8 @@ namespace AirsoftClub.Unity
     internal sealed class Volumetric017UiView
     {
         const string BasePath = "Art/Volumetric017/Sprites/";
-        static Sprite inspect, roster, combatNear, combatMass;
+        static Sprite maleInspect, maleRoster, maleCombatNear, maleCombatMass;
+        static Sprite femaleInspect, femaleRoster, femaleCombatNear, femaleCombatMass;
 
         readonly RectTransform root;
         readonly Image image;
@@ -35,9 +36,9 @@ namespace AirsoftClub.Unity
         public static Volumetric017UiView Create(RectTransform parent, string name, Vector2 displaySize)
             => new Volumetric017UiView(parent, name, displaySize);
 
-        public void Apply(bool facingRight, bool alive)
+        public void Apply(bool facingRight, bool alive, bool female = false)
         {
-            image.sprite = SelectSprite(displaySize);
+            image.sprite = SelectSprite(displaySize, female);
             image.rectTransform.anchorMin = Vector2.zero;
             image.rectTransform.anchorMax = Vector2.one;
             image.rectTransform.offsetMin = image.rectTransform.offsetMax = Vector2.zero;
@@ -45,22 +46,26 @@ namespace AirsoftClub.Unity
             root.localScale = new Vector3(facingRight ? 1 : -1, 1, 1);
         }
 
-        static Sprite SelectSprite(Vector2 size)
+        static Sprite SelectSprite(Vector2 size, bool female)
         {
             float height = size.y;
-            if (height >= 1000f) return inspect;
-            if (height >= 520f) return roster;
-            if (height >= 260f) return combatNear;
-            return combatMass;
+            if (height >= 1000f) return female ? femaleInspect : maleInspect;
+            if (height >= 520f) return female ? femaleRoster : maleRoster;
+            if (height >= 260f) return female ? femaleCombatNear : maleCombatNear;
+            return female ? femaleCombatMass : maleCombatMass;
         }
 
         static void EnsureLoaded()
         {
-            if (inspect != null) return;
-            inspect = Need("male-inspect");
-            roster = Need("male-roster");
-            combatNear = Need("male-combat-near");
-            combatMass = Need("male-combat-mass");
+            if (maleInspect != null) return;
+            maleInspect = Need("male-inspect");
+            maleRoster = Need("male-roster");
+            maleCombatNear = Need("male-combat-near");
+            maleCombatMass = Need("male-combat-mass");
+            femaleInspect = Need("female-inspect");
+            femaleRoster = Need("female-roster");
+            femaleCombatNear = Need("female-combat-near");
+            femaleCombatMass = Need("female-combat-mass");
         }
 
         static Sprite Need(string name)

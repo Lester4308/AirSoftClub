@@ -58,7 +58,7 @@ namespace AirsoftClub.Unity
                 card.GetComponent<Image>().raycastTarget = false;
                 var recruit = Volumetric017UiView.Create(card, "Candidate", new Vector2(68, 108));
                 recruit.Root.anchoredPosition = new Vector2(8, -8);
-                recruit.Apply(true, true);
+                recruit.Apply(true, true, n % 2 == 1);
                 MLabel(o.Name, card, 17, ModernStyle.Ink, TextAnchor.MiddleLeft);
                 ((RectTransform)card.GetChild(card.childCount - 1)).sizeDelta = new Vector2(155, 28); ((RectTransform)card.GetChild(card.childCount - 1)).anchoredPosition = new Vector2(82, -12);
                 MLabel("A " + o.Accuracy + "   E " + o.Endurance + "   G " + o.Agility, card, 14, ModernStyle.Muted, TextAnchor.MiddleLeft);
@@ -77,7 +77,7 @@ namespace AirsoftClub.Unity
 
             var candidatePortrait = Volumetric017UiView.Create(det, "SelectedCandidate", new Vector2(190, 285));
             candidatePortrait.Root.anchoredPosition = new Vector2(540, -20);
-            candidatePortrait.Apply(true, true);
+            candidatePortrait.Apply(true, true, Mathf.Abs(selectedOffer.GetHashCode()) % 2 == 1);
 
             MLabel("CHOOSE A FIGHTER", det, 18, ModernStyle.Gold, TextAnchor.MiddleLeft);
             ((RectTransform)det.GetChild(det.childCount - 1)).sizeDelta = new Vector2(500, 34); ((RectTransform)det.GetChild(det.childCount - 1)).anchoredPosition = new Vector2(24, -24);
@@ -136,11 +136,19 @@ namespace AirsoftClub.Unity
                 var card = PanelRect("Item" + n, catalog, n % cols * 270, n / cols * 135, 255, 125);
                 card.gameObject.AddComponent<Image>().color = ModernStyle.Card;
                 card.GetComponent<Image>().raycastTarget = false;
-                bool camoPreview = i.Slot == "Camouflage";
-                var itemPreview = Male017UiView.Create(card, "Preview", new Vector2(56, 92));
-                itemPreview.Root.anchoredPosition = new Vector2(6, -8);
-                itemPreview.Apply(camoPreview, i.Slot == "HeadProtection", i.Slot == "LoadBearingArmor",
-                    i.Slot == "Weapon", true, true);
+                if (i.Slot == "Weapon")
+                {
+                    var weaponPreview = VolumetricWeapon017UiView.Create(card, "WeaponPreview", new Vector2(58, 70));
+                    weaponPreview.Root.anchoredPosition = new Vector2(5, -22);
+                    weaponPreview.Apply(i.Id);
+                }
+                else
+                {
+                    bool camoPreview = i.Slot == "Camouflage";
+                    var itemPreview = Male017UiView.Create(card, "Preview", new Vector2(56, 92));
+                    itemPreview.Root.anchoredPosition = new Vector2(6, -8);
+                    itemPreview.Apply(camoPreview, i.Slot == "HeadProtection", i.Slot == "LoadBearingArmor", false, true, true);
+                }
                 MLabel(i.Id, card, 15, i.Credits > 0 ? ModernStyle.Gold : ModernStyle.Ink, TextAnchor.MiddleLeft);
                 ((RectTransform)card.GetChild(card.childCount - 1)).sizeDelta = new Vector2(180, 24); ((RectTransform)card.GetChild(card.childCount - 1)).anchoredPosition = new Vector2(68, -10);
                 MLabel("LV " + i.Level + "  ·  " + (i.Credits > 0 ? i.Credits + " Credits" : i.Money + " Money"), card, 13, ModernStyle.Muted, TextAnchor.MiddleLeft);
