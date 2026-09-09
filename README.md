@@ -1,82 +1,61 @@
 # Airsoft_Club_Game
 
-> **Modern UGUI + Volumetric 2D Sprites — ACTIVE, 2026-09-09.** All screens use `Volumetric017UiView` (fighters) and `VolumetricWeapon017UiView` (6 weapon families). Login, roster, shop, training, equip/unequip, battle — all functional via Modern UI. Legacy BetaShell/TacticalArt retained for smoke tests only. Commit `66090b3`.
+Modern UGUI та нові Volumetric017-спрайти активні. **Гра ще має відкриті UI-дефекти:** вікно екіпірування блокує CLOSE/EQUIP, Settings відкриває Club; частина функцій старого UI не перенесена. Успішна компіляція не означає повну працездатність. Див. [діагностику](implementation/DIAGNOSTIC_AUDIT_2026-09-09.md).
 
-## Quick start
+## Запуск у Windows PowerShell
 
-```bash
-# 1. Start PostgreSQL
-powershell -ExecutionPolicy Bypass -File tools/start-db.ps1 -Migrate
+Відкрий Docker Desktop. У PowerShell:
 
-# 2. Start server (in a separate terminal)
-export ASPNETCORE_ENVIRONMENT=Development
-export AIRSOFT_DEV_AUTH=1
-export AIRSOFT_CONNECTION='Host=127.0.0.1;Port=55470;Database=airsoft_club_dev;Username=airsoft_dev;Password=<from Artifacts/local-db-password.txt>'
-export ASPNETCORE_URLS=http://127.0.0.1:5080
-dotnet run --project src/Airsoft.Server
-
-# 3. Build Unity client
-powershell -ExecutionPolicy Bypass -File tools/verify-unity.ps1 -Stage MonoBuild
-
-# 4. Launch game
-Artifacts/Mono/AirsoftClubIntegration.exe
+```powershell
+Set-Location 'C:\Users\Ihor\Documents\ChatGPT\Airsoft_Club_Game'
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\run-development.ps1
 ```
 
-Game auto-creates a `dev-*` account on first launch. Login screen is Modern UGUI with GraphicRaycaster-enabled Canvas.
+Скрипт запускає PostgreSQL, застосовує міграції, налаштовує development-авторизацію та запускає сервер на http://127.0.0.1:5080. Залиш це вікно відкритим. Якщо сервер уже працює, не запускай другу копію на тому самому порті.
 
-## Run all tests
+В іншому вікні PowerShell:
 
-```bash
-# Server-side (battle 46/46, club 37/37, simulation 10K)
-powershell -ExecutionPolicy Bypass -File tools/verify.ps1
-
-# Unity EditMode (15/15)
-powershell -ExecutionPolicy Bypass -File tools/verify-unity.ps1 -Stage EditMode
-
-# Unity MonoBuild
-powershell -ExecutionPolicy Bypass -File tools/verify-unity.ps1 -Stage MonoBuild
+```powershell
+Set-Location 'C:\Users\Ihor\Documents\ChatGPT\Airsoft_Club_Game'
+# Якщо збірки немає або код змінився:
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\verify-unity.ps1 -Stage MonoBuild
+Start-Process .\Artifacts\Mono\AirsoftClubIntegration.exe
 ```
 
-## Project structure
+Unity: відкривати `UnityHost` редактором 6000.3.21f1. Modern UI вмикається за замовчуванням.
 
-| Directory | Purpose |
-|---|---|
-| `UnityHost/` | Unity 6000.3.21f1 LTS project |
-| `UnityHost/Assets/Runtime/` | Game scripts (ModernScreens1-3, Volumetric017UiView, etc.) |
-| `UnityHost/Assets/Resources/Art/Volumetric017/` | Runtime sprites (fighters + 6 weapon families) |
-| `UnityHost/Assets/Tests/` | EditMode + PlayMode tests |
-| `src/Airsoft.Server/` | ASP.NET Core backend |
-| `src/Airsoft.Battle/` | Pure C# deterministic battle core |
-| `src/Airsoft.Club/` | Club domain library |
-| `tests/` | .NET test projects |
-| `art/` | Source art assets |
-| `art/volumetric-017/` | Current volumetric 2D sprite source |
-| `design/` | Product design, decisions, art direction |
-| `implementation/` | Milestone reports and evidence |
-| `tools/` | Build, test, and DB scripts |
-| `Artifacts/` | Build output (Mono build, test logs) — .gitignored |
+## Локальні дані
 
-## Tech stack
+Чинний пароль development-БД зберігається в `.local/local-db-password.txt`. Каталог виключено з Git; він не є кешем і не підлягає очищенню. Скрипт підтримує старий шлях Artifacts/local-db-password.txt як джерело міграції та відновлення пароля з наявного development-контейнера. Якщо існує volume без відновлюваного пароля, скрипт зупиниться замість створення несумісного пароля. Не видаляй volume для обходу цієї помилки.
 
-- **Client:** Unity 6000.3.21f1 LTS, C#, UGUI/Canvas
-- **Server:** ASP.NET Core, .NET 10.0.302
-- **Database:** PostgreSQL 15 (Docker)
-- **Art:** Volumetric 2D sprites (programmatic + post-processed PNGs)
-- **Branch:** `codex/implementation-003-development-pass`
+## Перевірки
 
-## Key decisions
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\verify.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\verify-server.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\verify-unity.ps1 -Stage EditMode
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\verify-unity.ps1 -Stage PlayMode
+```
 
-- `useModern = true` by default — Modern UGUI is the primary UI
-- Stable fighter gender via `IsFemale(fighterId)` deterministic hash
-- Explicit `CatalogToFamily` dictionary for 6 weapon families
-- Battle weapon overlay uses `CreateSilhouette()` at hands level
-- GraphicRaycaster required on Canvas for mouse input routing
-- `account` excluded from `ModernRenderSignature()` to prevent per-keystroke UI rebuild
+Останній PlayMode після очищення: **7 PASS / 1 FAIL**. DiagnosticAuditTests відтворює відомі дефекти інвентарю та Settings. Не видаляти або вимикати тест, щоб штучно отримати зелений результат. GoldenRuntimeSmoke проходить: ресурси golden-* знаходяться в локальному пакеті `src/Airsoft.Battle/Runtime/Resources`, а не лише в UnityHost/Assets.
 
-## Documentation
+## Структура
 
-- [Master Development Spec v1](AIRSOFT_CLUB_GAME_MASTER_DEVELOPMENT_SPEC_v1.md)
-- [Agent Implementation Pack v1](AIRSOFT_CLUB_GAME_AGENT_IMPLEMENTATION_PACK_v1.md)
-- [Volumetric 2D Art Direction](design/VOLUMETRIC_2D_SPRITE_ART_DIRECTION_017.md)
-- [Cleanup Report](CLEANUP_REPORT.md)
-- [Development Runbook](implementation/DEVELOPMENT_RUNBOOK.md)
+- `UnityHost/` — Unity-клієнт, сцени, ресурси та UI-тести.
+- `src/`, `tests/` — ядро бою, клуб, сервер і .NET-тести.
+- `art/` — джерела та походження арту.
+- `design/`, `implementation/` — рішення, звіти та докази перевірок.
+- `tools/` — запуск, збірка й перевірки.
+- `Artifacts/` — результати збірок; перед очищенням перевіряти локальні службові файли.
+- `.local/` — приватні локальні налаштування, не видаляти.
+
+Стек: Unity/C#, ASP.NET Core/.NET 10, PostgreSQL **18.6** згідно з compose.yaml. Native IL2CPP/Steam sandbox/final art потребують окремої перевірки; історичні результати не підтверджують поточну збірку.
+
+## Документація
+
+- [Правила проєкту](AGENTS.md)
+- [Межа незалежності](PROJECT_BOUNDARY.md)
+- [Master spec](AIRSOFT_CLUB_GAME_MASTER_DEVELOPMENT_SPEC_v1.md)
+- [Повна діагностика](implementation/DIAGNOSTIC_AUDIT_2026-09-09.md)
+- [Виправлений звіт очищення](CLEANUP_REPORT.md)
+- [Журнал відновлення після очищення](implementation/CLEANUP_RECOVERY_2026-09-09.md)

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="8" result="Failed(Child)" total="8" passed="7" failed="1" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-09 14:14:40Z" end-time="2026-09-09 14:14:41Z" duration="0,9007303">
+  <test-suite type="TestSuite" id="1014" name="AirsoftClubIntegration" fullname="AirsoftClubIntegration" runstate="Runnable" testcasecount="8" result="Failed" site="Child" start-time="2026-09-09 14:14:40Z" end-time="2026-09-09 14:14:41Z" duration="0.900730" total="8" passed="7" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1012" name="AirsoftClub.Tests.PlayMode.dll" fullname="C:/Users/Ihor/Documents/ChatGPT/Airsoft_Club_Game/UnityHost/Library/ScriptAssemblies/AirsoftClub.Tests.PlayMode.dll" runstate="Runnable" testcasecount="8" result="Failed" site="Child" start-time="2026-09-09 14:14:40Z" end-time="2026-09-09 14:14:41Z" duration="0.886933" total="8" passed="7" failed="1" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="19384" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestFixture" id="1001" name="DiagnosticAuditTests" fullname="DiagnosticAuditTests" classname="DiagnosticAuditTests" runstate="Runnable" testcasecount="1" result="Failed" site="Child" start-time="2026-09-09 14:14:40Z" end-time="2026-09-09 14:14:41Z" duration="0.404262" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-case id="1002" name="AuditInventorySettingsAndResources" fullname="DiagnosticAuditTests.AuditInventorySettingsAndResources" methodname="AuditInventorySettingsAndResources" classname="DiagnosticAuditTests" runstate="Runnable" seed="1423912824" result="Failed" start-time="2026-09-09 14:14:40Z" end-time="2026-09-09 14:14:41Z" duration="0.386814" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[  Inventory CLOSE is disabled or absent; Inventory EQUIP is disabled or absent; Settings renders Club hub
+  Expected: <empty>
+  But was:  < "Inventory CLOSE is disabled or absent", "Inventory EQUIP is disabled or absent", "Settings renders Club hub" >
+]]></message>
+            <stack-trace><![CDATA[at DiagnosticAuditTests+<AuditInventorySettingsAndResources>d__1.MoveNext () [0x00503] in C:\Users\Ihor\Documents\ChatGPT\Airsoft_Club_Game\UnityHost\Assets\Tests\PlayMode\DiagnosticAuditTests.cs:63
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@bd7f943e9647\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+          </failure>
+          <output><![CDATA[DIAGNOSTIC inventory_CLOSE=False
+DIAGNOSTIC inventory_EQUIP=False
+DIAGNOSTIC sprite_missing=0
+DIAGNOSTIC settings_renders_hub=True
+]]></output>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1003" name="ModernUiSmokeTests" fullname="ModernUiSmokeTests" classname="ModernUiSmokeTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-09-09 14:14:41Z" end-time="2026-09-09 14:14:41Z" duration="0.376648" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1006" name="CreditsActionsStageAnExplicitConfirmation" fullname="ModernUiSmokeTests.CreditsActionsStageAnExplicitConfirmation" methodname="CreditsActionsStageAnExplicitConfirmation" classname="ModernUiSmokeTests" runstate="Runnable" seed="2123470995" result="Passed" start-time="2026-09-09 14:14:41Z" end-time="2026-09-09 14:14:41Z" duration="0.085262" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1007" name="HubExplainsRetentionConversionAndShieldConsequences" fullname="ModernUiSmokeTests.HubExplainsRetentionConversionAndShieldConsequences" methodname="HubExplainsRetentionConversionAndShieldConsequences" classname="ModernUiSmokeTests" runstate="Runnable" seed="1414009837" result="Passed" start-time="2026-09-09 14:14:41Z" end-time="2026-09-09 14:14:41Z" duration="0.055282" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1004" name="ModernCanvasBootstrapProducesHierarchy" fullname="ModernUiSmokeTests.ModernCanvasBootstrapProducesHierarchy" methodname="ModernCanvasBootstrapProducesHierarchy" classname="ModernUiSmokeTests" runstate="Runnable" seed="2075681400" result="Passed" start-time="2026-09-09 14:14:41Z" end-time="2026-09-09 14:14:41Z" duration="0.049489" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1005" name="ModernLoginChildrenStayInsideTheirBoxes" fullname="ModernUiSmokeTests.ModernLoginChildrenStayInsideTheirBoxes" methodname="ModernLoginChildrenStayInsideTheirBoxes" classname="ModernUiSmokeTests" runstate="Runnable" seed="1744537920" result="Passed" start-time="2026-09-09 14:14:41Z" end-time="2026-09-09 14:14:41Z" duration="0.042962" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1009" name="ModernUiKeepsSelectionWithoutIdleRebuild" fullname="ModernUiSmokeTests.ModernUiKeepsSelectionWithoutIdleRebuild" methodname="ModernUiKeepsSelectionWithoutIdleRebuild" classname="ModernUiSmokeTests" runstate="Runnable" seed="1444153260" result="Passed" start-time="2026-09-09 14:14:41Z" end-time="2026-09-09 14:14:41Z" duration="0.085154" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1008" name="TransactionFailureIsVisibleAndRetryable" fullname="ModernUiSmokeTests.TransactionFailureIsVisibleAndRetryable" methodname="TransactionFailureIsVisibleAndRetryable" classname="ModernUiSmokeTests" runstate="Runnable" seed="1169104070" result="Passed" start-time="2026-09-09 14:14:41Z" end-time="2026-09-09 14:14:41Z" duration="0.055789" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+      </test-suite>
+      <test-suite type="TestFixture" id="1010" name="RuntimeSmokeTests" fullname="RuntimeSmokeTests" classname="RuntimeSmokeTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-09 14:14:41Z" end-time="2026-09-09 14:14:41Z" duration="0.103412" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1011" name="GoldenRuntimeSmoke" fullname="RuntimeSmokeTests.GoldenRuntimeSmoke" methodname="GoldenRuntimeSmoke" classname="RuntimeSmokeTests" runstate="Runnable" seed="1220023120" result="Passed" start-time="2026-09-09 14:14:41Z" end-time="2026-09-09 14:14:41Z" duration="0.100672" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: C:\Users\Ihor\Documents\ChatGPT\Airsoft_Club_Game\Artifacts\PlayMode.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

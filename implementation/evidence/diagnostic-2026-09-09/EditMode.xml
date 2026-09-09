@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="15" result="Passed" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-09 14:12:47Z" end-time="2026-09-09 14:12:48Z" duration="0,3753035">
+  <test-suite type="TestSuite" id="1000" name="AirsoftClubIntegration" fullname="AirsoftClubIntegration" runstate="Runnable" testcasecount="15" result="Passed" start-time="2026-09-09 14:12:47Z" end-time="2026-09-09 14:12:48Z" duration="0.375304" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1018" name="AirsoftClub.Tests.EditMode.dll" fullname="C:/Users/Ihor/Documents/ChatGPT/Airsoft_Club_Game/UnityHost/Library/ScriptAssemblies/AirsoftClub.Tests.EditMode.dll" runstate="Runnable" testcasecount="15" result="Passed" start-time="2026-09-09 14:12:47Z" end-time="2026-09-09 14:12:48Z" duration="0.361589" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="26008" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestFixture" id="1001" name="IntegrationTests" fullname="IntegrationTests" classname="IntegrationTests" runstate="Runnable" testcasecount="15" result="Passed" start-time="2026-09-09 14:12:47Z" end-time="2026-09-09 14:12:48Z" duration="0.359443" total="15" passed="15" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-case id="1015" name="Batch300AndPerformance" fullname="IntegrationTests.Batch300AndPerformance" methodname="Batch300AndPerformance" classname="IntegrationTests" runstate="Runnable" seed="1409296230" result="Passed" start-time="2026-09-09 14:12:47Z" end-time="2026-09-09 14:12:47Z" duration="0.165891" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[PERF size=1 battles=100 elapsedMs=7.983 heapDeltaBytes=-331776
+PERF size=8 battles=100 elapsedMs=34.365 heapDeltaBytes=-442368
+PERF size=16 battles=100 elapsedMs=47.849 heapDeltaBytes=1687552
+]]></output>
+        </test-case>
+        <test-case id="1014" name="DifferentSeedsValidAndVariable" fullname="IntegrationTests.DifferentSeedsValidAndVariable" methodname="DifferentSeedsValidAndVariable" classname="IntegrationTests" runstate="Runnable" seed="1552684673" result="Passed" start-time="2026-09-09 14:12:47Z" end-time="2026-09-09 14:12:48Z" duration="0.032703" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1004" name="FixedAndRngVectors" fullname="IntegrationTests.FixedAndRngVectors" methodname="FixedAndRngVectors" classname="IntegrationTests" runstate="Runnable" seed="34303432" result="Passed" start-time="2026-09-09 14:12:48Z" end-time="2026-09-09 14:12:48Z" duration="0.001116" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1002" name="GoldenBytesAndDigest" fullname="IntegrationTests.GoldenBytesAndDigest" methodname="GoldenBytesAndDigest" classname="IntegrationTests" runstate="Runnable" seed="266106513" result="Passed" start-time="2026-09-09 14:12:48Z" end-time="2026-09-09 14:12:48Z" duration="0.026071" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1005" name="ReadinessBoundary" fullname="IntegrationTests.ReadinessBoundary" methodname="ReadinessBoundary" classname="IntegrationTests" runstate="Runnable" seed="571108021" result="Passed" start-time="2026-09-09 14:12:48Z" end-time="2026-09-09 14:12:48Z" duration="0.001347" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1013" name="Repeat100" fullname="IntegrationTests.Repeat100" methodname="Repeat100" classname="IntegrationTests" runstate="Runnable" seed="1562841761" result="Passed" start-time="2026-09-09 14:12:48Z" end-time="2026-09-09 14:12:48Z" duration="0.087036" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1003" name="SerializationRoundtrips" fullname="IntegrationTests.SerializationRoundtrips" methodname="SerializationRoundtrips" classname="IntegrationTests" runstate="Runnable" seed="952673268" result="Passed" start-time="2026-09-09 14:12:48Z" end-time="2026-09-09 14:12:48Z" duration="0.005513" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1012" name="SteamAppIdValidationAcceptsConfiguredAndMatchingRuntime" fullname="IntegrationTests.SteamAppIdValidationAcceptsConfiguredAndMatchingRuntime" methodname="SteamAppIdValidationAcceptsConfiguredAndMatchingRuntime" classname="IntegrationTests" runstate="Runnable" seed="1419305297" result="Passed" start-time="2026-09-09 14:12:48Z" end-time="2026-09-09 14:12:48Z" duration="0.001557" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1011" name="SteamAppIdValidationRejectsUnsafeConfiguration" fullname="IntegrationTests.SteamAppIdValidationRejectsUnsafeConfiguration" classname="IntegrationTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-09-09 14:12:48Z" end-time="2026-09-09 14:12:48Z" duration="0.010278" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-case id="1006" name="SteamAppIdValidationRejectsUnsafeConfiguration(null,uint.MinValue,&quot;Steam AppID is not configured.&quot;)" fullname="IntegrationTests.SteamAppIdValidationRejectsUnsafeConfiguration(null,uint.MinValue,&quot;Steam AppID is not configured.&quot;)" methodname="SteamAppIdValidationRejectsUnsafeConfiguration" classname="IntegrationTests" runstate="Runnable" seed="508831666" result="Passed" start-time="2026-09-09 14:12:48Z" end-time="2026-09-09 14:12:48Z" duration="0.005690" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1007" name="SteamAppIdValidationRejectsUnsafeConfiguration(&quot;&quot;,uint.MinValue,&quot;Steam AppID is not configured.&quot;)" fullname="IntegrationTests.SteamAppIdValidationRejectsUnsafeConfiguration(&quot;&quot;,uint.MinValue,&quot;Steam AppID is not configured.&quot;)" methodname="SteamAppIdValidationRejectsUnsafeConfiguration" classname="IntegrationTests" runstate="Runnable" seed="1423650039" result="Passed" start-time="2026-09-09 14:12:48Z" end-time="2026-09-09 14:12:48Z" duration="0.000203" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1008" name="SteamAppIdValidationRejectsUnsafeConfiguration(&quot;0&quot;,uint.MinValue,&quot;Steam AppID is not configured.&quot;)" fullname="IntegrationTests.SteamAppIdValidationRejectsUnsafeConfiguration(&quot;0&quot;,uint.MinValue,&quot;Steam AppID is not configured.&quot;)" methodname="SteamAppIdValidationRejectsUnsafeConfiguration" classname="IntegrationTests" runstate="Runnable" seed="1803888867" result="Passed" start-time="2026-09-09 14:12:48Z" end-time="2026-09-09 14:12:48Z" duration="0.000133" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1009" name="SteamAppIdValidationRejectsUnsafeConfiguration(&quot;480&quot;,480,&quot;Steam sample AppID 480 is not accepted for this game.&quot;)" fullname="IntegrationTests.SteamAppIdValidationRejectsUnsafeConfiguration(&quot;480&quot;,480,&quot;Steam sample AppID 480 is not accepted for this game.&quot;)" methodname="SteamAppIdValidationRejectsUnsafeConfiguration" classname="IntegrationTests" runstate="Runnable" seed="16069113" result="Passed" start-time="2026-09-09 14:12:48Z" end-time="2026-09-09 14:12:48Z" duration="0.000125" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+          <test-case id="1010" name="SteamAppIdValidationRejectsUnsafeConfiguration(&quot;123&quot;,456,&quot;Steam AppID mismatch.&quot;)" fullname="IntegrationTests.SteamAppIdValidationRejectsUnsafeConfiguration(&quot;123&quot;,456,&quot;Steam AppID mismatch.&quot;)" methodname="SteamAppIdValidationRejectsUnsafeConfiguration" classname="IntegrationTests" runstate="Runnable" seed="1042750868" result="Passed" start-time="2026-09-09 14:12:48Z" end-time="2026-09-09 14:12:48Z" duration="0.000126" asserts="0">
+            <properties>
+              <property name="retryIteration" value="0" />
+              <property name="repeatIteration" value="0" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-case id="1017" name="TechnicalFailureSurvivesWire" fullname="IntegrationTests.TechnicalFailureSurvivesWire" methodname="TechnicalFailureSurvivesWire" classname="IntegrationTests" runstate="Runnable" seed="739460486" result="Passed" start-time="2026-09-09 14:12:48Z" end-time="2026-09-09 14:12:48Z" duration="0.005101" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1016" name="ValidationErrorsPropagate" fullname="IntegrationTests.ValidationErrorsPropagate" methodname="ValidationErrorsPropagate" classname="IntegrationTests" runstate="Runnable" seed="14232663" result="Passed" start-time="2026-09-09 14:12:48Z" end-time="2026-09-09 14:12:48Z" duration="0.001445" asserts="0">
+          <properties>
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: C:\Users\Ihor\Documents\ChatGPT\Airsoft_Club_Game\Artifacts\EditMode.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
