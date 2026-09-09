@@ -107,6 +107,15 @@ namespace AirsoftClub.Unity
                     fighterArt.Apply(look?.Camo == true, look?.Head == true, look?.Rig == true,
                         f.Weapon != null, left, hpV > 0, recoil);
 
+                    // Overlay the volumetric family weapon as a compact grounded silhouette,
+                    // replacing the static generic rifle for a per-fighter weapon read.
+                    if (f.Weapon != null)
+                    {
+                        var w = VolumetricWeapon017UiView.Create(body, "WeaponOverlay", new Vector2(dense ? 36 : 48, dense ? 24 : 32));
+                        w.Root.anchoredPosition = new Vector2(left ? fw - 42 : 14, fh - 26);
+                        w.ApplyFamily((int)f.Weapon.Family);
+                    }
+
                     // name plate
                     MLabel(f.Id.Substring(0, Math.Min(5, f.Id.Length)), body, dense ? 12 : 11, ModernStyle.Ink, TextAnchor.MiddleCenter);
                     var nameT = (RectTransform)body.GetChild(body.childCount - 1);

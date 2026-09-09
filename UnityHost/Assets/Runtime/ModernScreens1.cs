@@ -204,6 +204,16 @@ namespace AirsoftClub.Unity
                 gl.sizeDelta = new Vector2(250, 40); gl.anchoredPosition = new Vector2(12, -24);
             }
 
+            // Equipped weapon preview (volumetric family sprite per catalog id)
+            var equippedWeapon = fIdx.Equipment.FirstOrDefault(e => e.Slot == "Weapon");
+            if (equippedWeapon != null)
+            {
+                // Bigger weapon showcase beside the portrait when a weapon is equipped.
+                var wp = VolumetricWeapon017UiView.Create(det, "WeaponShowcase", new Vector2(120, 70));
+                wp.Root.anchoredPosition = new Vector2(390, -300);
+                wp.Apply(equippedWeapon.Item ?? equippedWeapon.Definition);
+            }
+
             MButton("VISIT SHOP", det, 24, 550, 260, 48, () => { page = "Shop"; shopCategory = "Weapons"; }, ModernStyle.Blue);
         }
     }
