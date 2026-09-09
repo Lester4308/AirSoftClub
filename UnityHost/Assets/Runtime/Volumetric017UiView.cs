@@ -6,7 +6,7 @@ namespace AirsoftClub.Unity
 {
     // Cohesive volumetric 2D sprite preview. It intentionally falls back to
     // Male017 for equipment combinations until matching production layers exist.
-    internal sealed class Volumetric017UiView
+    public sealed class Volumetric017UiView
     {
         const string BasePath = "Art/Volumetric017/Sprites/";
         static Sprite maleInspect, maleRoster, maleCombatNear, maleCombatMass;
@@ -33,10 +33,25 @@ namespace AirsoftClub.Unity
 
         public RectTransform Root => root;
 
-        // Stable, deterministic sex derived from the fighter id so every screen
-        // (roster card, roster detail, recruitment, battle) shows the same fighter.
-        public static bool IsFemale(string id)
-            => !string.IsNullOrEmpty(id) && (Mathf.Abs(id.GetHashCode()) % 10) >= 5;
+        // Stable, deterministic sex derived from the identity so every screen
+        // shows the same fighter even for legacy API data without AppearanceId.
+        public static bool IsFemale(string id) => (StableHash(id) & 1) == 1;
+
+        public static bool IsFemaleAppearance(string appearanceId, string fallbackIdentity)
+        {
+            if (!string.IsNullOrEmpty(appearanceId)) return appearanceId.StartsWith("female", StringComparison.OrdinalIgnoreCase);
+            return IsFemale(fallbackIdentity);
+        }
+
+        static int StableHash(string value)
+        {
+            unchecked
+            {
+                uint hash = 2166136261;
+                foreach (char c in value ?? "") hash = (hash ^ c) * 16777619;
+                return (int)(hash & 0x7fffffff);
+            }
+        }
 
         public static Volumetric017UiView Create(RectTransform parent, string name, Vector2 displaySize)
             => new Volumetric017UiView(parent, name, displaySize);

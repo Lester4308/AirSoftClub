@@ -47,8 +47,10 @@ namespace AirsoftClub.Unity
             ((RectTransform)root.GetChild(root.childCount - 1)).sizeDelta = new Vector2(700, 30);
             ((RectTransform)root.GetChild(root.childCount - 1)).anchoredPosition = new Vector2(CX, -(CY + 38));
 
-            if (club.RefreshAvailableAt <= club.ServerNow)
+            if (club.RefreshAvailableAt <= club.ServerNow || club.CompletedSinceRefresh >= 10)
                 MButton("REFRESH POOL", root, CX + 700, CY + 38, 180, 36, () => StartCoroutine(Send(Intent("Refresh"))), ModernStyle.Blue);
+            else
+                MButton("REFRESH / " + club.RefreshMoney + " MONEY", root, CX + 700, CY + 38, 220, 36, () => StartCoroutine(Send(Intent("Refresh", flag: true))), ModernStyle.Neutral);
 
             // Compact two-column candidate grid leaves room for the detail panel.
             int offerRows = Mathf.CeilToInt(club.Offers.Length / 2f);
@@ -61,7 +63,7 @@ namespace AirsoftClub.Unity
                 card.GetComponent<Image>().raycastTarget = false;
                 var recruit = Volumetric017UiView.Create(card, "Candidate", new Vector2(68, 108));
                 recruit.Root.anchoredPosition = new Vector2(8, -8);
-                recruit.Apply(true, true, n % 2 == 1);
+                recruit.Apply(true, true, Volumetric017UiView.IsFemaleAppearance(o.AppearanceId, o.Id));
                 MLabel(o.Name, card, 17, ModernStyle.Ink, TextAnchor.MiddleLeft);
                 ((RectTransform)card.GetChild(card.childCount - 1)).sizeDelta = new Vector2(155, 28); ((RectTransform)card.GetChild(card.childCount - 1)).anchoredPosition = new Vector2(82, -12);
                 MLabel("A " + o.Accuracy + "   E " + o.Endurance + "   G " + o.Agility, card, 14, ModernStyle.Muted, TextAnchor.MiddleLeft);

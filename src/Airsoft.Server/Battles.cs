@@ -6,7 +6,7 @@ using System.Diagnostics.Metrics;
 namespace Airsoft.Server;
 
 public sealed record StartIntent(string Target, string Mode = "Practice", string Ticket = "");
-public sealed record FighterAppearance(string Id, string Side, bool Head, bool Rig, bool Camo);
+public sealed record FighterAppearance(string Id, string Side, bool Head, bool Rig, bool Camo, string AppearanceId = "");
 public sealed record CapturedEconomy(EconomyConfig Config, int OpponentLevel, long AttackerPower, long DefenderPower)
 {
     public FighterAppearance[] Appearance { get; init; } = [];
@@ -54,7 +54,7 @@ public sealed class Battles(Store store)
             return new { MatchId = id };
         }, now);
     static IEnumerable<FighterAppearance> Appearance(ClubState s, TeamSnapshot team, string side) =>
-        team.Fighters.Select(f => { var gear = s.Fighters.Single(x => x.Id == f.Id).Equipment; return new FighterAppearance(f.Id, side, gear.ContainsKey(Slot.HeadProtection), gear.ContainsKey(Slot.LoadBearingArmor), gear.ContainsKey(Slot.Camouflage)); });
+        team.Fighters.Select(f => { var owned = s.Fighters.Single(x => x.Id == f.Id); var gear = owned.Equipment; return new FighterAppearance(f.Id, side, gear.ContainsKey(Slot.HeadProtection), gear.ContainsKey(Slot.LoadBearingArmor), gear.ContainsKey(Slot.Camouflage), string.IsNullOrEmpty(owned.AppearanceId) ? Clubs.StableAppearance(owned.Id) : owned.AppearanceId); });
     public async Task Resolve(string id, long now)
     {
         MatchRow captured;

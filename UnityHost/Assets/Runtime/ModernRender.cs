@@ -192,7 +192,7 @@ namespace AirsoftClub.Unity
             return t;
         }
 
-        Button MButton(string label, Transform parent, float x, float y, float w, float h, Action onClick, Color? fill = null, bool forceEnabled = false)
+        Button MButton(string label, Transform parent, float x, float y, float w, float h, Action onClick, Color? fill = null, bool forceEnabled = false, bool localEnabled = true)
         {
             var rt = PanelRect("Btn", parent, x, y, w, h);
             var img = rt.gameObject.AddComponent<Image>();
@@ -200,7 +200,7 @@ namespace AirsoftClub.Unity
             img.color = fill ?? ModernStyle.Card;
             var btn = rt.gameObject.AddComponent<Button>();
             btn.targetGraphic = img;
-            btn.interactable = forceEnabled || ActionsEnabled;
+            btn.interactable = localEnabled && (forceEnabled || ActionsEnabled);
             btn.onClick.AddListener(() => onClick());
             var colors = btn.colors;
             colors.normalColor = Color.white;
@@ -243,8 +243,8 @@ namespace AirsoftClub.Unity
             ((RectTransform)panel.GetChild(0)).sizeDelta = new Vector2(552, 50); ((RectTransform)panel.GetChild(0)).anchoredPosition = new Vector2(24, -28);
             MLabel(pendingCreditsDetail + "\n\nBalance is authoritative and will refresh from the server.", panel, 15, ModernStyle.Ink, TextAnchor.MiddleCenter);
             ((RectTransform)panel.GetChild(1)).sizeDelta = new Vector2(552, 110); ((RectTransform)panel.GetChild(1)).anchoredPosition = new Vector2(24, -88);
-            MButton("CONFIRM " + pendingCreditsCost + " CREDITS", panel, 35, 220, 250, 52, () => { var command = pendingCreditsCommand; pendingCreditsCommand = null; StartCoroutine(Send(command)); }, ModernStyle.Gold);
-            MButton("CANCEL", panel, 315, 220, 250, 52, () => pendingCreditsCommand = null, ModernStyle.Neutral);
+            MButton("CONFIRM " + pendingCreditsCost + " CREDITS", panel, 35, 220, 250, 52, () => { var command = pendingCreditsCommand; pendingCreditsCommand = null; StartCoroutine(Send(command)); }, ModernStyle.Gold, forceEnabled: true);
+            MButton("CANCEL", panel, 315, 220, 250, 52, () => pendingCreditsCommand = null, ModernStyle.Neutral, forceEnabled: true);
         }
 
         void RenderTransactionStateModern(RectTransform root)

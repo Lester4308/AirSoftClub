@@ -54,6 +54,9 @@ public sealed class Fighter
     public long RecoveryRemainder { get; set; }
     public long InitialPrice { get; set; }
     public bool Active { get; set; } = true;
+    // Stable presentation identity. Empty on legacy saves; the API derives a
+    // deterministic fallback without rewriting persisted state.
+    public string AppearanceId { get; set; } = "";
     public Dictionary<Slot, string> Equipment { get; set; } = new();
     public long MaxHp => Formulas.MaxHp(Fixed.FromInt(Endurance), new BattleRules()).Raw;
     public int Level => 1 + (int)(Xp / AlphaConfig.FighterXpPerLevel);
@@ -74,7 +77,12 @@ public sealed class Fighter
         RecoveryAt = now;
     }
 }
-public sealed record RecruitOffer(string Id, int Accuracy, int Endurance, int Agility, long Price, string Name);
+public sealed record RecruitOffer(string Id, int Accuracy, int Endurance, int Agility, long Price, string Name)
+{
+    // Presentation-only identity generated with the offer and copied on hire.
+    // Kept outside the positional constructor for JSON compatibility.
+    public string AppearanceId { get; init; } = "";
+}
 public sealed class ClubState
 {
     public string Id { get; set; } = "";
@@ -130,7 +138,10 @@ public static class Clubs
         s.Offers = Enumerable.Range(0, AlphaConfig.RecruitCount).Select(i =>
         {
             int a = AlphaConfig.RecruitStatBase + s.Level + rng.NextInt(AlphaConfig.RecruitVariance), e = AlphaConfig.RecruitStatBase + s.Level + rng.NextInt(AlphaConfig.RecruitVariance), g = AlphaConfig.RecruitStatBase + s.Level + rng.NextInt(AlphaConfig.RecruitVariance);
-            return new RecruitOffer($"{version}-{i}", a, e, g, (a + e + g) * AlphaConfig.RecruitPricePerStat, "Recruit " + (i + 1));
+            return new RecruitOffer($"{version}-{i}", a, e, g, (a + e + g) * AlphaConfig.RecruitPricePerStat, "Recruit " + (i + 1))
+            {
+                AppearanceId = rng.NextInt(2) == 0 ? "male-017" : "female-017"
+            };
         }).ToList();
         s.OfferVersion = version; s.OffersAt = now; s.CompletedSinceRefresh = 0;
     }
@@ -150,13 +161,23 @@ public static class Clubs
             Endurance = offer.Endurance,
             Agility = offer.Agility,
             RecoveryAt = now,
-            InitialPrice = free ? 0 : offer.Price
+            InitialPrice = free ? 0 : offer.Price,
+            AppearanceId = string.IsNullOrEmpty(offer.AppearanceId) ? StableAppearance(offer.Id) : offer.AppearanceId
         };
         fighter.Hp = fighter.MaxHp; s.Fighters.Add(fighter); s.Offers.Remove(offer);
         if (free) s.FreeRecruitClaimed = true;
         return fighter;
     }
     public static Fighter Owned(ClubState s, string id) => s.Fighters.SingleOrDefault(f => f.Id == id && f.Active) ?? throw new InvalidOperationException("Fighter not owned/active");
+    public static string StableAppearance(string identity)
+    {
+        unchecked
+        {
+            uint hash = 2166136261;
+            foreach (char c in identity ?? "") hash = (hash ^ c) * 16777619;
+            return (hash & 1) == 0 ? "male-017" : "female-017";
+        }
+    }
     public static void Dismiss(ClubState s, string id, string operation)
     {
         Available(s); var f = Owned(s, id);

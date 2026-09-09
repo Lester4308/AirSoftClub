@@ -6,6 +6,7 @@ using System.Reflection;
 using AirsoftClub.Unity;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -61,5 +62,48 @@ public sealed class DiagnosticAuditTests
         Object.Destroy(host);
         yield return null;
         Assert.IsEmpty(failures, string.Join("; ", failures));
+    }
+
+    [UnityTest]
+    public IEnumerator InventoryClose_UsesPointerEvent_AndClosesOverlay()
+    {
+        var fixture = (ClubView)typeof(ModernUiSmokeTests)
+            .GetMethod("ClubFixture", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, null);
+        fixture.Fighters = new[] { new FighterView { Id = "audit-fighter", Name = "Audit", Hp = 1000000,
+            MaxHp = 1000000, Level = 1, Accuracy = 10, Endurance = 10, Agility = 10,
+            Ready = true, Equipment = Array.Empty<EquipmentView>() } };
+        fixture.Items = new[] { new ItemView { Id = "audit-item", Definition = "Pistol-MK1", Slot = "Weapon", Equipped = false } };
+        var host = new GameObject("PointerInventoryAudit");
+        var client = host.AddComponent<ClubClient>();
+        Set(client, "club", fixture);
+        Set(client, "page", "Roster");
+        Set(client, "selectedFighter", "audit-fighter");
+        Set(client, "inventorySlot", "Weapon");
+        client.SetModernForTest(true);
+        yield return null;
+        yield return null;
+
+        var close = client.Modern.GetComponentsInChildren<Button>()
+            .FirstOrDefault(x => x.GetComponentInChildren<Text>()?.text == "CLOSE");
+        Assert.IsNotNull(close);
+        Assert.IsTrue(close.IsInteractable());
+        var pointer = new PointerEventData(EventSystem.current) { button = PointerEventData.InputButton.Left };
+        ExecuteEvents.Execute(close.gameObject, pointer, ExecuteEvents.pointerDownHandler);
+        ExecuteEvents.Execute(close.gameObject, pointer, ExecuteEvents.pointerUpHandler);
+        ExecuteEvents.Execute(close.gameObject, pointer, ExecuteEvents.pointerClickHandler);
+        yield return null;
+
+        var slot = (string)client.GetType().GetField("inventorySlot", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(client);
+        Assert.AreEqual(string.Empty, slot);
+        Object.Destroy(client.Modern.gameObject);
+        Object.Destroy(host);
+    }
+
+    [Test]
+    public void StableAppearance_UsesPersistedIdentityAcrossScreens()
+    {
+        Assert.IsTrue(Volumetric017UiView.IsFemaleAppearance("female-standard", "candidate-1"));
+        Assert.IsFalse(Volumetric017UiView.IsFemaleAppearance("male-standard", "candidate-1"));
+        Assert.AreEqual(Volumetric017UiView.IsFemale("legacy-1"), Volumetric017UiView.IsFemaleAppearance("", "legacy-1"));
     }
 }

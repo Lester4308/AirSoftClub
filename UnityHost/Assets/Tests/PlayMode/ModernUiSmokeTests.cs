@@ -71,7 +71,7 @@ public sealed class ModernUiSmokeTests
 
         var early = ButtonWithText("UNLOCK EARLY / 2 CREDITS");
         Assert.IsNotNull(early, "Early access was not exposed separately from the Money item purchase.");
-        early.onClick.Invoke();
+        PointerClick(early);
         yield return null;
 
         Assert.IsNotNull(ButtonWithText("CONFIRM 2 CREDITS"), "A Credits action spent without an explicit confirmation step.");
@@ -132,6 +132,16 @@ public sealed class ModernUiSmokeTests
 
     static Button ButtonWithText(string text) => Object.FindObjectsByType<Button>(FindObjectsSortMode.None)
         .FirstOrDefault(b => b.GetComponentInChildren<Text>()?.text == text);
+
+    static void PointerClick(Button button)
+    {
+        Assert.IsNotNull(EventSystem.current, "Pointer interaction requires an EventSystem.");
+        Assert.IsTrue(button.IsInteractable(), button.GetComponentInChildren<Text>()?.text + " is not interactable");
+        var pointer = new PointerEventData(EventSystem.current) { button = PointerEventData.InputButton.Left };
+        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerDownHandler);
+        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerUpHandler);
+        ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerClickHandler);
+    }
 
     static void SetField(object target, string name, object value) => target.GetType()
         .GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(target, value);

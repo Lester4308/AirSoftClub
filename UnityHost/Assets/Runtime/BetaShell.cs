@@ -9,7 +9,7 @@ namespace AirsoftClub.Unity
     {
         readonly Rect content = new Rect(226,128,1344,716);
         Vector2 rosterScroll, catalogScroll, inventoryScroll;
-        bool ActionsEnabled => !busy && inventorySlot.Length==0 && !revengeOverlay;
+        bool ActionsEnabled => !busy && inventorySlot.Length==0 && !revengeOverlay && pendingCreditsCommand == null;
         bool revengeOverlay;
         string displayedPage=""; float pageChangedAt;
         string selectedOffer="", selectedItem="", shopCategory="Weapons", inventorySlot="", hoverText="";

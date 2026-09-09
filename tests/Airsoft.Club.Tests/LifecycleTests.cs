@@ -6,6 +6,15 @@ internal static partial class Program
     { var s = Clubs.Create(Guid.NewGuid().ToString("N"), 0); Clubs.Hire(s, s.Offers[0].Id, 1, true, 0, "free"); return s; }
     static void LifecycleTests()
     {
+        Test("appearance identity persists from recruit offer to fighter", () =>
+        {
+            var s = Clubs.Create(Guid.NewGuid().ToString("N"), 0);
+            var offer = s.Offers[0];
+            Check(offer.AppearanceId is "male-017" or "female-017");
+            Clubs.Hire(s, offer.Id, 1, true, 0, "appearance");
+            Check(s.Fighters.Single().AppearanceId == offer.AppearanceId);
+            Check(Clubs.StableAppearance("legacy") == Clubs.StableAppearance("legacy"));
+        });
         Test("auto Basic opt-in level threshold guard and no premium spend", () =>
         {
             var s = Starter(); s.BbStock[0] = 0; Check(!Clubs.AutoRefill(s, "off")); s.AutoBuyBasic = true; Check(!Clubs.AutoRefill(s, "locked"));

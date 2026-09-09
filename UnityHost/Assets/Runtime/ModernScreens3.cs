@@ -99,9 +99,10 @@ namespace AirsoftClub.Unity
 
                     string key = (left ? "A" : "D") + f.Id;
                     long hpV = hp != null && hp.TryGetValue(key, out var val) ? val : f.StartingHp.Raw;
+                    var look = appearance?.FirstOrDefault(a => a.Id == f.Id && a.Side == (left ? "A" : "D"));
                     var fighterArt = Volumetric017UiView.Create(body, "FighterArt", new Vector2(fw, fh));
                     fighterArt.Root.anchoredPosition = Vector2.zero;
-                    fighterArt.Apply(left, hpV > 0);
+                    fighterArt.Apply(left, hpV > 0, Volumetric017UiView.IsFemaleAppearance(look?.AppearanceId, f.Id));
 
                     // Overlay the volumetric family weapon as a compact grounded silhouette
                     // at the fighter's hands line (not drifting above), read per fighter.

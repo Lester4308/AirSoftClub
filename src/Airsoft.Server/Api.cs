@@ -68,6 +68,7 @@ public static class Api
             {
                 f.Id,
                 f.Name,
+                AppearanceId = string.IsNullOrEmpty(f.AppearanceId) ? Clubs.StableAppearance(f.Id) : f.AppearanceId,
                 f.Accuracy,
                 f.Endurance,
                 f.Agility,

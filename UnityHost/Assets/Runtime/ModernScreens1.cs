@@ -70,7 +70,7 @@ namespace AirsoftClub.Unity
             }
 
             // Daily / protection row (bottom)
-            var left = PanelRect("Daily", root, CX, CY + 470, 640, 160);
+            var left = PanelRect("Daily", root, CX, CY + 450, 640, 190);
             left.gameObject.AddComponent<Image>().color = ModernStyle.Card;
             left.GetComponent<Image>().raycastTarget = false;
             MLabel("REWARDS & PROGRESS", left, 15, ModernStyle.Gold, TextAnchor.MiddleLeft);
@@ -86,10 +86,10 @@ namespace AirsoftClub.Unity
             MButton("CONVERT 1 CREDIT → " + club.ConvertRate + " MONEY", left, 370, 84, 220, 44,
                 () => ConfirmCredits(Intent("Convert", number: 1), 1, "CREDITS CONVERSION", "1 CREDIT → " + club.ConvertRate + " MONEY. Conversion cannot be reversed."), ModernStyle.Neutral);
             MButton("EMERGENCY BASIC BB", left, 20, 138, 220, 44, () => StartCoroutine(Send(Intent("Emergency"))), ModernStyle.Orange);
-            if (club != null)
+            if (club != null && club.Level >= 3)
                 MButton((club.AutoBuyBasic ? "AUTO-BUY: ON" : "AUTO-BUY: OFF"), left, 250, 138, 180, 44, () => StartCoroutine(Send(Intent("AutoBuyBasic", flag: !club.AutoBuyBasic))), club.AutoBuyBasic ? ModernStyle.Blue : ModernStyle.Neutral);
 
-            var right = PanelRect("Protection", root, CX + 670, CY + 470, 640, 160);
+            var right = PanelRect("Protection", root, CX + 670, CY + 450, 640, 190);
             right.gameObject.AddComponent<Image>().color = ModernStyle.Card;
             right.GetComponent<Image>().raycastTarget = false;
             MLabel("CLUB PROTECTION", right, 15, ModernStyle.Gold, TextAnchor.MiddleLeft);
@@ -134,7 +134,7 @@ namespace AirsoftClub.Unity
                 card.GetComponent<Image>().raycastTarget = false;
                 var thumbnail = Volumetric017UiView.Create(card, "Portrait", new Vector2(68, 96));
                 thumbnail.Root.anchoredPosition = new Vector2(12, -6);
-                thumbnail.Apply(true, f.Hp > 0, Volumetric017UiView.IsFemale(f.Id));
+                thumbnail.Apply(true, f.Hp > 0, Volumetric017UiView.IsFemaleAppearance(f.AppearanceId, f.Id));
                 MLabel(f.Name, card, 17, ModernStyle.Ink, TextAnchor.MiddleLeft);
                 var c0 = (RectTransform)card.GetChild(card.childCount - 1);
                 c0.sizeDelta = new Vector2(260, 30); c0.anchoredPosition = new Vector2(92, -18);
@@ -160,7 +160,7 @@ namespace AirsoftClub.Unity
 
             var portrait = Volumetric017UiView.Create(det, "SelectedFighter", new Vector2(190, 285));
             portrait.Root.anchoredPosition = new Vector2(410, -16);
-            portrait.Apply(true, fIdx.Hp > 0, Volumetric017UiView.IsFemale(fIdx.Id));
+            portrait.Apply(true, fIdx.Hp > 0, Volumetric017UiView.IsFemaleAppearance(fIdx.AppearanceId, fIdx.Id));
 
             MLabel(fIdx.Name.ToUpperInvariant(), det, 24, ModernStyle.Gold, TextAnchor.MiddleLeft);
             var d0 = (RectTransform)det.GetChild(det.childCount - 1);
@@ -182,12 +182,13 @@ namespace AirsoftClub.Unity
                 MLabel(sn + "   " + statVals[nf], row, 16, ModernStyle.Ink, TextAnchor.MiddleLeft);
                 var sl = (RectTransform)row.GetChild(row.childCount - 1);
                 sl.sizeDelta = new Vector2(300, 40); sl.anchoredPosition = new Vector2(14, -24);
-                MButton("+1", row, 460, 8, 120, 34, () => StartCoroutine(Send(Intent("Train", fIdx.Id, sn))), ModernStyle.Blue);
+                MButton("+1", row, 430, 8, 120, 34, () => StartCoroutine(Send(Intent("Train", fIdx.Id, sn))), ModernStyle.Blue, localEnabled: statVals[nf] < fIdx.TrainingCap);
             }
 
             // Heal
             MButton("HEAL / " + fIdx.HealMoney + " MONEY", det, 24, 280, 260, 48, () => StartCoroutine(Send(Intent("Heal", fIdx.Id))), ModernStyle.Gold);
-            MButton("DISMISS", det, 310, 300, 140, 48, () => StartCoroutine(Send(Intent("Dismiss", fIdx.Id))), ModernStyle.Orange);
+            if (club.Fighters.Length > 1)
+                MButton("DISMISS", det, 310, 280, 140, 48, () => StartCoroutine(Send(Intent("Dismiss", fIdx.Id))), ModernStyle.Orange);
 
             // Recovery text
             MLabel("Full recovery: " + Math.Ceiling(fIdx.RecoveryRemainingMs / 60000d) + " min free", det, 13, ModernStyle.Muted, TextAnchor.MiddleLeft);

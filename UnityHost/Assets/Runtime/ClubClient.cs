@@ -34,9 +34,9 @@ namespace AirsoftClub.Unity
     [Serializable] public class ErrorView { public string Error; }
     [Serializable] public class LeaderView { public string Id, Name; public int Rating; }
     [Serializable] public class LeadersView { public LeaderView[] Leaders; }
-    [Serializable] public class FighterView { public string Id, Name; public int Accuracy, Endurance, Agility, Level, TrainingCap; public long Hp, MaxHp, Xp, HealMoney, RecoveryRemainingMs; public bool Ready; public EquipmentView[] Equipment; }
+    [Serializable] public class FighterView { public string Id, Name, AppearanceId; public int Accuracy, Endurance, Agility, Level, TrainingCap; public long Hp, MaxHp, Xp, HealMoney, RecoveryRemainingMs; public bool Ready; public EquipmentView[] Equipment; }
     [Serializable] public class EquipmentView { public string Slot, Item, Definition; }
-    [Serializable] public class OfferView { public string Id, Name; public int Accuracy, Endurance, Agility; public long Price; }
+    [Serializable] public class OfferView { public string Id, Name, AppearanceId; public int Accuracy, Endurance, Agility; public long Price; }
     [Serializable] public class ItemView { public string Id, Definition, Slot; public bool Equipped; }
     [Serializable] public class CatalogView { public string Id, Slot; public long Money, Credits; public int Mk, Level, Damage, Interval, Projectiles, Protection, AgilityPenalty; public bool Access, EarlyAllowed, EarlyCapped; public int EarlyPrice; }
     [Serializable] public class RevengeView { public string Origin, Target; public int ActualLoss, Attempts; public long Expires; }
@@ -53,7 +53,7 @@ namespace AirsoftClub.Unity
         public int Number, OfferVersion;
         public bool Flag;
     }
-    [Serializable] public class AppearanceView { public string Id, Side; public bool Head, Rig, Camo; }
+    [Serializable] public class AppearanceView { public string Id, Side, AppearanceId; public bool Head, Rig, Camo; }
     [Serializable] public class MatchView { public AppearanceView[] Appearance; public string Id, MatchId, Status, Input, Result, Digest; public long RewardMoney, RewardClubXp, RewardFighterXp; public int RatingDelta; public bool RatingKnown; }
     public sealed partial class ClubClient : MonoBehaviour
     {
