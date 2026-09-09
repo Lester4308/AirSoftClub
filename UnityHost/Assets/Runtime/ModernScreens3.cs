@@ -219,10 +219,10 @@ namespace AirsoftClub.Unity
             MLabel((replayResult.SimulatedDurationMs / 1000f).ToString("0.0") + " s  ·  BB " + replayResult.Attacker.BbConsumed + " / " + replayResult.Defender.BbConsumed + "  ·  " + replayInput.Attacker.Fighters.Count + " vs " + replayInput.Defender.Fighters.Count, card, 14, ModernStyle.Muted, TextAnchor.MiddleLeft);
             ((RectTransform)card.GetChild(card.childCount - 1)).sizeDelta = new Vector2(900, 28); ((RectTransform)card.GetChild(card.childCount - 1)).anchoredPosition = new Vector2(30, -390);
 
-            MButton("NEW BATTLE", root, CX, CY + 550, 300, 50, () => page = "Opponents", ModernStyle.Gold);
-            MButton("BACK TO CLUB", root, CX + 330, CY + 550, 300, 50, () => page = "Club", ModernStyle.Blue);
-            MButton("REPLAY", root, CX + 660, CY + 550, 300, 50, () => ResetPlayback(), ModernStyle.Neutral);
-            MButton("HISTORY", root, CX + 990, CY + 550, 300, 50, () => page = "History", ModernStyle.Neutral);
+            MButton("NEW BATTLE", root, CX, CY + 550, 280, 50, () => page = "Opponents", ModernStyle.Gold);
+            MButton("BACK TO CLUB", root, CX + 310, CY + 550, 280, 50, () => page = "Club", ModernStyle.Blue);
+            MButton("REPLAY", root, CX + 620, CY + 550, 280, 50, () => ResetPlayback(), ModernStyle.Neutral);
+            MButton("HISTORY", root, CX + 930, CY + 550, 280, 50, () => page = "History", ModernStyle.Neutral);
         }
     }
 }

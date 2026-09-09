@@ -72,7 +72,7 @@ namespace AirsoftClub.Unity
             }
 
             // Detailed selected candidate + hire
-            var choice = club.Offers.FirstOrDefault(o => o.Id == selectedOffer) ?? club.Offers.FirstOrDefault(o => o.Id.EndsWith("-0"));
+            var choice = club.Offers.FirstOrDefault(o => o.Id == selectedOffer) ?? club.Offers.FirstOrDefault();
             if (choice == null) return;
             selectedOffer = choice.Id;
 
@@ -172,7 +172,7 @@ namespace AirsoftClub.Unity
                         if (i.Credits > 0)
                             ConfirmCredits(Intent("Buy", i.Id), (int)i.Credits, "CREDITS PURCHASE", "Buy " + i.Id + " using Credits.");
                         else StartCoroutine(Send(Intent("Buy", i.Id)));
-                    }, i.Credits > 0 ? ModernStyle.Gold : ModernStyle.Blue);
+                    }, i.Credits > 0 ? ModernStyle.Gold : ModernStyle.Blue, localEnabled: i.Access);
                 }
             }
         }
@@ -317,12 +317,55 @@ namespace AirsoftClub.Unity
             var c = PanelRect("Status", root, CX, CY, CW, CH);
             c.gameObject.AddComponent<Image>().color = ModernStyle.Panel;
             c.GetComponent<Image>().raycastTarget = false;
-            MLabel("SERVER & PROFILE STATUS", c, 20, ModernStyle.Gold, TextAnchor.MiddleLeft);
+            MLabel("SERVER & PROFILE SETTINGS", c, 20, ModernStyle.Gold, TextAnchor.MiddleLeft);
             ((RectTransform)c.GetChild(0)).sizeDelta = new Vector2(500, 34); ((RectTransform)c.GetChild(0)).anchoredPosition = new Vector2(24, -24);
             MLabel("Version " + (club?.Version.ToString() ?? "-") + "  ·  " + (club?.ConfigVersion ?? "-"), c, 15, ModernStyle.Ink, TextAnchor.MiddleLeft);
             ((RectTransform)c.GetChild(1)).sizeDelta = new Vector2(900, 30); ((RectTransform)c.GetChild(1)).anchoredPosition = new Vector2(24, -60);
             MLabel(club != null && club.DefensePublished ? "Defense published: full HP / virtual BB" : "Recruit a fighter to publish defense.", c, 14, ModernStyle.Muted, TextAnchor.MiddleLeft);
             ((RectTransform)c.GetChild(2)).sizeDelta = new Vector2(900, 30); ((RectTransform)c.GetChild(2)).anchoredPosition = new Vector2(24, -96);
+            if (club == null) return;
+
+            var nameRoot = PanelRect("ClubName", c, 24, 145, 620, 48);
+            var bg = nameRoot.gameObject.AddComponent<Image>(); bg.color = ModernStyle.Bg2; bg.raycastTarget = true;
+            var input = nameRoot.gameObject.AddComponent<InputField>(); input.targetGraphic = bg; input.characterLimit = 24;
+            var text = MLabel(profileName, nameRoot, 16, ModernStyle.Ink, TextAnchor.MiddleLeft);
+            var textRect = (RectTransform)text.transform; textRect.anchorMin = Vector2.zero; textRect.anchorMax = Vector2.one; textRect.offsetMin = new Vector2(12, 0); textRect.offsetMax = new Vector2(-12, 0);
+            var placeholder = MLabel("Club name", nameRoot, 16, ModernStyle.Muted, TextAnchor.MiddleLeft);
+            var phRect = (RectTransform)placeholder.transform; phRect.anchorMin = Vector2.zero; phRect.anchorMax = Vector2.one; phRect.offsetMin = new Vector2(12, 0); phRect.offsetMax = new Vector2(-12, 0);
+            input.textComponent = text; input.placeholder = placeholder; input.text = profileName; input.onValueChanged.AddListener(v => profileName = v);
+            MButton("SAVE CLUB NAME", c, 670, 145, 220, 48, () => StartCoroutine(Send(Intent("Name", value: profileName))), ModernStyle.Blue);
+
+            MLabel("EMBLEM " + club.Emblem, c, 14, ModernStyle.Muted, TextAnchor.MiddleLeft);
+            ((RectTransform)c.GetChild(c.childCount - 1)).sizeDelta = new Vector2(200, 30); ((RectTransform)c.GetChild(c.childCount - 1)).anchoredPosition = new Vector2(24, -220);
+            for (int n = 0; n < 8; n++)
+            {
+                int emblem = n;
+                MButton(n.ToString(), c, 24 + n * 72, 255, 58, 42, () => StartCoroutine(Send(Intent("Emblem", number: emblem))), club.Emblem == n ? ModernStyle.Gold : ModernStyle.Card);
+            }
+            MButton("LOAD LEADERBOARD", c, 670, 255, 220, 42, () => StartCoroutine(LoadLeaders()), ModernStyle.Neutral);
+            for (int n = 0; n < leaders.Length && n < 8; n++)
+            {
+                MLabel((n + 1) + ". " + leaders[n].Name + "  ·  " + leaders[n].Rating, c, 14, ModernStyle.Ink, TextAnchor.MiddleLeft);
+                ((RectTransform)c.GetChild(c.childCount - 1)).sizeDelta = new Vector2(600, 28); ((RectTransform)c.GetChild(c.childCount - 1)).anchoredPosition = new Vector2(670, -315 - n * 30);
+            }
+            if (!steamSession && club.Id.StartsWith("dev-", StringComparison.Ordinal))
+            {
+                MLabel("DEVELOPMENT FIXTURES — local test profile only", c, 13, ModernStyle.Orange, TextAnchor.MiddleLeft);
+                ((RectTransform)c.GetChild(c.childCount - 1)).sizeDelta = new Vector2(600, 28); ((RectTransform)c.GetChild(c.childCount - 1)).anchoredPosition = new Vector2(24, -340);
+                MButton("TEST MONEY / CREDITS", c, 24, 385, 230, 42, () => StartCoroutine(Send(Intent("Grant"), true)), ModernStyle.Neutral);
+                MButton("SIMULATE RECOVERY", c, 270, 385, 220, 42, () => StartCoroutine(Send(Intent("Recovery"), true)), ModernStyle.Neutral);
+                MButton("SEED RECRUITS", c, 506, 385, 180, 42, () => StartCoroutine(Send(Intent("Refresh"), true)), ModernStyle.Neutral);
+                if (rivals.Length > 0) MButton("CREATE REVENGE", c, 24, 445, 230, 42, () => StartCoroutine(Send(Intent("Revenge", rivals[0].Id), true)), ModernStyle.Orange);
+                MButton("NEW DEVELOPMENT PROFILE", c, 270, 445, 280, 42, ResetDevelopmentProfile, ModernStyle.Orange);
+                MButton("VISUAL / MK PREVIEW", c, 566, 445, 230, 42, () => page = "ArtSheet", ModernStyle.Blue);
+            }
+        }
+
+        void ResetDevelopmentProfile()
+        {
+            account = "dev-" + Guid.NewGuid().ToString("N").Substring(0, 12);
+            club = null; token = ""; lastPayload = null; selectedTarget = ""; page = "Club";
+            leaders = Array.Empty<LeaderView>(); busy = false;
         }
     }
 }

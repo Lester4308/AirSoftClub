@@ -19,7 +19,11 @@ namespace AirsoftClub.Unity
         // prevents recreating the complete Canvas hierarchy every frame.
         public string ModernRenderSignature()
         {
-            int replayFrame = page == "Battle" && replayResult != null ? Mathf.FloorToInt(replayTime / 33f) : 0;
+            // The result screen is static. An unbounded replay clock used to change this
+            // signature forever after settlement, replacing buttons between pointer down/up.
+            int replayFrame = 0;
+            if (page == "Battle" && replayResult != null && replayTime < replayResult.SimulatedDurationMs)
+                replayFrame = Mathf.FloorToInt(replayTime / 33f) + 1;
             return string.Join("|", page, club?.Version.ToString() ?? "login", selectedFighter, selectedOffer,
                 selectedItem, selectedTarget, shopCategory, mode, busy, failed, status, pendingCreditsCommand?.Key,
                 replayFrame, inventorySlot, revengeOverlay);
@@ -77,7 +81,7 @@ namespace AirsoftClub.Unity
             if (equipped != null)
             {
                 var capturedSlot = inventorySlot;
-                MButton("UNEQUIP " + equipped.Definition, panel, 27, 80, 750, 42, () => { inventorySlot = ""; StartCoroutine(Send(Intent("Unequip", f.Id, capturedSlot))); }, ModernStyle.Orange, forceEnabled: true);
+                MButton("UNEQUIP " + equipped.Definition, panel, 27, 80, 750, 42, () => { inventorySlot = ""; StartCoroutine(Send(Intent("Unequip", f.Id, capturedSlot))); }, ModernStyle.Orange, forceEnabled: true, localEnabled: !busy);
             }
             var items = club.Items.Where(i => i.Slot == inventorySlot && !i.Equipped).ToArray();
             float ih = 24 + items.Length * 56;
@@ -88,7 +92,7 @@ namespace AirsoftClub.Unity
                 MLabel(it.Definition, iv, 14, ModernStyle.Ink, TextAnchor.MiddleLeft);
                 var itL = (RectTransform)iv.GetChild(iv.childCount - 1);
                 itL.sizeDelta = new Vector2(560, 40); itL.anchoredPosition = new Vector2(10, -n * 56 - 8);
-                MButton("EQUIP", iv, 590, n * 56 + 4, 140, 42, () => { inventorySlot = ""; StartCoroutine(Send(Intent("Equip", f.Id, it.Id))); }, ModernStyle.Blue, forceEnabled: true);
+                MButton("EQUIP", iv, 590, n * 56 + 4, 140, 42, () => { inventorySlot = ""; StartCoroutine(Send(Intent("Equip", f.Id, it.Id))); }, ModernStyle.Blue, forceEnabled: true, localEnabled: !busy);
             }
             if (items.Length == 0)
                 MLabel("No unequipped items in this slot.\\nBuy equipment in the shop, then return here.", panel, 14, ModernStyle.Muted, TextAnchor.MiddleLeft);
@@ -224,6 +228,14 @@ namespace AirsoftClub.Unity
             return btn;
         }
 
+        void HandleModalEscape()
+        {
+            if (!Input.GetKeyDown(KeyCode.Escape)) return;
+            if (inventorySlot.Length > 0) inventorySlot = "";
+            else if (pendingCreditsCommand != null) pendingCreditsCommand = null;
+            else if (revengeOverlay) revengeOverlay = false;
+        }
+
         void ConfirmCredits(CommandRequest command, int credits, string title, string detail)
         {
             pendingCreditsCommand = command;
@@ -243,7 +255,7 @@ namespace AirsoftClub.Unity
             ((RectTransform)panel.GetChild(0)).sizeDelta = new Vector2(552, 50); ((RectTransform)panel.GetChild(0)).anchoredPosition = new Vector2(24, -28);
             MLabel(pendingCreditsDetail + "\n\nBalance is authoritative and will refresh from the server.", panel, 15, ModernStyle.Ink, TextAnchor.MiddleCenter);
             ((RectTransform)panel.GetChild(1)).sizeDelta = new Vector2(552, 110); ((RectTransform)panel.GetChild(1)).anchoredPosition = new Vector2(24, -88);
-            MButton("CONFIRM " + pendingCreditsCost + " CREDITS", panel, 35, 220, 250, 52, () => { var command = pendingCreditsCommand; pendingCreditsCommand = null; StartCoroutine(Send(command)); }, ModernStyle.Gold, forceEnabled: true);
+            MButton("CONFIRM " + pendingCreditsCost + " CREDITS", panel, 35, 220, 250, 52, () => { var command = pendingCreditsCommand; pendingCreditsCommand = null; StartCoroutine(Send(command)); }, ModernStyle.Gold, forceEnabled: true, localEnabled: !busy);
             MButton("CANCEL", panel, 315, 220, 250, 52, () => pendingCreditsCommand = null, ModernStyle.Neutral, forceEnabled: true);
         }
 
@@ -325,15 +337,15 @@ namespace AirsoftClub.Unity
             logoR.anchorMin = new Vector2(0, 1); logoR.anchorMax = new Vector2(0, 1); logoR.pivot = new Vector2(0.5f, 1);
             logoR.sizeDelta = new Vector2(200, 90); logoR.anchoredPosition = new Vector2(110, -20);
 
-            string[] tabs = { "Club", "Roster", "Recruitment", "Training", "Shop", "BB", "Opponents", "History", "Settings" };
-            float ty = 130;
+            string[] tabs = { "Club", "Roster", "Equipment", "Recruitment", "Training", "Recovery", "Shop", "BB", "Opponents", "History", "Settings" };
+            float ty = 116;
             foreach (var t in tabs)
             {
                 var idx = t;
-                var b = MButton(idx, nav, 15, ty, 190, 42, () => { page = idx; scroll = Vector2.zero; inventorySlot = ""; },
+                var b = MButton(idx, nav, 15, ty, 190, 38, () => { page = idx; scroll = Vector2.zero; inventorySlot = ""; },
                     page == idx ? ModernStyle.Neutral : ModernStyle.Card);
-                ((RectTransform)b.transform).anchoredPosition = new Vector2(15, -(ty + 42));
-                ty += 52;
+                ((RectTransform)b.transform).anchoredPosition = new Vector2(15, -(ty + 38));
+                ty += 45;
             }
 
             // Header resources (top bar, left of nav)

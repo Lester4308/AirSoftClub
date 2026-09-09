@@ -122,6 +122,7 @@ namespace AirsoftClub.Unity
         }
         IEnumerator Login()
         {
+            if (busy) yield break;
             busy = true; steamSession = false;
             yield return Request("/dev/login", JsonUtility.ToJson(new LoginRequest { Account = account }), text => token = JsonUtility.FromJson<LoginView>(text).Token);
             if (!failed) { PlayerPrefs.SetString("club-development-account", account); PlayerPrefs.Save(); yield return Refresh(); if (!failed) status = "Connected. Server state restored."; }
@@ -129,6 +130,7 @@ namespace AirsoftClub.Unity
         }
         IEnumerator SteamLogin()
         {
+            if (busy) yield break;
             busy = true;
             steamSession = false;
             string ticket = null; bool finished = false;
@@ -158,6 +160,7 @@ namespace AirsoftClub.Unity
         { Key = Guid.NewGuid().ToString("N"), Version = club.Version, Type = type, Target = target, Value = value, Number = number, Flag = flag, OfferVersion = club.OfferVersion, CatalogVersion = club.CatalogVersion };
         IEnumerator Send(CommandRequest command, bool development = false)
         {
+            if (busy) yield break;
             busy = true; lastPayload = JsonUtility.ToJson(command); lastEndpoint = development ? "/api/dev/command" : "/api/command";
             string match = "";
             yield return Request(lastEndpoint, lastPayload, text => { if (command.Type == "Attack") match = JsonUtility.FromJson<MatchView>(text).MatchId; status = "Saved by server."; lastPayload = null; });
@@ -167,6 +170,7 @@ namespace AirsoftClub.Unity
         }
         IEnumerator Retry()
         {
+            if (busy) yield break;
             busy = true;
             if (lastPayload != null) yield return Request(lastEndpoint, lastPayload, text => { lastPayload = null; status = "Recovered server receipt."; });
             yield return Refresh();
@@ -175,7 +179,9 @@ namespace AirsoftClub.Unity
         }
         IEnumerator LoadMatch(string id)
         {
-            busy = true; MatchView view = null;
+            bool ownsBusy = !busy;
+            if (ownsBusy) busy = true;
+            MatchView view = null;
             for (int n = 0; n < 40; n++)
             {
                 yield return Request("/api/match/" + id, null, text => view = JsonUtility.FromJson<MatchView>(text));
@@ -193,12 +199,21 @@ namespace AirsoftClub.Unity
                 replayTime = 0; eventIndex = 0; page = "Battle"; status = "Server result saved. Playback speed and skip only affect presentation.";
             }
             else if (view != null) status = "Match " + view.Status + ". Use refresh to recover pending work.";
-            yield return Refresh(); busy = false;
+            yield return Refresh();
+            if (ownsBusy) busy = false;
         }
         void Update()
         {
+            HandleModalEscape();
+            if (club == null && Input.GetKeyDown(KeyCode.Return) && !busy)
+            {
+                StartCoroutine(Login());
+                return;
+            }
             if (page != "Battle" || replayResult == null) return;
-            replayTime += Time.unscaledDeltaTime * 1000;
+            int duration = replayResult.SimulatedDurationMs;
+            if (replayTime < duration)
+                replayTime = Math.Min(duration, replayTime + Time.unscaledDeltaTime * 1000);
             while (eventIndex < replayResult.Events.Count && replayResult.Events[eventIndex].TimeMs <= replayTime)
             {
                 int time = replayResult.Events[eventIndex].TimeMs;
@@ -215,6 +230,7 @@ namespace AirsoftClub.Unity
         void Text(string value) => GUILayout.Label(value, label);
         IEnumerator LoadLeaders()
         {
+            if (busy) yield break;
             busy = true;
             yield return Request("/api/leaderboard", null, text => leaders = JsonUtility.FromJson<LeadersView>(text).Leaders);
             busy = false;

@@ -175,6 +175,93 @@ public sealed class ModernUiSmokeTests
         DestroyClient(host, client);
     }
 
+    [UnityTest] public IEnumerator InputFocusAndTextSurviveIdleFrames()
+    {
+        var host = new GameObject("InputFocusHost");
+        var client = host.AddComponent<ClubClient>();
+        client.SetModernForTest(true);
+        yield return null;
+        var input = Object.FindFirstObjectByType<InputField>();
+        input.Select();
+        input.text = "dev-focus-proof";
+        EventSystem.current.SetSelectedGameObject(input.gameObject);
+        yield return null;
+        yield return null;
+        Assert.AreSame(input, Object.FindFirstObjectByType<InputField>());
+        Assert.AreEqual("dev-focus-proof", input.text);
+        Assert.AreSame(input.gameObject, EventSystem.current.currentSelectedGameObject);
+        DestroyClient(host, client);
+    }
+
+    [UnityTest] public IEnumerator CreditsModalBlocksBackgroundButLeavesModalActionsUsable()
+    {
+        var host = new GameObject("ModalGateHost");
+        var client = host.AddComponent<ClubClient>();
+        SetField(client, "club", ClubFixture());
+        SetField(client, "page", "Club");
+        client.SetModernForTest(true);
+        yield return null;
+        PointerClick(ButtonWithText("CONVERT 1 CREDIT → 100 MONEY"));
+        yield return null;
+        yield return null;
+        var confirm = ButtonWithText("CONFIRM 1 CREDITS");
+        var cancel = ButtonWithText("CANCEL");
+        var nav = ButtonWithText("Roster");
+        Assert.IsTrue(confirm.IsInteractable());
+        Assert.IsTrue(cancel.IsInteractable());
+        Assert.IsFalse(nav.IsInteractable(), "Background navigation remained usable below a modal.");
+        var pointer = PointerAtCenter(confirm);
+        var hits = new System.Collections.Generic.List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointer, hits);
+        Assert.IsTrue(hits.Any(h => h.gameObject == confirm.gameObject || h.gameObject.transform.IsChildOf(confirm.transform)));
+        DestroyClient(host, client);
+    }
+
+    static PointerEventData PointerAtCenter(Button button)
+    {
+        Canvas.ForceUpdateCanvases();
+        var rt = (RectTransform)button.transform;
+        var canvas = button.GetComponentInParent<Canvas>();
+        return new PointerEventData(EventSystem.current)
+        {
+            button = PointerEventData.InputButton.Left,
+            position = RectTransformUtility.WorldToScreenPoint(canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
+                rt.TransformPoint(rt.rect.center))
+        };
+    }
+
+    [UnityTest] public IEnumerator TrainingButtonsStayInsideRowsAtSupportedReferenceResolutions()
+    {
+        foreach (var size in new[] { new Vector2Int(1280, 720), new Vector2Int(1600, 900), new Vector2Int(1920, 1080) })
+        {
+            var host = new GameObject("TrainingGeometry" + size.x);
+            var client = host.AddComponent<ClubClient>();
+            var fixture = ClubFixture();
+            fixture.Fighters = new[] { new FighterView { Id = "fighter-1", Name = "Fighter", Accuracy = 2, Endurance = 2, Agility = 2, TrainingCap = 10, MaxHp = 100000, Hp = 100000, Equipment = Array.Empty<EquipmentView>(), Ready = true } };
+            SetField(client, "club", fixture);
+            SetField(client, "selectedFighter", "fighter-1");
+            SetField(client, "page", "Training");
+            client.SetModernForTest(true);
+            yield return null;
+            Canvas.ForceUpdateCanvases();
+            var canvas = Object.FindFirstObjectByType<Canvas>();
+            var scaler = canvas.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ConstantPixelSize;
+            scaler.scaleFactor = size.x / 1600f;
+            Canvas.ForceUpdateCanvases();
+            foreach (var row in Object.FindObjectsByType<RectTransform>(FindObjectsSortMode.None).Where(r => r.name == "Stat"))
+            {
+                var button = row.GetComponentInChildren<Button>(true);
+                Assert.IsNotNull(button);
+                Assert.IsTrue(IsInside(button.GetComponent<RectTransform>(), row), size + " training button escaped its stat row");
+                Assert.IsTrue(button.IsInteractable(), size + " training button unexpectedly disabled");
+                Assert.IsFalse(button.GetComponentsInParent<CanvasGroup>(true).Any(g => !g.interactable || !g.blocksRaycasts), size + " training button blocked by CanvasGroup");
+            }
+            DestroyClient(host, client);
+            yield return null;
+        }
+    }
+
     static bool IsInside(RectTransform child, RectTransform parent)
     {
         var corners = new Vector3[4];

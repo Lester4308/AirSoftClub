@@ -208,7 +208,7 @@ namespace AirsoftClub.Unity
                 MLabel((eq?.Definition ?? "Empty slot"), gear, 13, occupied ? ModernStyle.Ink : ModernStyle.Muted, TextAnchor.MiddleLeft);
                 var gl = (RectTransform)gear.GetChild(gear.childCount - 1);
                 gl.sizeDelta = new Vector2(190, 40); gl.anchoredPosition = new Vector2(12, -24);
-                MButton(occupied ? "UNEQUIP" : "EQUIP…", gear, 195, 8, 62, 36,
+                MButton(occupied ? "UNEQUIP" : "EQUIP…", gear, 185, 8, 72, 36,
                     () => { if (occupied) StartCoroutine(Send(Intent("Unequip", fIdx.Id, slotIdx))); else inventorySlot = slotIdx; },
                     occupied ? ModernStyle.Orange : ModernStyle.Blue);
             }
